@@ -119,8 +119,9 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 	}
 
 	// Start subscription handlers
-	c.wg.Add(1)
+	c.wg.Add(2)
 	go c.handleForwards()
+	go c.handlePeerEvents()
 
 	return c.eventSub, nil
 }
@@ -158,7 +159,38 @@ func (c *Client) handleForwards() {
 			start = time.Now()
 		}
 	}
+}
 
+// handlePeerEvents handles peer connection and disconnection events
+func (c *Client) handlePeerEvents() {
+	ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
+	if err != nil {
+		fmt.Printf("Error subscribing to peer events: %v\n", err)
+		return
+	}
+
+	for {
+		peerEvent, err := ev.Recv()
+		if err != nil {
+			fmt.Printf("Error receiving peer event: %v\n", err)
+			return
+		}
+
+		nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
+			PubKey: peerEvent.GetPubKey(),
+		})
+		if err != nil {
+			fmt.Printf("Error fetching node info: %v\n", err)
+			continue
+		}
+
+		switch peerEvent.GetType() {
+		case lnrpc.PeerEvent_PEER_ONLINE:
+			c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node.Alias)
+		case lnrpc.PeerEvent_PEER_OFFLINE:
+			c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node.Alias)
+		}
+	}
 }
 
 // MacaroonCredential implements the credentials.PerRPCCredentials interface

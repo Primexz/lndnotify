@@ -38,12 +38,15 @@ type ProviderConfig struct {
 
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
-	Forward string `yaml:"forward_event"`
+	Forward     string `yaml:"forward_event"`
+	PeerOnline  string `yaml:"peer_online"`
+	PeerOffline string `yaml:"peer_offline"`
 }
 
 // EventConfig controls which events to monitor
 type EventConfig struct {
 	ForwardEvents bool `yaml:"forward_events"`
+	PeerEvents    bool `yaml:"peer_events"`
 }
 
 // RateLimitConfig controls notification rate limiting
@@ -150,5 +153,11 @@ func (c *Config) setDefaults() {
 	// Set default templates if not specified
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
+	}
+	if c.Notifications.Templates.PeerOnline == "" {
+		c.Notifications.Templates.PeerOnline = "✅ Peer {{.PeerAlias}} is online"
+	}
+	if c.Notifications.Templates.PeerOffline == "" {
+		c.Notifications.Templates.PeerOffline = "⚠️ Peer {{.PeerAlias}} is offline"
 	}
 }

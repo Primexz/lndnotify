@@ -77,7 +77,9 @@ func NewManager(cfg *ManagerConfig) *Manager {
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
 	templates := map[string]string{
-		"forward_event": m.cfg.Templates.Forward,
+		"forward_event":      m.cfg.Templates.Forward,
+		"peer_offline_event": m.cfg.Templates.PeerOffline,
+		"peer_online_event":  m.cfg.Templates.PeerOnline,
 	}
 
 	for name, text := range templates {
@@ -109,37 +111,40 @@ func (m *Manager) RenderTemplate(name string, data interface{}) (string, error) 
 }
 
 // Send sends a notification to all configured providers
-func (m *Manager) Send(message string) error {
+func (m *Manager) Send(message string) {
 	if message == "" {
-		return fmt.Errorf("empty message")
+		return
 	}
 
 	if !m.checkRateLimit() {
-		return fmt.Errorf("rate limit exceeded")
+		return
 	}
 
-	var lastErr error
 	for name, provider := range m.providers {
-		if err := provider.Send(message, &types.Params{}); len(err) > 0 {
-			lastErr = fmt.Errorf("provider %s: %w", name, err)
-			continue
+		errs := provider.Send(message, &types.Params{})
+		for _, err := range errs {
+			if err == nil {
+				continue
+			}
+
+			fmt.Printf("Error sending notification via %s: %v\n", name, err)
 		}
 	}
 
-	return lastErr
+	fmt.Println(message)
 }
 
 // SendBatch sends multiple notifications as a batch
-func (m *Manager) SendBatch(messages []string) error {
+func (m *Manager) SendBatch(messages []string) {
 	if len(messages) == 0 {
-		return fmt.Errorf("empty message batch")
+		return
 	}
 
 	// Join messages with newlines
 	message := ""
 	for i, msg := range messages {
 		if msg == "" {
-			return fmt.Errorf("empty message in batch at index %d", i)
+			return
 		}
 		if i > 0 {
 			message += "\n"
@@ -147,7 +152,7 @@ func (m *Manager) SendBatch(messages []string) error {
 		message += msg
 	}
 
-	return m.Send(message)
+	m.Send(message)
 }
 
 // checkRateLimit checks if sending a notification would exceed the rate limit
