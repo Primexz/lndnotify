@@ -149,6 +149,6 @@ func (c *Config) setDefaults() {
 
 	// Set default templates if not specified
 	if c.Notifications.Templates.Forward == "" {
-		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats :)"
+		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
 	}
 }
