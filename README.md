@@ -43,11 +43,14 @@ notifications:
     - url: "discord://token@channel"  # Discord webhook URL
       name: "main-discord"
   templates:
-    forward: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
+    forward_event: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
+    peer_online_event: "✅ Peer {{.PeerAlias}} is online"
+    peer_offline_event: "⚠️ Peer {{.PeerAlias}} went offline"
 
 # Event settings
 events:
   forward_events: true
+  peer_events: true
 
 # Rate limiting settings
 rate_limiting:

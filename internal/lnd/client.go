@@ -132,7 +132,6 @@ func (c *Client) handleForwards() {
 
 	start := time.Now()
 	for range time.Tick(time.Minute * 1) {
-
 		resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
 			StartTime:       uint64(start.Unix()),
 			PeerAliasLookup: true,
