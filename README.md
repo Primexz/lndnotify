@@ -66,7 +66,7 @@ export LND_PORT=10009
 export LND_TLS_CERT_PATH=/path/to/tls.cert
 export LND_MACAROON_PATH=/path/to/admin.macaroon
 export NOTIFICATION_URL="discord://token@channel"
-export ENABLED_EVENTS="peers,fees,routing,htlc"
+export ENABLED_EVENTS="forwards"
 ```
 
 ### Notification Providers
