@@ -121,6 +121,8 @@ func (m *Manager) Send(message string) {
 	}
 
 	for name, provider := range m.providers {
+		fmt.Printf("Sending notification via %s: %s\n", name, message)
+
 		errs := provider.Send(message, &types.Params{})
 		for _, err := range errs {
 			if err == nil {
@@ -130,8 +132,6 @@ func (m *Manager) Send(message string) {
 			fmt.Printf("Error sending notification via %s: %v\n", name, err)
 		}
 	}
-
-	fmt.Println(message)
 }
 
 // SendBatch sends multiple notifications as a batch
