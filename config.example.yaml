@@ -12,10 +12,13 @@ notifications:
       name: "main-discord"
   templates:
     forward_event: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
+    peer_online_event: "✅ Peer {{.PeerAlias}} is online"
+    peer_offline_event: "⚠️ Peer {{.PeerAlias}} went offline"
 
 # Event settings
 events:
   forward_events: true  # Enable payment forwarding notifications
+  peer_events: true # Enable peer events (online/offline) notifications
 
 # Rate limiting settings
 rate_limiting:

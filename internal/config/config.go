@@ -39,8 +39,8 @@ type ProviderConfig struct {
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
 	Forward     string `yaml:"forward_event"`
-	PeerOnline  string `yaml:"peer_online"`
-	PeerOffline string `yaml:"peer_offline"`
+	PeerOnline  string `yaml:"peer_online_event"`
+	PeerOffline string `yaml:"peer_offline_event"`
 }
 
 // EventConfig controls which events to monitor
@@ -158,6 +158,6 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.PeerOnline = "✅ Peer {{.PeerAlias}} is online"
 	}
 	if c.Notifications.Templates.PeerOffline == "" {
-		c.Notifications.Templates.PeerOffline = "⚠️ Peer {{.PeerAlias}} is offline"
+		c.Notifications.Templates.PeerOffline = "⚠️ Peer {{.PeerAlias}} went offline"
 	}
 }
