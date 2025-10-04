@@ -129,8 +129,8 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 func (c *Client) handleForwards() {
 	defer c.wg.Done()
 
-	start := time.Now().Add(-time.Hour * 7) // TOOD: UPDATE TO REAL VALUE
-	for range time.Tick(time.Second * 10) {
+	start := time.Now()
+	for range time.Tick(time.Minute * 1) {
 
 		resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
 			StartTime:       uint64(start.Unix()),
