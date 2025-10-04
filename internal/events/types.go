@@ -8,5 +8,5 @@ import (
 type Event interface {
 	Type() string
 	Timestamp() time.Time
-	ToNotification() string
+	GetTemplateData() interface{}
 }

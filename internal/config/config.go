@@ -38,7 +38,7 @@ type ProviderConfig struct {
 
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
-	Forward string `yaml:"forward"`
+	Forward string `yaml:"forward_event"`
 }
 
 // EventConfig controls which events to monitor
@@ -149,6 +149,6 @@ func (c *Config) setDefaults() {
 
 	// Set default templates if not specified
 	if c.Notifications.Templates.Forward == "" {
-		c.Notifications.Templates.Forward = "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
+		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats :)"
 	}
 }

@@ -81,7 +81,12 @@ func main() {
 				continue
 			}
 
-			msg := event.ToNotification()
+			msg, err := notifier.RenderTemplate(event.Type(), event.GetTemplateData())
+			if err != nil {
+				log.Printf("Error rendering template: %v", err)
+				continue
+			}
+
 			if err := notifier.Send(msg); err != nil {
 				log.Printf("Error sending notification: %v", err)
 			}

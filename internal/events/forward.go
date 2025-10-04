@@ -1,7 +1,6 @@
 package events
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/Primexz/lnd-notify/pkg/format"
@@ -15,6 +14,13 @@ type ForwardEvent struct {
 	FeeMsat      uint64
 
 	timestamp time.Time
+}
+
+type ForwardTemplate struct {
+	PeerAliasIn  string
+	PeerAliasOut string
+	Amount       string
+	Fee          string
 }
 
 func NewForwardEvent(peerAliasIn, peerAliasOut string, amtIn, amtOut, fee uint64) *ForwardEvent {
@@ -36,9 +42,14 @@ func (e *ForwardEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ForwardEvent) ToNotification() string {
+func (e *ForwardEvent) GetTemplateData() interface{} {
 	amtSats := float64(e.AmtInMsat) / 1000
 	feeSats := float64(e.FeeMsat) / 1000
 
-	return fmt.Sprintf("💰 Forwarded %s sats %s -> %s, earning %s sats fee", format.FormatSats(amtSats), e.PeerAliasIn, e.PeerAliasOut, format.FormatSats(feeSats))
+	return &ForwardTemplate{
+		PeerAliasIn:  e.PeerAliasIn,
+		PeerAliasOut: e.PeerAliasOut,
+		Amount:       format.FormatSats(amtSats),
+		Fee:          format.FormatSats(feeSats),
+	}
 }

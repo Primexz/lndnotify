@@ -77,7 +77,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
 	templates := map[string]string{
-		"forward": m.cfg.Templates.Forward,
+		"forward_event": m.cfg.Templates.Forward,
 	}
 
 	for name, text := range templates {

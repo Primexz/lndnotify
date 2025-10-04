@@ -129,11 +129,12 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 func (c *Client) handleForwards() {
 	defer c.wg.Done()
 
-	start := time.Now().Add(-time.Hour * 7)
+	start := time.Now().Add(-time.Hour * 7) // TOOD: UPDATE TO REAL VALUE
 	for range time.Tick(time.Second * 10) {
 
 		resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
-			StartTime: uint64(start.Unix()),
+			StartTime:       uint64(start.Unix()),
+			PeerAliasLookup: true,
 		})
 		if err != nil {
 			fmt.Printf("Error fetching forwarding history: %v\n", err)

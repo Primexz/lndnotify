@@ -11,7 +11,7 @@ notifications:
     - url: "discord://token@channel"  # Discord webhook URL
       name: "main-discord"
   templates:
-    forward: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
+    forward_event: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
 
 # Event settings
 events:
