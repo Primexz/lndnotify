@@ -1,0 +1,24 @@
+# LND connection settings
+lnd:
+  host: "localhost"
+  port: 10009
+  tls_cert_path: "~/.lnd/tls.cert"
+  macaroon_path: "~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon"
+
+# Notification settings
+notifications:
+  providers:
+    - url: "discord://token@channel"  # Discord webhook URL
+      name: "main-discord"
+  templates:
+    forward: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
+
+# Event settings
+events:
+  forward_events: true  # Enable payment forwarding notifications
+
+# Rate limiting settings
+rate_limiting:
+  max_notifications_per_minute: 60  # Maximum number of notifications per minute
+  batch_similar_events: true        # Combine similar events into one notification
+  batch_window_seconds: 30          # Time window for batching similar events
