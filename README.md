@@ -1,7 +1,12 @@
 # ⚡️ LND Notify
 
 A notification system for Lightning Network nodes that monitors and notifies about important events.
+
 This project is heavily inspured by [balanceofsatoshis](https://github.com/alexbosworth/balanceofsatoshis), but with the aim of offering much greater customisation and a wider range of notification destinations.
+
+![Buid](https://img.shields.io/github/actions/workflow/status/primexz/lndnotify/ci.yml)
+![License](https://img.shields.io/github/license/primexz/lndnotify)
+
 
 ## Features
 
