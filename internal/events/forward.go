@@ -34,8 +34,8 @@ func NewForwardEvent(peerAliasIn, peerAliasOut string, amtIn, amtOut, fee uint64
 	}
 }
 
-func (e *ForwardEvent) Type() string {
-	return "forward_event"
+func (e *ForwardEvent) Type() EventType {
+	return Event_FORWARD
 }
 
 func (e *ForwardEvent) Timestamp() time.Time {

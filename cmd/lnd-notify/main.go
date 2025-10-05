@@ -72,24 +72,17 @@ func main() {
 	notifier := notify.NewManager(&notify.ManagerConfig{
 		Providers: cfg.Notifications.Providers,
 		Templates: cfg.Notifications.Templates,
-		RateLimit: cfg.RateLimit,
 	})
 
 	// Create event processor
 	processor := events.NewProcessor(&events.ProcessorConfig{
 		EnabledEvents: cfg.Events,
-		RateLimit:     cfg.RateLimit,
 	})
 
 	// Subscribe to events
 	eventChan, err := lndClient.SubscribeEvents()
 	if err != nil {
 		log.Fatalf("Failed to subscribe to events: %v", err)
-	}
-
-	// Start event processing
-	if err := processor.Start(); err != nil {
-		log.Fatalf("Failed to start event processor: %v", err)
 	}
 
 	// Handle shutdown gracefully
@@ -102,23 +95,22 @@ func main() {
 	for {
 		select {
 		case event := <-eventChan:
-			if err := processor.ProcessEvent(event); err != nil {
-				log.Printf("Error processing event: %v", err)
+			if !processor.ShouldProcess(event) {
+				log.WithField("event_type", event.Type()).Debug("event type not enabled, skipping")
 				continue
 			}
 
-			msg, err := notifier.RenderTemplate(event.Type(), event.GetTemplateData())
+			msg, err := notifier.RenderTemplate(event.Type().String(), event.GetTemplateData())
 			if err != nil {
-				log.Printf("Error rendering template: %v", err)
+				log.WithError(err).Error("error rendering template")
 				continue
 			}
 			notifier.Send(msg)
 
 		case <-sigChan:
 			log.Info("received shutdown signal")
-			processor.Stop()
 			if err := lndClient.Disconnect(); err != nil {
-				log.Printf("Error disconnecting from LND: %v", err)
+				log.WithError(err).Error("error disconnecting from LND")
 			}
 
 			log.Info("shutdown complete")

@@ -25,8 +25,8 @@ func NewChannelCloseEvent(alias string, settledBalance int64) *ChannelCloseEvent
 	}
 }
 
-func (e *ChannelCloseEvent) Type() string {
-	return "channel_close_event"
+func (e *ChannelCloseEvent) Type() EventType {
+	return Event_CHANNEL_CLOSE
 }
 
 func (e *ChannelCloseEvent) Timestamp() time.Time {

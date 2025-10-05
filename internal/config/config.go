@@ -13,7 +13,6 @@ type Config struct {
 	LND           LNDConfig          `yaml:"lnd" validate:"required"`
 	Notifications NotificationConfig `yaml:"notifications" validate:"required"`
 	Events        EventConfig        `yaml:"events"`
-	RateLimit     RateLimitConfig    `yaml:"rate_limiting"`
 }
 
 // LNDConfig holds the LND node connection settings
@@ -50,13 +49,6 @@ type EventConfig struct {
 	ForwardEvents bool `yaml:"forward_events"`
 	PeerEvents    bool `yaml:"peer_events"`
 	ChannelEvents bool `yaml:"channel_events"`
-}
-
-// RateLimitConfig controls notification rate limiting
-type RateLimitConfig struct {
-	MaxNotificationsPerMinute int  `yaml:"max_notifications_per_minute"`
-	BatchSimilarEvents        bool `yaml:"batch_similar_events"`
-	BatchWindowSeconds        int  `yaml:"batch_window_seconds"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -146,14 +138,6 @@ func (c *Config) validate() error {
 }
 
 func (c *Config) setDefaults() {
-	// Set default rate limiting if not specified
-	if c.RateLimit.MaxNotificationsPerMinute == 0 {
-		c.RateLimit.MaxNotificationsPerMinute = 60
-	}
-	if c.RateLimit.BatchWindowSeconds == 0 {
-		c.RateLimit.BatchWindowSeconds = 30
-	}
-
 	// Set default templates if not specified
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"

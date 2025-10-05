@@ -20,8 +20,8 @@ func NewPeerOnlineEvent(alias string) *PeerOnlineEvent {
 	}
 }
 
-func (e *PeerOnlineEvent) Type() string {
-	return "peer_online_event"
+func (e *PeerOnlineEvent) Type() EventType {
+	return Event_PEER_ONLINE
 }
 
 func (e *PeerOnlineEvent) Timestamp() time.Time {

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
+	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
@@ -18,7 +19,6 @@ import (
 type ManagerConfig struct {
 	Providers []config.ProviderConfig
 	Templates config.NotificationTemplate
-	RateLimit config.RateLimitConfig
 }
 
 // ProviderConfig holds the configuration for a notification provider
@@ -76,24 +76,24 @@ func NewManager(cfg *ManagerConfig) *Manager {
 
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
-	templates := map[string]string{
-		"forward_event":       m.cfg.Templates.Forward,
-		"peer_offline_event":  m.cfg.Templates.PeerOffline,
-		"peer_online_event":   m.cfg.Templates.PeerOnline,
-		"channel_open_event":  m.cfg.Templates.ChannelOpen,
-		"channel_close_event": m.cfg.Templates.ChannelClose,
+	templates := map[events.EventType]string{
+		events.Event_FORWARD:       m.cfg.Templates.Forward,
+		events.Event_PEER_OFFLINE:  m.cfg.Templates.PeerOffline,
+		events.Event_PEER_ONLINE:   m.cfg.Templates.PeerOnline,
+		events.Event_CHANNEL_OPEN:  m.cfg.Templates.ChannelOpen,
+		events.Event_CHANNEL_CLOSE: m.cfg.Templates.ChannelClose,
 	}
 
 	for name, text := range templates {
 		if text == "" {
 			continue
 		}
-		tmpl, err := template.New(name).Parse(text)
+		tmpl, err := template.New(name.String()).Parse(text)
 		if err != nil {
 			log.WithField("template", name).WithError(err).Error("error parsing template")
 			continue
 		}
-		m.templates[name] = tmpl
+		m.templates[name.String()] = tmpl
 	}
 }
 
@@ -115,10 +115,6 @@ func (m *Manager) RenderTemplate(name string, data interface{}) (string, error) 
 // Send sends a notification to all configured providers
 func (m *Manager) Send(message string) {
 	if message == "" {
-		return
-	}
-
-	if !m.checkRateLimit() {
 		return
 	}
 
@@ -157,24 +153,4 @@ func (m *Manager) SendBatch(messages []string) {
 	}
 
 	m.Send(message)
-}
-
-// checkRateLimit checks if sending a notification would exceed the rate limit
-func (m *Manager) checkRateLimit() bool {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	now := time.Now()
-	if now.Sub(m.lastReset) >= time.Minute {
-		m.sent = 0
-		m.lastReset = now
-	}
-
-	if m.cfg.RateLimit.MaxNotificationsPerMinute > 0 &&
-		m.sent >= m.cfg.RateLimit.MaxNotificationsPerMinute {
-		return false
-	}
-
-	m.sent++
-	return true
 }

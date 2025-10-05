@@ -25,8 +25,8 @@ func NewChannelOpenEvent(alias string, capacity int64) *ChannelOpenEvent {
 	}
 }
 
-func (e *ChannelOpenEvent) Type() string {
-	return "channel_open_event"
+func (e *ChannelOpenEvent) Type() EventType {
+	return Event_CHANNEL_OPEN
 }
 
 func (e *ChannelOpenEvent) Timestamp() time.Time {

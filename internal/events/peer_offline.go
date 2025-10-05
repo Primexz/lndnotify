@@ -20,8 +20,8 @@ func NewPeerOfflineEvent(alias string) *PeerOfflineEvent {
 	}
 }
 
-func (e *PeerOfflineEvent) Type() string {
-	return "peer_offline_event"
+func (e *PeerOfflineEvent) Type() EventType {
+	return Event_PEER_OFFLINE
 }
 
 func (e *PeerOfflineEvent) Timestamp() time.Time {
