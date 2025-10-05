@@ -61,6 +61,7 @@ type RateLimitConfig struct {
 
 // LoadConfig loads configuration from a YAML file
 func LoadConfig(path string) (*Config, error) {
+	// #nosec G304 -- Just a config path from the user
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading config file: %w", err)
@@ -86,7 +87,7 @@ func LoadConfigFromEnv() (*Config, error) {
 	// LND configuration
 	cfg.LND.Host = os.Getenv("LND_HOST")
 	if port := os.Getenv("LND_PORT"); port != "" {
-		fmt.Sscanf(port, "%d", &cfg.LND.Port)
+		fmt.Sscanf(port, "%d", &cfg.LND.Port) // #nosec G104 -- Error ignored intentionally
 	}
 	cfg.LND.TLSCertPath = os.Getenv("LND_TLS_CERT_PATH")
 	cfg.LND.MacaroonPath = os.Getenv("LND_MACAROON_PATH")

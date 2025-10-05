@@ -9,6 +9,11 @@ import (
 // For low numbers (< 1000), it uses 3 decimal places
 // For high numbers (>= 1000), it uses 0 decimal places with thousand separators
 func FormatSats(sats float64) string {
+	// if sats is a whole number, format without decimal places
+	if sats == float64(int64(sats)) {
+		return strconv.FormatInt(int64(sats), 10)
+	}
+
 	if sats < 1000 {
 		return fmt.Sprintf("%.3f", float64(sats))
 	}

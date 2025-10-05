@@ -15,7 +15,7 @@ func (c *Client) handleForwards() {
 	start := time.Now()
 	for range time.Tick(time.Minute * 1) {
 		resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
-			StartTime:       uint64(start.Unix()),
+			StartTime:       uint64(start.Unix()), // #nosec G115
 			PeerAliasLookup: true,
 		})
 		if err != nil {
@@ -25,7 +25,6 @@ func (c *Client) handleForwards() {
 
 		forwards := resp.GetForwardingEvents()
 		for _, fwd := range forwards {
-
 			c.eventSub <- events.NewForwardEvent(
 				fwd.PeerAliasIn,
 				fwd.PeerAliasOut,

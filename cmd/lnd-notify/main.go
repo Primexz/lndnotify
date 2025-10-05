@@ -91,7 +91,9 @@ func main() {
 		case <-sigChan:
 			fmt.Println("\nShutting down...")
 			processor.Stop()
-			lndClient.Disconnect()
+			if err := lndClient.Disconnect(); err != nil {
+				log.Printf("Error disconnecting from LND: %v", err)
+			}
 			return
 		}
 	}
