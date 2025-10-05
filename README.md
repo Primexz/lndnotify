@@ -92,7 +92,7 @@ The program uses [shoutrrr](https://github.com/nicholas-fedor/shoutrrr) for noti
 - Slack: `slack://token@channel`
 - Generic Webhook: `generic://example.com/webhook`
 
-To see the full list of supported providers, check out the [official list](https://github.com/nicholas-fedor/shoutrrr#supported-services).
+To see the full list of supported providers, check out the [official documentation](https://shoutrrr.nickfedor.com/v0.10.1/services/overview/).
 
 ## Usage
 
