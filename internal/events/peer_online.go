@@ -2,20 +2,25 @@ package events
 
 import (
 	"time"
+
+	"github.com/Primexz/lndnotify/pkg/format"
+	"github.com/lightningnetwork/lnd/lnrpc"
 )
 
 type PeerOnlineEvent struct {
-	Alias     string
+	Node      *lnrpc.LightningNode
 	timestamp time.Time
 }
 
 type PeerOnlineTemplate struct {
-	PeerAlias string
+	PeerAlias       string
+	PeerPubKey      string
+	PeerPubkeyShort string
 }
 
-func NewPeerOnlineEvent(alias string) *PeerOnlineEvent {
+func NewPeerOnlineEvent(node *lnrpc.LightningNode) *PeerOnlineEvent {
 	return &PeerOnlineEvent{
-		Alias:     alias,
+		Node:      node,
 		timestamp: time.Now(),
 	}
 }
@@ -30,6 +35,8 @@ func (e *PeerOnlineEvent) Timestamp() time.Time {
 
 func (e *PeerOnlineEvent) GetTemplateData() interface{} {
 	return &PeerOnlineTemplate{
-		PeerAlias: e.Alias,
+		PeerAlias:       e.Node.Alias,
+		PeerPubKey:      e.Node.PubKey,
+		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
 	}
 }

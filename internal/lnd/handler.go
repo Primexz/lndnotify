@@ -34,13 +34,7 @@ func (c *Client) handleForwards() {
 
 			forwards := resp.GetForwardingEvents()
 			for _, fwd := range forwards {
-				c.eventSub <- events.NewForwardEvent(
-					fwd.PeerAliasIn,
-					fwd.PeerAliasOut,
-					fwd.AmtInMsat,
-					fwd.AmtOutMsat,
-					fwd.FeeMsat,
-				)
+				c.eventSub <- events.NewForwardEvent(fwd)
 			}
 
 			// push start time forward
@@ -79,9 +73,9 @@ func (c *Client) handlePeerEvents() {
 
 		switch peerEvent.GetType() {
 		case lnrpc.PeerEvent_PEER_ONLINE:
-			c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node.Alias)
+			c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node)
 		case lnrpc.PeerEvent_PEER_OFFLINE:
-			c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node.Alias)
+			c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node)
 		}
 	}
 }
@@ -115,7 +109,7 @@ func (c *Client) handleChannelEvents() {
 				continue
 			}
 
-			c.eventSub <- events.NewChannelOpenEvent(nodeInfo.Node.Alias, channel.Capacity)
+			c.eventSub <- events.NewChannelOpenEvent(nodeInfo.Node, channel)
 		case lnrpc.ChannelEventUpdate_CLOSED_CHANNEL:
 			channel := peerEvent.GetClosedChannel()
 			nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
@@ -126,7 +120,7 @@ func (c *Client) handleChannelEvents() {
 				continue
 			}
 
-			c.eventSub <- events.NewChannelCloseEvent(nodeInfo.Node.Alias, channel.SettledBalance)
+			c.eventSub <- events.NewChannelCloseEvent(nodeInfo.Node, channel)
 		}
 	}
 }

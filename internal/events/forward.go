@@ -4,15 +4,11 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/pkg/format"
+	"github.com/lightningnetwork/lnd/lnrpc"
 )
 
 type ForwardEvent struct {
-	PeerAliasIn  string
-	PeerAliasOut string
-	AmtInMsat    uint64
-	AmtOutMsat   uint64
-	FeeMsat      uint64
-
+	Forward   *lnrpc.ForwardingEvent
 	timestamp time.Time
 }
 
@@ -23,14 +19,10 @@ type ForwardTemplate struct {
 	Fee          string
 }
 
-func NewForwardEvent(peerAliasIn, peerAliasOut string, amtIn, amtOut, fee uint64) *ForwardEvent {
+func NewForwardEvent(forward *lnrpc.ForwardingEvent) *ForwardEvent {
 	return &ForwardEvent{
-		PeerAliasIn:  peerAliasIn,
-		PeerAliasOut: peerAliasOut,
-		AmtInMsat:    amtIn,
-		AmtOutMsat:   amtOut,
-		FeeMsat:      fee,
-		timestamp:    time.Now(),
+		Forward:   forward,
+		timestamp: time.Now(),
 	}
 }
 
@@ -43,12 +35,12 @@ func (e *ForwardEvent) Timestamp() time.Time {
 }
 
 func (e *ForwardEvent) GetTemplateData() interface{} {
-	amtSats := float64(e.AmtInMsat) / 1000
-	feeSats := float64(e.FeeMsat) / 1000
+	amtSats := float64(e.Forward.AmtInMsat) / 1000
+	feeSats := float64(e.Forward.FeeMsat) / 1000
 
 	return &ForwardTemplate{
-		PeerAliasIn:  e.PeerAliasIn,
-		PeerAliasOut: e.PeerAliasOut,
+		PeerAliasIn:  e.Forward.PeerAliasIn,
+		PeerAliasOut: e.Forward.PeerAliasOut,
 		Amount:       format.FormatSats(amtSats),
 		Fee:          format.FormatSats(feeSats),
 	}

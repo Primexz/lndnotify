@@ -4,24 +4,31 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/pkg/format"
+	"github.com/lightningnetwork/lnd/lnrpc"
 )
 
 type ChannelCloseEvent struct {
-	Alias          string
-	SettledBalance int64
-	timestamp      time.Time
+	Node      *lnrpc.LightningNode
+	Channel   *lnrpc.ChannelCloseSummary
+	timestamp time.Time
 }
 
 type ChannelCloseTemplate struct {
-	PeerAlias      string
-	SettledBalance string
+	PeerAlias       string
+	PeerPubKey      string
+	PeerPubkeyShort string
+	SettledBalance  string
+	ChanId          uint64
+	ChannelPoint    string
+	RemotePubkey    string
+	Capacity        string
 }
 
-func NewChannelCloseEvent(alias string, settledBalance int64) *ChannelCloseEvent {
+func NewChannelCloseEvent(node *lnrpc.LightningNode, channel *lnrpc.ChannelCloseSummary) *ChannelCloseEvent {
 	return &ChannelCloseEvent{
-		Alias:          alias,
-		SettledBalance: settledBalance,
-		timestamp:      time.Now(),
+		Node:      node,
+		Channel:   channel,
+		timestamp: time.Now(),
 	}
 }
 
@@ -35,7 +42,13 @@ func (e *ChannelCloseEvent) Timestamp() time.Time {
 
 func (e *ChannelCloseEvent) GetTemplateData() interface{} {
 	return &ChannelCloseTemplate{
-		PeerAlias:      e.Alias,
-		SettledBalance: format.FormatSats(float64(e.SettledBalance)),
+		PeerAlias:       e.Node.Alias,
+		PeerPubKey:      e.Node.PubKey,
+		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
+		ChanId:          e.Channel.ChanId,
+		ChannelPoint:    e.Channel.ChannelPoint,
+		Capacity:        format.FormatSats(float64(e.Channel.Capacity)),
+		RemotePubkey:    e.Channel.RemotePubkey,
+		SettledBalance:  format.FormatSats(float64(e.Channel.SettledBalance)),
 	}
 }
