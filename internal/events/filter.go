@@ -87,6 +87,8 @@ func (p *Processor) shouldProcess(event Event) bool {
 		return p.cfg.EnabledEvents.ForwardEvents
 	case "peer_event":
 		return p.cfg.EnabledEvents.PeerEvents
+	case "channel_event":
+		return p.cfg.EnabledEvents.ChannelEvents
 	default:
 		return false
 	}

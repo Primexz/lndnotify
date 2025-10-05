@@ -77,9 +77,11 @@ func NewManager(cfg *ManagerConfig) *Manager {
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
 	templates := map[string]string{
-		"forward_event":      m.cfg.Templates.Forward,
-		"peer_offline_event": m.cfg.Templates.PeerOffline,
-		"peer_online_event":  m.cfg.Templates.PeerOnline,
+		"forward_event":       m.cfg.Templates.Forward,
+		"peer_offline_event":  m.cfg.Templates.PeerOffline,
+		"peer_online_event":   m.cfg.Templates.PeerOnline,
+		"channel_open_event":  m.cfg.Templates.ChannelOpen,
+		"channel_close_event": m.cfg.Templates.ChannelClose,
 	}
 
 	for name, text := range templates {

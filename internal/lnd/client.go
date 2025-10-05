@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -119,77 +118,12 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 	}
 
 	// Start subscription handlers
-	c.wg.Add(2)
+	c.wg.Add(3)
 	go c.handleForwards()
 	go c.handlePeerEvents()
+	go c.handleChannelEvents()
 
 	return c.eventSub, nil
-}
-
-// handleForwards polls for forwarding events
-func (c *Client) handleForwards() {
-	defer c.wg.Done()
-
-	start := time.Now()
-	for range time.Tick(time.Minute * 1) {
-		resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
-			StartTime:       uint64(start.Unix()),
-			PeerAliasLookup: true,
-		})
-		if err != nil {
-			fmt.Printf("Error fetching forwarding history: %v\n", err)
-			continue
-		}
-
-		forwards := resp.GetForwardingEvents()
-		for _, fwd := range forwards {
-
-			c.eventSub <- events.NewForwardEvent(
-				fwd.PeerAliasIn,
-				fwd.PeerAliasOut,
-				fwd.AmtInMsat,
-				fwd.AmtOutMsat,
-				fwd.FeeMsat,
-			)
-		}
-
-		// push start time forward
-		if len(forwards) > 0 {
-			start = time.Now()
-		}
-	}
-}
-
-// handlePeerEvents handles peer connection and disconnection events
-func (c *Client) handlePeerEvents() {
-	ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
-	if err != nil {
-		fmt.Printf("Error subscribing to peer events: %v\n", err)
-		return
-	}
-
-	for {
-		peerEvent, err := ev.Recv()
-		if err != nil {
-			fmt.Printf("Error receiving peer event: %v\n", err)
-			return
-		}
-
-		nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
-			PubKey: peerEvent.GetPubKey(),
-		})
-		if err != nil {
-			fmt.Printf("Error fetching node info: %v\n", err)
-			continue
-		}
-
-		switch peerEvent.GetType() {
-		case lnrpc.PeerEvent_PEER_ONLINE:
-			c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node.Alias)
-		case lnrpc.PeerEvent_PEER_OFFLINE:
-			c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node.Alias)
-		}
-	}
 }
 
 // MacaroonCredential implements the credentials.PerRPCCredentials interface

@@ -38,15 +38,18 @@ type ProviderConfig struct {
 
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
-	Forward     string `yaml:"forward_event"`
-	PeerOnline  string `yaml:"peer_online_event"`
-	PeerOffline string `yaml:"peer_offline_event"`
+	Forward      string `yaml:"forward_event"`
+	PeerOnline   string `yaml:"peer_online_event"`
+	PeerOffline  string `yaml:"peer_offline_event"`
+	ChannelOpen  string `yaml:"channel_open_event"`
+	ChannelClose string `yaml:"channel_close_event"`
 }
 
 // EventConfig controls which events to monitor
 type EventConfig struct {
 	ForwardEvents bool `yaml:"forward_events"`
 	PeerEvents    bool `yaml:"peer_events"`
+	ChannelEvents bool `yaml:"channel_events"`
 }
 
 // RateLimitConfig controls notification rate limiting
@@ -159,5 +162,11 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.PeerOffline == "" {
 		c.Notifications.Templates.PeerOffline = "⚠️ Peer {{.PeerAlias}} went offline"
+	}
+	if c.Notifications.Templates.ChannelOpen == "" {
+		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
+	}
+	if c.Notifications.Templates.ChannelClose == "" {
+		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
 	}
 }
