@@ -1,3 +1,2 @@
 - Chain Transactions
 - Payments
-- Invoices

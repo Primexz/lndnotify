@@ -29,6 +29,8 @@ func (p *Processor) ShouldProcess(event Event) bool {
 		return p.cfg.EnabledEvents.PeerEvents
 	case Event_CHANNEL_OPEN, Event_CHANNEL_CLOSE:
 		return p.cfg.EnabledEvents.ChannelEvents
+	case Event_INVOICE_SETTLED:
+		return p.cfg.EnabledEvents.InvoiceEvents
 	default:
 		log.WithField("event_type", event.Type()).Warn("unknown event type")
 		return false

@@ -17,6 +17,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Channel Close
   - Peer Online
   - Peer Offline
+  - Settled Invoice
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates
 - Event filtering
@@ -74,12 +75,14 @@ notifications:
     peer_offline_event: "⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline"
     channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
+    invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
 
 # Event settings
 events:
   forward_events: true
   peer_events: true
   channel_events: true
+  invoice_events: true
 ```
 
 

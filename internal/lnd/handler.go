@@ -124,3 +124,27 @@ func (c *Client) handleChannelEvents() {
 		}
 	}
 }
+
+func (c *Client) handleInvoiceEvents() {
+	log.Debug("starting invoice event handler")
+	defer c.wg.Done()
+
+	ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
+	if err != nil {
+		log.WithError(err).Error("error subscribing to invoice events")
+		return
+	}
+
+	for {
+		invoice, err := ev.Recv()
+		if err != nil {
+			log.WithError(err).Error("error receiving invoice event")
+			return
+		}
+
+		switch invoice.GetState() {
+		case lnrpc.Invoice_SETTLED:
+			c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+		}
+	}
+}

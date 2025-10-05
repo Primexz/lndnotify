@@ -16,9 +16,11 @@ notifications:
     peer_offline_event: "⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline"
     channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
+    invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
 
 # Event settings
 events:
   forward_events: true  # Enable payment forwarding notifications
   peer_events: true # Enable peer events (online/offline) notifications
   channel_events: true # Enable channel events (open/close) notifications
+  invoice_events: true # Enable invoice settled notifications

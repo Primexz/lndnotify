@@ -36,11 +36,12 @@ type ProviderConfig struct {
 
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
-	Forward      string `yaml:"forward_event"`
-	PeerOnline   string `yaml:"peer_online_event"`
-	PeerOffline  string `yaml:"peer_offline_event"`
-	ChannelOpen  string `yaml:"channel_open_event"`
-	ChannelClose string `yaml:"channel_close_event"`
+	Forward        string `yaml:"forward_event"`
+	PeerOnline     string `yaml:"peer_online_event"`
+	PeerOffline    string `yaml:"peer_offline_event"`
+	ChannelOpen    string `yaml:"channel_open_event"`
+	ChannelClose   string `yaml:"channel_close_event"`
+	InvoiceSettled string `yaml:"invoice_settled_event"`
 }
 
 // EventConfig controls which events to monitor
@@ -48,6 +49,7 @@ type EventConfig struct {
 	ForwardEvents bool `yaml:"forward_events"`
 	PeerEvents    bool `yaml:"peer_events"`
 	ChannelEvents bool `yaml:"channel_events"`
+	InvoiceEvents bool `yaml:"invoice_events"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -114,5 +116,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.ChannelClose == "" {
 		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
+	}
+	if c.Notifications.Templates.InvoiceSettled == "" {
+		c.Notifications.Templates.InvoiceSettled = "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
 	}
 }
