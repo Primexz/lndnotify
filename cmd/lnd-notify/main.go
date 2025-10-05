@@ -39,7 +39,7 @@ func main() {
 		"commit":  commit,
 		"runtime": runtime.Version(),
 		"arch":    runtime.GOARCH,
-	}).Infof("starting lndnotify ⚡️ %s", version)
+	}).Infof("⚡️ starting lndnotify %s", version)
 
 	configPath := flag.String("config", "config.yaml", "Path to configuration file")
 	flag.Parse()
