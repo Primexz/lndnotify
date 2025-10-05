@@ -43,6 +43,8 @@ func (c *Client) handleForwards() {
 
 // handlePeerEvents handles peer connection and disconnection events
 func (c *Client) handlePeerEvents() {
+	defer c.wg.Done()
+
 	ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
 	if err != nil {
 		fmt.Printf("Error subscribing to peer events: %v\n", err)
@@ -75,6 +77,8 @@ func (c *Client) handlePeerEvents() {
 
 // handleChannelEvents handles channel open and close events
 func (c *Client) handleChannelEvents() {
+	defer c.wg.Done()
+
 	ev, err := c.client.SubscribeChannelEvents(c.ctx, &lnrpc.ChannelEventSubscription{})
 	if err != nil {
 		fmt.Printf("Error subscribing to peer events: %v\n", err)
