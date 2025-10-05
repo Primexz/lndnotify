@@ -69,9 +69,9 @@ notifications:
     - url: "discord://token@channel"  # Discord webhook URL
       name: "main-discord"
   templates:
-    forward_event: "💸 Forwarded {{.Amount}} sats, earned {{.Fee}} sats"
-    peer_online_event: "✅ Peer {{.PeerAlias}} is online"
-    peer_offline_event: "⚠️ Peer {{.PeerAlias}} went offline"
+    forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
+    peer_online_event: "✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online"
+    peer_offline_event: "⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline"
     channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
 
