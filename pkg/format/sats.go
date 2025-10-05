@@ -1,38 +1,26 @@
 package format
 
 import (
-	"fmt"
-	"strconv"
+	"math"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
-// FormatSats formats a satoshi amount with appropriate decimal places based on the count
-// For low numbers (< 1000), it uses 3 decimal places
-// For high numbers (>= 1000), it uses 0 decimal places with thousand separators
-func FormatSats(sats float64) string {
-	// if sats is a whole number, format without decimal places
-	if sats == float64(int64(sats)) {
-		return strconv.FormatInt(int64(sats), 10)
+// FormatSats formats a float64 with thousand separators.
+// Whole numbers are displayed without decimals, others show up to 3 decimal places.
+func FormatSats(value float64) string {
+	p := message.NewPrinter(language.English)
+
+	if value == math.Floor(value) {
+		return p.Sprintf("%.0f", value)
 	}
 
-	if sats < 1000 {
-		return fmt.Sprintf("%.3f", float64(sats))
+	// Truncate to 3 decimal places
+	truncated := math.Floor(math.Abs(value)*1000) / 1000
+	if value < 0 {
+		truncated = -truncated
 	}
 
-	// Convert to string and add thousand separators
-	str := strconv.FormatInt(int64(sats), 10)
-	n := len(str)
-	if n <= 3 {
-		return str
-	}
-
-	// Build the formatted string with thousand separators
-	var result []byte
-	for i := 0; i < n; i++ {
-		if i > 0 && (n-i)%3 == 0 {
-			result = append(result, ',')
-		}
-		result = append(result, str[i])
-	}
-
-	return string(result)
+	return p.Sprintf("%.3f", truncated)
 }
