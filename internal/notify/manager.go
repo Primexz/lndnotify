@@ -32,13 +32,6 @@ type NotificationTemplates struct {
 	Forward string
 }
 
-// RateLimitConfig holds rate limiting configuration
-type RateLimitConfig struct {
-	MaxNotificationsPerMinute int
-	BatchSimilarEvents        bool
-	BatchWindowSeconds        int
-}
-
 // Manager handles notification delivery
 type Manager struct {
 	cfg       *ManagerConfig

@@ -2,9 +2,9 @@
 
 A notification system for Lightning Network nodes that monitors and notifies about important events.
 
-This project is heavily inspured by [balanceofsatoshis](https://github.com/alexbosworth/balanceofsatoshis), but with the aim of offering much greater customisation and a wider range of notification destinations.
+This project is heavily inspired by [balanceofsatoshis](https://github.com/alexbosworth/balanceofsatoshis), but with the aim of offering much greater customisation and a wider range of notification destinations.
 
-![Buid](https://img.shields.io/github/actions/workflow/status/primexz/lndnotify/ci.yml)
+![CI](https://img.shields.io/github/actions/workflow/status/primexz/lndnotify/ci.yml)
 ![License](https://img.shields.io/github/license/primexz/lndnotify)
 
 
@@ -23,13 +23,30 @@ This project is heavily inspured by [balanceofsatoshis](https://github.com/alexb
 
 ## Prerequisites
 
-- Go 1.25 or later
 - Running LND node with gRPC access
 - LND TLS certificate
 - LND macaroon file
 
 ## Installation
 
+### 🐳 Run with Docker
+
+#### Docker-Compose
+
+```bash
+vim docker-compose.yml
+```
+
+```yaml
+version: "3.8"
+services:
+  lndnotify:
+    image: ghcr.io/primexz/lndnotify:latest
+    container_name: lndnotify
+    restart: always
+```
+
+### 💻 Run without Docker
 ```bash
 go install github.com/Primexz/lndnotify@latest
 ```
@@ -63,12 +80,6 @@ events:
   forward_events: true
   peer_events: true
   channel_events: true
-
-# Rate limiting settings
-rate_limiting:
-  max_notifications_per_minute: 60
-  batch_similar_events: true
-  batch_window_seconds: 30
 ```
 
 
