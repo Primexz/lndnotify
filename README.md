@@ -27,6 +27,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 - Running LND node with gRPC access
 - LND TLS certificate
 - LND macaroon file
+- Basic Understanding of Docker and Docker Compose
 
 ## Installation
 
@@ -39,13 +40,21 @@ vim docker-compose.yml
 ```
 
 ```yaml
-version: "3.8"
 services:
   lndnotify:
     image: ghcr.io/primexz/lndnotify:latest
     container_name: lndnotify
+    volumes:
+      - HOST_LND_PATH:/root/.lnd:ro
+      - ./lndnotify/config.yaml:/data/config.yaml
+    command: -config /data/config.yaml
+    networks:
+      - LND_NETWORK
     restart: always
 ```
+
+- Adjust ``HOST_LND_PATH``and ``LND_NETWORK``
+- Add ``config.yaml`` file to the ``lndnotify`` directory and adjust the configuration
 
 ### 💻 Run without Docker
 ```bash
