@@ -19,7 +19,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Peer Offline
   - Settled Invoice
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
-- Customizable message templates
+- Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
 
 ## Prerequisites
@@ -78,7 +78,7 @@ notifications:
   providers:
     - url: "discord://token@channel"  # Discord webhook URL
       name: "main-discord"
-  templates:
+  templates:   # See TEMPLATES.md for all available variables
     forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
     peer_online_event: "✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online"
     peer_offline_event: "⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline"
