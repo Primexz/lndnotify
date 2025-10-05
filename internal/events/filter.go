@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
+	log "github.com/sirupsen/logrus"
 )
 
 // ProcessorConfig holds the configuration for event processing
@@ -85,11 +86,12 @@ func (p *Processor) shouldProcess(event Event) bool {
 	switch event.Type() {
 	case "forward_event":
 		return p.cfg.EnabledEvents.ForwardEvents
-	case "peer_event":
+	case "peer_online_event", "peer_offline_event":
 		return p.cfg.EnabledEvents.PeerEvents
-	case "channel_event":
+	case "channel_open_event", "channel_close_event":
 		return p.cfg.EnabledEvents.ChannelEvents
 	default:
+		log.WithField("event_type", event.Type()).Warn("unknown event type")
 		return false
 	}
 }
