@@ -2,19 +2,45 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/Primexz/lndnotify/internal/lnd"
 	"github.com/Primexz/lndnotify/internal/notify"
+	log "github.com/sirupsen/logrus"
+	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
 
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
+func init() {
+	log.SetFormatter(&prefixed.TextFormatter{
+		TimestampFormat:  "2006/01/02 - 15:04:05",
+		FullTimestamp:    true,
+		QuoteEmptyFields: true,
+		SpacePadding:     45,
+	})
+
+	log.SetReportCaller(true)
+
+	log.SetLevel(log.DebugLevel)
+}
+
 func main() {
+	log.WithFields(log.Fields{
+		"commit":  commit,
+		"runtime": runtime.Version(),
+		"arch":    runtime.GOARCH,
+	}).Infof("starting lndnotify ⚡️ %s", version)
+
 	configPath := flag.String("config", "config.yaml", "Path to configuration file")
 	flag.Parse()
 
@@ -70,7 +96,7 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	fmt.Println("LND Notify started. Press Ctrl+C to exit.")
+	log.Info("started lndnotify")
 
 	// Main event loop
 	for {
@@ -89,11 +115,13 @@ func main() {
 			notifier.Send(msg)
 
 		case <-sigChan:
-			fmt.Println("\nShutting down...")
+			log.Info("received shutdown signal")
 			processor.Stop()
 			if err := lndClient.Disconnect(); err != nil {
 				log.Printf("Error disconnecting from LND: %v", err)
 			}
+
+			log.Info("shutdown complete")
 			return
 		}
 	}

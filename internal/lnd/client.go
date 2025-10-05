@@ -92,6 +92,9 @@ func (c *Client) Disconnect() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+	c.cancel()
+	c.wg.Wait()
+
 	if c.conn != nil {
 		if err := c.conn.Close(); err != nil {
 			return fmt.Errorf("closing connection: %w", err)

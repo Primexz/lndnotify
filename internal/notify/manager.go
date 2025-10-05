@@ -11,6 +11,7 @@ import (
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
+	log "github.com/sirupsen/logrus"
 )
 
 // ManagerConfig holds the configuration for the notification manager
@@ -61,8 +62,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 	for _, p := range cfg.Providers {
 		sender, err := shoutrrr.CreateSender(p.URL)
 		if err != nil {
-			// Log error but continue with other providers
-			fmt.Printf("Error initializing provider %s: %v\n", p.Name, err)
+			log.WithField("provider", p.Name).WithError(err).Error("error creating sender")
 			continue
 		}
 		m.providers[p.Name] = sender
@@ -90,7 +90,7 @@ func (m *Manager) parseTemplates() {
 		}
 		tmpl, err := template.New(name).Parse(text)
 		if err != nil {
-			fmt.Printf("Error parsing template %s: %v\n", name, err)
+			log.WithField("template", name).WithError(err).Error("error parsing template")
 			continue
 		}
 		m.templates[name] = tmpl
@@ -123,7 +123,9 @@ func (m *Manager) Send(message string) {
 	}
 
 	for name, provider := range m.providers {
-		fmt.Printf("Sending notification via %s: %s\n", name, message)
+		log := log.WithField("provider", name)
+
+		log.Infof("sending notification: %s", message)
 
 		errs := provider.Send(message, &types.Params{})
 		for _, err := range errs {
@@ -131,7 +133,7 @@ func (m *Manager) Send(message string) {
 				continue
 			}
 
-			fmt.Printf("Error sending notification via %s: %v\n", name, err)
+			log.WithError(err).Error("error sending notification")
 		}
 	}
 }
