@@ -1,16 +1,20 @@
 # LND Notify
 
-A notification system for Lightning Network nodes that monitors and notifies about important events
+A notification system for Lightning Network nodes that monitors and notifies about important events.
+This project is heavily inspured by balanceofsatoshis(https://github.com/alexbosworth/balanceofsatoshis), but with the aim of offering much greater customisation and a wider range of notification destinations.
 
 ## Features
 
 - Real-time monitoring of LND node events
 - Configurable notifications for:
-  - Payment forwardings
-- Multiple notification providers support via shoutrrr
+  - Payment forward
+  - Channel Open
+  - Channel Close
+  - Peer Online
+  - Peer Offline
+- Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates
-- Event filtering and rate limiting
-- Environment variable configuration support
+- Event filtering
 
 ## Prerequisites
 
@@ -62,36 +66,22 @@ rate_limiting:
   batch_window_seconds: 30
 ```
 
-### Environment Variables
-
-You can also configure the program using environment variables:
-
-```bash
-export LND_HOST=localhost
-export LND_PORT=10009
-export LND_TLS_CERT_PATH=/path/to/tls.cert
-export LND_MACAROON_PATH=/path/to/admin.macaroon
-export NOTIFICATION_URL="discord://token@channel"
-export ENABLED_EVENTS="forwards"
-```
 
 ### Notification Providers
 
-The program uses shoutrrr for notifications, which supports various services:
+The program uses [shoutrrr](https://github.com/nicholas-fedor/shoutrrr) for notifications, which supports various services:
 
 - Discord: `discord://token@channel`
 - Telegram: `telegram://token@telegram?channels=channel-1`
 - Slack: `slack://token@channel`
 - Generic Webhook: `generic://example.com/webhook`
 
+To see the full list of supported providers, check out the [official list](https://github.com/nicholas-fedor/shoutrrr#supported-services).
+
 ## Usage
 
 ```bash
-# Using config file
 lndnotify -config config.yaml
-
-# Using environment variables
-lndnotify
 ```
 
 ## Development
@@ -101,7 +91,6 @@ lndnotify
 ```bash
 git clone https://github.com/Primexz/lndnotify.git
 cd lndnotify
-go mod download
 go build -o lndnotify cmd/lndnotify/main.go
 ```
 

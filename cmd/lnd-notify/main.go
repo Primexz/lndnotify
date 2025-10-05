@@ -47,11 +47,7 @@ func main() {
 	// Load configuration
 	cfg, err := config.LoadConfig(*configPath)
 	if err != nil {
-		// Try environment variables if config file fails
-		cfg, err = config.LoadConfigFromEnv()
-		if err != nil {
-			log.Fatalf("Failed to load configuration: %v", err)
-		}
+		log.WithError(err).Fatal("failed to load config file")
 	}
 
 	// Create LND client

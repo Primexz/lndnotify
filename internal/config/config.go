@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -72,45 +71,7 @@ func LoadConfig(path string) (*Config, error) {
 	return &cfg, nil
 }
 
-// LoadConfigFromEnv loads configuration from environment variables
-func LoadConfigFromEnv() (*Config, error) {
-	cfg := &Config{}
-
-	// LND configuration
-	cfg.LND.Host = os.Getenv("LND_HOST")
-	if port := os.Getenv("LND_PORT"); port != "" {
-		fmt.Sscanf(port, "%d", &cfg.LND.Port) // #nosec G104 -- Error ignored intentionally
-	}
-	cfg.LND.TLSCertPath = os.Getenv("LND_TLS_CERT_PATH")
-	cfg.LND.MacaroonPath = os.Getenv("LND_MACAROON_PATH")
-
-	// Notification configuration
-	if url := os.Getenv("NOTIFICATION_URL"); url != "" {
-		cfg.Notifications.Providers = []ProviderConfig{{
-			URL:  url,
-			Name: "default",
-		}}
-	}
-
-	// Event configuration
-	if events := os.Getenv("ENABLED_EVENTS"); events != "" {
-		enabledEvents := strings.Split(events, ",")
-		for _, event := range enabledEvents {
-			switch strings.ToLower(strings.TrimSpace(event)) {
-			case "forwards":
-				cfg.Events.ForwardEvents = true
-			}
-		}
-	}
-
-	if err := cfg.validate(); err != nil {
-		return nil, fmt.Errorf("validating config from env: %w", err)
-	}
-
-	cfg.setDefaults()
-	return cfg, nil
-}
-
+// Validate the configuration fields
 func (c *Config) validate() error {
 	// Basic validation
 	if c.LND.Host == "" {
@@ -137,8 +98,8 @@ func (c *Config) validate() error {
 	return nil
 }
 
+// Set default templates if not specified
 func (c *Config) setDefaults() {
-	// Set default templates if not specified
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
 	}
