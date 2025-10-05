@@ -1,4 +1,4 @@
-module github.com/Primexz/lnd-notify
+module github.com/Primexz/lndnotify
 
 go 1.25.1
 

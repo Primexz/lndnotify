@@ -7,7 +7,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/Primexz/lnd-notify/internal/config"
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"

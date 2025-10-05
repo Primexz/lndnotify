@@ -22,7 +22,7 @@ A notification system for Lightning Network nodes that monitors and notifies abo
 ## Installation
 
 ```bash
-go install github.com/Primexz/lnd-notify@latest
+go install github.com/Primexz/lndnotify@latest
 ```
 
 ## Configuration
@@ -88,10 +88,10 @@ The program uses shoutrrr for notifications, which supports various services:
 
 ```bash
 # Using config file
-lnd-notify -config config.yaml
+lndnotify -config config.yaml
 
 # Using environment variables
-lnd-notify
+lndnotify
 ```
 
 ## Development
@@ -99,10 +99,10 @@ lnd-notify
 ### Building from Source
 
 ```bash
-git clone https://github.com/Primexz/lnd-notify.git
-cd lnd-notify
+git clone https://github.com/Primexz/lndnotify.git
+cd lndnotify
 go mod download
-go build -o lnd-notify cmd/lnd-notify/main.go
+go build -o lndnotify cmd/lndnotify/main.go
 ```
 
 ## Contributing

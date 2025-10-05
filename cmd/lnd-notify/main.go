@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Primexz/lnd-notify/internal/config"
-	"github.com/Primexz/lnd-notify/internal/events"
-	"github.com/Primexz/lnd-notify/internal/lnd"
-	"github.com/Primexz/lnd-notify/internal/notify"
+	"github.com/Primexz/lndnotify/internal/config"
+	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/Primexz/lndnotify/internal/lnd"
+	"github.com/Primexz/lndnotify/internal/notify"
 )
 
 func main() {

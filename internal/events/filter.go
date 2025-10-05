@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Primexz/lnd-notify/internal/config"
+	"github.com/Primexz/lndnotify/internal/config"
 )
 
 // ProcessorConfig holds the configuration for event processing

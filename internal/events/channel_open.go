@@ -3,7 +3,7 @@ package events
 import (
 	"time"
 
-	"github.com/Primexz/lnd-notify/pkg/format"
+	"github.com/Primexz/lndnotify/pkg/format"
 )
 
 type ChannelOpenEvent struct {
