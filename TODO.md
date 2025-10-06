@@ -3,4 +3,3 @@
 - Rebalances
 - Fee Report
 - Notifications per type to specific destinations
-- Failed HTLCS
