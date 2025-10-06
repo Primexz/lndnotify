@@ -1,7 +1,6 @@
 package lnd
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
@@ -161,7 +160,6 @@ func (c *Client) handleFailedHtlcEvents() {
 		return
 	}
 
-	forwardMap := make(map[string]*routerrpc.HtlcEvent)
 	for {
 		htlcEvent, err := ev.Recv()
 		if err != nil {
@@ -174,7 +172,6 @@ func (c *Client) handleFailedHtlcEvents() {
 			continue
 		}
 
-		htlcKey := getHtlcKey(htlcEvent)
 		forwardEvent := htlcEvent.GetForwardEvent()
 		forwardFailEvent := htlcEvent.GetForwardFailEvent()
 		linkFailEvent := htlcEvent.GetLinkFailEvent()
@@ -192,20 +189,18 @@ func (c *Client) handleFailedHtlcEvents() {
 			}
 			c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, channelResp.Channels)
 		} else if forwardEvent != nil {
-			log.Info("forward event", forwardEvent)
-			forwardMap[htlcKey] = htlcEvent
+			log.WithField("total", c.forwardTracker.Count()).Info("forward event", forwardEvent)
+			c.forwardTracker.AddForward(htlcEvent)
 		} else if settleEvent != nil {
-			if _, ok := forwardMap[htlcKey]; ok {
+			if c.forwardTracker.RemoveForward(htlcEvent) {
 				log.Info("settle event", settleEvent)
-				delete(forwardMap, htlcKey)
 			} else {
 				log.WithField("htlc_event", htlcEvent).Debug("no matching forward event found for settle event")
 			}
 		} else if forwardFailEvent == nil {
-			if originalForward, exists := forwardMap[htlcKey]; exists {
+			if originalForward, exists := c.forwardTracker.GetForward(htlcEvent); exists {
 				log.Error("!!forward fail event!!", forwardFailEvent, originalForward)
-
-				delete(forwardMap, htlcKey)
+				c.forwardTracker.RemoveForward(htlcEvent)
 			} else {
 				log.WithField("htlc_event", htlcEvent).Debug("no matching forward event found for fail event")
 			}
@@ -213,9 +208,4 @@ func (c *Client) handleFailedHtlcEvents() {
 			log.WithField("htlc_event", htlcEvent).Debug("unhandled htlc event")
 		}
 	}
-}
-
-// TODO: REFACTOR ME INTO A SEPARATE FILE
-func getHtlcKey(event *routerrpc.HtlcEvent) string {
-	return fmt.Sprintf("%d%d%d%d", event.IncomingChannelId, event.OutgoingChannelId, event.IncomingHtlcId, event.OutgoingHtlcId)
 }
