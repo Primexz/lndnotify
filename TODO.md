@@ -2,4 +2,5 @@
 - Payments
 - Rebalances
 - Fee Report
-- Benachrichtungen pro Typ zu bestimmten Destionations
+- Notifications per type to specific destinations
+- Failed HTLCS
