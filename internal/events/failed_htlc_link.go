@@ -39,10 +39,6 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 	inChanAlias := "unknown"
 	outChanAlias := "unknown"
 	outChanLiquidity := int64(0)
-	amount := float64(failInfo.GetOutgoingAmtMsat()) / 1000
-	wireFailure := e.FailEvent.GetWireFailure().String()
-	failureDetail := e.FailEvent.GetFailureDetail().String()
-	missedFee := (float64(failInfo.GetIncomingAmtMsat() - failInfo.GetOutgoingAmtMsat())) / 1000
 
 	if outChan := channel.GetChannelById(e.Channels, outChanId); outChan != nil {
 		outChanAlias = outChan.PeerAlias
@@ -59,9 +55,9 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 		InChanAlias:      inChanAlias,
 		OutChanAlias:     outChanAlias,
 		OutChanLiquidity: format.FormatSats(float64(outChanLiquidity)),
-		Amount:           format.FormatSats(amount),
-		WireFailure:      wireFailure,
-		FailureDetail:    failureDetail,
-		MissedFee:        format.FormatSats(missedFee),
+		Amount:           format.FormatSats(float64(failInfo.GetOutgoingAmtMsat()) / 1000),
+		WireFailure:      e.FailEvent.GetWireFailure().String(),
+		FailureDetail:    e.FailEvent.GetFailureDetail().String(),
+		MissedFee:        format.FormatSats((float64(failInfo.GetIncomingAmtMsat() - failInfo.GetOutgoingAmtMsat())) / 1000),
 	}
 }
