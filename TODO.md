@@ -2,3 +2,4 @@
 - Payments
 - Rebalances
 - Fee Report
+- Benachrichtungen pro Typ zu bestimmten Destionations
