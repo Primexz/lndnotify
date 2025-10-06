@@ -26,7 +26,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 
 - Running LND node with gRPC access
 - LND TLS certificate
-- LND macaroon file
+- LND readonly macaroon file
 - Basic Understanding of Docker and Docker Compose
 
 ## Installation
@@ -71,7 +71,7 @@ lnd:
   host: "localhost"
   port: 10009
   tls_cert_path: "~/.lnd/tls.cert"
-  macaroon_path: "~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon"
+  macaroon_path: "~/.lnd/data/chain/bitcoin/mainnet/readonly.macaroon"
 
 # Notification settings
 notifications:
