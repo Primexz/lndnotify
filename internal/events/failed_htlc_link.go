@@ -7,6 +7,7 @@ import (
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
+	log "github.com/sirupsen/logrus"
 )
 
 type FailedHtlcLinkEvent struct {
@@ -43,10 +44,14 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 	if outChan := channel.GetChannelById(e.Channels, outChanId); outChan != nil {
 		outChanAlias = outChan.PeerAlias
 		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat()
+	} else {
+		log.WithField("chan_id", outChanId).Warn("could not find outgoing channel")
 	}
 
 	if inChan := channel.GetChannelById(e.Channels, inChanId); inChan != nil {
 		inChanAlias = inChan.PeerAlias
+	} else {
+		log.WithField("chan_id", inChanId).Warn("could not find incoming channel")
 	}
 
 	return &FailedHtlcTemplate{
