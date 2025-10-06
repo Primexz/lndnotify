@@ -86,6 +86,7 @@ notifications:
     channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
+    failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
 
 # Event settings
 events:

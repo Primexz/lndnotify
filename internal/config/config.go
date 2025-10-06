@@ -122,4 +122,7 @@ func (c *Config) setDefaults() {
 	if c.Notifications.Templates.InvoiceSettled == "" {
 		c.Notifications.Templates.InvoiceSettled = "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
 	}
+	if c.Notifications.Templates.FailedHtlc == "" {
+		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
+	}
 }

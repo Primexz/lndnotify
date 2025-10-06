@@ -26,3 +26,15 @@ const (
 func (et EventType) String() string {
 	return string(et)
 }
+
+type FailedHtlcTemplate struct {
+	OutChanId        uint64
+	InChanId         uint64
+	InChanAlias      string
+	OutChanAlias     string
+	OutChanLiquidity string
+	Amount           string
+	WireFailure      string
+	FailureDetail    string
+	MissedFee        string
+}

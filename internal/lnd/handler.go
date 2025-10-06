@@ -181,8 +181,16 @@ func (c *Client) handleFailedHtlcEvents() {
 		settleEvent := htlcEvent.GetSettleEvent()
 
 		if linkFailEvent != nil {
-			log.Info("link fail event", linkFailEvent)
-			continue
+			log.Error("link fail event", linkFailEvent)
+
+			channelResp, err := c.client.ListChannels(c.ctx, &lnrpc.ListChannelsRequest{
+				PeerAliasLookup: true,
+			})
+			if err != nil {
+				log.WithError(err).Error("error listing channels")
+				continue
+			}
+			c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, channelResp.Channels)
 		} else if forwardEvent != nil {
 			log.Info("forward event", forwardEvent)
 			forwardMap[htlcKey] = htlcEvent
@@ -195,7 +203,7 @@ func (c *Client) handleFailedHtlcEvents() {
 			}
 		} else if forwardFailEvent == nil {
 			if originalForward, exists := forwardMap[htlcKey]; exists {
-				log.Error("!!!orward fail event!!!", forwardFailEvent, originalForward)
+				log.Error("!!forward fail event!!", forwardFailEvent, originalForward)
 
 				delete(forwardMap, htlcKey)
 			} else {

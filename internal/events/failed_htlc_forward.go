@@ -11,9 +11,6 @@ type FailedHtlcForwardEvent struct {
 	timestamp time.Time
 }
 
-type FailedHtlcForwardTemplate struct {
-}
-
 func NewFailedHtlcForwardEvent(htlcEvent *routerrpc.HtlcEvent) *FailedHtlcForwardEvent {
 	return &FailedHtlcForwardEvent{
 		HtlcEvent: htlcEvent,
@@ -30,5 +27,5 @@ func (e *FailedHtlcForwardEvent) Timestamp() time.Time {
 }
 
 func (e *FailedHtlcForwardEvent) GetTemplateData() interface{} {
-	return &FailedHtlcForwardTemplate{}
+	return &FailedHtlcTemplate{}
 }
