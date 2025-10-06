@@ -2,6 +2,8 @@
 
 This document describes all available template variables that can be used in notification templates for each event type in lndnotify.
 
+Templates use Go's `text/template` syntax. For more information on template syntax, functions, and advanced usage, see the [official Go documentation](https://pkg.go.dev/text/template).
+
 ## Forward Event
 Triggered when a payment is forwarded through your node.
 
