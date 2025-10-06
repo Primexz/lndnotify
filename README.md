@@ -18,6 +18,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Peer Online
   - Peer Offline
   - Settled Invoice
+  - Failed HTLCs
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
@@ -92,6 +93,7 @@ events:
   peer_events: true
   channel_events: true
   invoice_events: true
+  failed_htlc_events: true
 ```
 
 

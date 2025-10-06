@@ -24,3 +24,4 @@ events:
   peer_events: true # Enable peer events (online/offline) notifications
   channel_events: true # Enable channel events (open/close) notifications
   invoice_events: true # Enable invoice settled notifications
+  failed_htlc_events: true # Enable failed HTLC notifications

@@ -76,6 +76,7 @@ func (m *Manager) parseTemplates() {
 		events.Event_CHANNEL_OPEN:    m.cfg.Templates.ChannelOpen,
 		events.Event_CHANNEL_CLOSE:   m.cfg.Templates.ChannelClose,
 		events.Event_INVOICE_SETTLED: m.cfg.Templates.InvoiceSettled,
+		events.Event_FAILED_HTLC:     m.cfg.Templates.FailedHtlc,
 	}
 
 	for name, text := range templates {

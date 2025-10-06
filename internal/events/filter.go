@@ -31,6 +31,8 @@ func (p *Processor) ShouldProcess(event Event) bool {
 		return p.cfg.EnabledEvents.ChannelEvents
 	case Event_INVOICE_SETTLED:
 		return p.cfg.EnabledEvents.InvoiceEvents
+	case Event_FAILED_HTLC:
+		return p.cfg.EnabledEvents.FailedHtlc
 	default:
 		log.WithField("event_type", event.Type()).Warn("unknown event type")
 		return false

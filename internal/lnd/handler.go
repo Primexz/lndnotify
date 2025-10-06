@@ -1,10 +1,12 @@
 package lnd
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -147,4 +149,65 @@ func (c *Client) handleInvoiceEvents() {
 			c.eventSub <- events.NewInvoiceSettledEvent(invoice)
 		}
 	}
+}
+
+func (c *Client) handleFailedHtlcEvents() {
+	log.Debug("starting failed htlc event handler")
+	defer c.wg.Done()
+
+	ev, err := c.router.SubscribeHtlcEvents(c.ctx, &routerrpc.SubscribeHtlcEventsRequest{})
+	if err != nil {
+		log.WithError(err).Error("error subscribing to failed htlc events")
+		return
+	}
+
+	forwardMap := make(map[string]*routerrpc.HtlcEvent)
+	for {
+		htlcEvent, err := ev.Recv()
+		if err != nil {
+			log.WithError(err).Error("error receiving failed htlc event")
+			return
+		}
+
+		if htlcEvent.GetEventType() != routerrpc.HtlcEvent_FORWARD {
+			log.WithField("htlc_event", htlcEvent).Debug("ignoring non-forward htlc event")
+			continue
+		}
+
+		htlcKey := getHtlcKey(htlcEvent)
+		forwardEvent := htlcEvent.GetForwardEvent()
+		forwardFailEvent := htlcEvent.GetForwardFailEvent()
+		linkFailEvent := htlcEvent.GetLinkFailEvent()
+		settleEvent := htlcEvent.GetSettleEvent()
+
+		if linkFailEvent != nil {
+			log.Info("link fail event", linkFailEvent)
+			continue
+		} else if forwardEvent != nil {
+			log.Info("forward event", forwardEvent)
+			forwardMap[htlcKey] = htlcEvent
+		} else if settleEvent != nil {
+			if _, ok := forwardMap[htlcKey]; ok {
+				log.Info("settle event", settleEvent)
+				delete(forwardMap, htlcKey)
+			} else {
+				log.WithField("htlc_event", htlcEvent).Debug("no matching forward event found for settle event")
+			}
+		} else if forwardFailEvent == nil {
+			if originalForward, exists := forwardMap[htlcKey]; exists {
+				log.Error("!!!orward fail event!!!", forwardFailEvent, originalForward)
+
+				delete(forwardMap, htlcKey)
+			} else {
+				log.WithField("htlc_event", htlcEvent).Debug("no matching forward event found for fail event")
+			}
+		} else {
+			log.WithField("htlc_event", htlcEvent).Debug("unhandled htlc event")
+		}
+	}
+}
+
+// TODO: REFACTOR ME INTO A SEPARATE FILE
+func getHtlcKey(event *routerrpc.HtlcEvent) string {
+	return fmt.Sprintf("%d%d%d%d", event.IncomingChannelId, event.OutgoingChannelId, event.IncomingHtlcId, event.OutgoingHtlcId)
 }

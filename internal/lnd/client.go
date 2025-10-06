@@ -121,11 +121,12 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 	}
 
 	// Start subscription handlers
-	c.wg.Add(4)
+	c.wg.Add(5)
 	go c.handleForwards()
 	go c.handlePeerEvents()
 	go c.handleChannelEvents()
 	go c.handleInvoiceEvents()
+	go c.handleFailedHtlcEvents()
 
 	return c.eventSub, nil
 }

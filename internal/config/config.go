@@ -42,6 +42,7 @@ type NotificationTemplate struct {
 	ChannelOpen    string `yaml:"channel_open_event"`
 	ChannelClose   string `yaml:"channel_close_event"`
 	InvoiceSettled string `yaml:"invoice_settled_event"`
+	FailedHtlc     string `yaml:"failed_htlc_event"`
 }
 
 // EventConfig controls which events to monitor
@@ -50,6 +51,7 @@ type EventConfig struct {
 	PeerEvents    bool `yaml:"peer_events"`
 	ChannelEvents bool `yaml:"channel_events"`
 	InvoiceEvents bool `yaml:"invoice_events"`
+	FailedHtlc    bool `yaml:"failed_htlc_events"`
 }
 
 // LoadConfig loads configuration from a YAML file
