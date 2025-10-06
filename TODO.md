@@ -1,2 +1,4 @@
 - Chain Transactions
 - Payments
+- Rebalances
+- Fee Report
