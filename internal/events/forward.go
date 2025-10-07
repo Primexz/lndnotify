@@ -16,6 +16,7 @@ type ForwardTemplate struct {
 	PeerAliasIn  string
 	PeerAliasOut string
 	Amount       string
+	AmountOut    string
 	Fee          string
 }
 
@@ -35,13 +36,15 @@ func (e *ForwardEvent) Timestamp() time.Time {
 }
 
 func (e *ForwardEvent) GetTemplateData() interface{} {
-	amtSats := float64(e.Forward.AmtInMsat) / 1000
+	amtInSats := float64(e.Forward.AmtInMsat) / 1000
+	amtOutSats := float64(e.Forward.AmtOutMsat) / 1000
 	feeSats := float64(e.Forward.FeeMsat) / 1000
 
 	return &ForwardTemplate{
 		PeerAliasIn:  e.Forward.PeerAliasIn,
 		PeerAliasOut: e.Forward.PeerAliasOut,
-		Amount:       format.FormatSats(amtSats),
-		Fee:          format.FormatSats(feeSats),
+		Amount:       format.FormatBasic(amtInSats),
+		AmountOut:    format.FormatBasic(amtOutSats),
+		Fee:          format.FormatDetailed(feeSats),
 	}
 }

@@ -47,8 +47,8 @@ func (e *ChannelCloseEvent) GetTemplateData() interface{} {
 		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
 		ChanId:          e.Channel.ChanId,
 		ChannelPoint:    e.Channel.ChannelPoint,
-		Capacity:        format.FormatSats(float64(e.Channel.Capacity)),
+		Capacity:        format.FormatBasic(float64(e.Channel.Capacity)),
 		RemotePubkey:    e.Channel.RemotePubkey,
-		SettledBalance:  format.FormatSats(float64(e.Channel.SettledBalance)),
+		SettledBalance:  format.FormatBasic(float64(e.Channel.SettledBalance)),
 	}
 }

@@ -1,5 +1,6 @@
 - Chain Transactions
-- Payments
 - Rebalances
+    - Payments (Exclude Rebalances)
+    - Invoices (Exclude Rebalances)
 - Fee Report
 - Notifications per type to specific destinations
