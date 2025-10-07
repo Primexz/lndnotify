@@ -3,6 +3,7 @@ module github.com/Primexz/lndnotify
 go 1.25.1
 
 require (
+	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/lightningnetwork/lnd v0.19.0-beta
 	github.com/nicholas-fedor/shoutrrr v0.10.1
 	github.com/sirupsen/logrus v1.9.3
