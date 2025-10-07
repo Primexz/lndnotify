@@ -119,7 +119,7 @@ lndnotify -config config.yaml
 ```bash
 git clone https://github.com/Primexz/lndnotify.git
 cd lndnotify
-go build -o lndnotify cmd/lndnotify/main.go
+go install ./cmd/lndnotify
 ```
 
 ## Contributing
