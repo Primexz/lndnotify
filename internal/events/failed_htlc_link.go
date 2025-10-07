@@ -33,6 +33,7 @@ func NewFailedHtlcLinkEvent(htlcEvent *routerrpc.HtlcEvent, failEvent *routerrpc
 	return &FailedHtlcLinkEvent{
 		HtlcEvent: htlcEvent,
 		FailEvent: failEvent,
+		Channels:  channels,
 		timestamp: time.Now(),
 	}
 }

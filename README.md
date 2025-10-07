@@ -77,7 +77,7 @@ lnd:
 # Notification settings
 notifications:
   providers:
-    - url: "discord://token@channel"  # Discord webhook URL
+    - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
 
 # Event settings

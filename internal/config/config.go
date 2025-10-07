@@ -105,6 +105,10 @@ func (c *Config) validate() error {
 
 // Set default templates if not specified
 func (c *Config) setDefaults() {
+	if c.LogLevel == "" {
+		c.LogLevel = "info"
+	}
+
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
 	}
@@ -125,8 +129,5 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.FailedHtlc == "" {
 		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"
-	}
-	if c.LogLevel == "" {
-		c.LogLevel = "info"
 	}
 }
