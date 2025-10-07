@@ -201,7 +201,7 @@ func (c *Client) handleFailedHtlcEvents() {
 			}
 
 			if htlcEvent.GetEventType() != routerrpc.HtlcEvent_FORWARD {
-				log.WithField("htlc_event", htlcEvent).Debug("ignoring non-forward htlc event")
+				log.WithField("htlc_event", htlcEvent).Trace("ignoring non-forward htlc event")
 				continue
 			}
 
@@ -218,7 +218,7 @@ func (c *Client) handleFailedHtlcEvents() {
 
 				c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, channelResp.Channels)
 			} else {
-				log.WithField("htlc_event", htlcEvent).Debug("unhandled htlc event")
+				log.WithField("htlc_event", htlcEvent).Trace("unhandled htlc event")
 			}
 		}
 	})
