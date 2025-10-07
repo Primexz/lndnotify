@@ -16,6 +16,7 @@ func (c *Client) handleForwards() {
 	log.Debug("starting forward event handler")
 	defer c.wg.Done()
 
+	var lastOffset uint32
 	start := time.Now()
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
@@ -25,10 +26,15 @@ func (c *Client) handleForwards() {
 		case <-c.ctx.Done():
 			return
 		case <-ticker.C:
-			log.WithField("since", start).Debug("polling for forwarding events")
+			log.WithFields(log.Fields{
+				"since":      start,
+				"lastOffset": lastOffset,
+			}).Debug("polling for forwarding events")
+
 			resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
 				StartTime:       uint64(start.Unix()), // #nosec G115
 				PeerAliasLookup: true,
+				IndexOffset:     lastOffset,
 			})
 			if err != nil {
 				log.WithError(err).Error("error fetching forwarding history")
@@ -40,10 +46,9 @@ func (c *Client) handleForwards() {
 				c.eventSub <- events.NewForwardEvent(fwd)
 			}
 
-			// push start time forward
-			if len(forwards) > 0 {
-				start = time.Now()
-			}
+			// push last offset for next request. lnd will return the current offset
+			// if no new events are available.
+			lastOffset = resp.LastOffsetIndex
 		}
 	}
 }
