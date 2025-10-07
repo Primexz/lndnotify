@@ -17,6 +17,18 @@ type FailedHtlcLinkEvent struct {
 	timestamp time.Time
 }
 
+type FailedHtlcLinkTemplate struct {
+	OutChanId        uint64
+	InChanId         uint64
+	InChanAlias      string
+	OutChanAlias     string
+	OutChanLiquidity string
+	Amount           string
+	WireFailure      string
+	FailureDetail    string
+	MissedFee        string
+}
+
 func NewFailedHtlcLinkEvent(htlcEvent *routerrpc.HtlcEvent, failEvent *routerrpc.LinkFailEvent, channels []*lnrpc.Channel) *FailedHtlcLinkEvent {
 	return &FailedHtlcLinkEvent{
 		HtlcEvent: htlcEvent,
@@ -54,7 +66,7 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 		log.WithField("chan_id", inChanId).Warn("could not find incoming channel")
 	}
 
-	return &FailedHtlcTemplate{
+	return &FailedHtlcLinkTemplate{
 		InChanId:         inChanId,
 		OutChanId:        outChanId,
 		InChanAlias:      inChanAlias,
