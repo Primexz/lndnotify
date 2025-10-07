@@ -53,6 +53,7 @@ type EventConfig struct {
 	ChannelEvents bool `yaml:"channel_events"`
 	InvoiceEvents bool `yaml:"invoice_events"`
 	FailedHtlc    bool `yaml:"failed_htlc_events"`
+	StatusEvents  bool `yaml:"status_events"`
 }
 
 // LoadConfig loads configuration from a YAML file

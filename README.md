@@ -87,6 +87,7 @@ events:
   channel_events: true
   invoice_events: true
   failed_htlc_events: true
+  status_events: true
 ```
 
 

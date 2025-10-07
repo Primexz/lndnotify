@@ -28,3 +28,4 @@ events:
   channel_events: true # Enable channel events (open/close) notifications
   invoice_events: true # Enable invoice settled notifications
   failed_htlc_events: true # Enable failed HTLC notifications
+  status_events: true # Enable status change notifications (startup/shutdown)
