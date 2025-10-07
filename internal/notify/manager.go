@@ -99,6 +99,11 @@ func (m *Manager) RenderTemplate(name string, data interface{}) (string, error) 
 		return "", fmt.Errorf("template not found: %s", name)
 	}
 
+	log.WithFields(log.Fields{
+		"template": name,
+		"data":     data,
+	}).Debug("rendering template")
+
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return "", fmt.Errorf("executing template: %w", err)

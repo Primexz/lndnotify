@@ -75,7 +75,7 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 		InChanAlias:             inChanAlias,
 		OutChanAlias:            outChanAlias,
 		OutChanLiquidity:        format.FormatBasic(float64(outChanLiquidity)),
-		MissingOutChanLiquidity: format.FormatBasic(float64(failInfo.GetOutgoingAmtMsat())/1000 - float64(outChanLiquidity)),
+		MissingOutChanLiquidity: format.FormatDetailed(float64(failInfo.GetOutgoingAmtMsat())/1000 - float64(outChanLiquidity)),
 		IsLocalLiquidityFailure: float64(failInfo.GetOutgoingAmtMsat()/1000) > float64(outChanLiquidity),
 		Amount:                  format.FormatBasic(float64(failInfo.GetOutgoingAmtMsat()) / 1000),
 		WireFailure:             e.FailEvent.GetWireFailure().String(),
