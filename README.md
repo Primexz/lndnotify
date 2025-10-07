@@ -57,8 +57,11 @@ services:
 - Add ``config.yaml`` file to the ``lndnotify`` directory and adjust the configuration
 
 ### 💻 Run without Docker
+
 ```bash
-go install github.com/Primexz/lndnotify@latest
+git clone https://github.com/Primexz/lndnotify.git
+cd lndnotify
+go install ./cmd/lnd-notify
 ```
 
 ## Configuration
@@ -109,7 +112,7 @@ To see the full list of supported providers, check out the [official documentati
 ## Usage
 
 ```bash
-lndnotify -config config.yaml
+lnd-notify -config config.yaml
 ```
 
 ## Development
@@ -119,7 +122,7 @@ lndnotify -config config.yaml
 ```bash
 git clone https://github.com/Primexz/lndnotify.git
 cd lndnotify
-go build -o lndnotify cmd/lndnotify/main.go
+go build -o lndnotify cmd/lnd-notify/main.go
 ```
 
 ## Contributing
