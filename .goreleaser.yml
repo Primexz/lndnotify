@@ -5,7 +5,7 @@ builds:
     env:
       - CGO_ENABLED=0
     binary: lndnotify
-    main: ./cmd/lnd-notify/main.go
+    main: ./cmd/lndnotify/main.go
     goos:
       - linux
     goarch:
