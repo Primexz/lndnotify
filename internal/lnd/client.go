@@ -25,27 +25,25 @@ type ClientConfig struct {
 
 // Client represents an LND node client
 type Client struct {
-	cfg            *ClientConfig
-	conn           *grpc.ClientConn
-	client         lnrpc.LightningClient
-	router         routerrpc.RouterClient
-	mu             sync.Mutex
-	eventSub       chan events.Event
-	ctx            context.Context
-	cancel         context.CancelFunc
-	wg             sync.WaitGroup
-	forwardTracker *ForwardTracker
+	cfg      *ClientConfig
+	conn     *grpc.ClientConn
+	client   lnrpc.LightningClient
+	router   routerrpc.RouterClient
+	mu       sync.Mutex
+	eventSub chan events.Event
+	ctx      context.Context
+	cancel   context.CancelFunc
+	wg       sync.WaitGroup
 }
 
 // NewClient creates a new LND client
 func NewClient(cfg *ClientConfig) *Client {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Client{
-		cfg:            cfg,
-		eventSub:       make(chan events.Event, 100),
-		ctx:            ctx,
-		cancel:         cancel,
-		forwardTracker: NewForwardTracker(),
+		cfg:      cfg,
+		eventSub: make(chan events.Event, 100),
+		ctx:      ctx,
+		cancel:   cancel,
 	}
 }
 

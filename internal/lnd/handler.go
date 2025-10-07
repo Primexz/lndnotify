@@ -205,11 +205,7 @@ func (c *Client) handleFailedHtlcEvents() {
 				continue
 			}
 
-			forwardEvent := htlcEvent.GetForwardEvent()
-			forwardFailEvent := htlcEvent.GetForwardFailEvent()
 			linkFailEvent := htlcEvent.GetLinkFailEvent()
-			settleEvent := htlcEvent.GetSettleEvent()
-
 			if linkFailEvent != nil {
 				log.Error("link fail event", linkFailEvent)
 				channelResp, err := c.client.ListChannels(c.ctx, &lnrpc.ListChannelsRequest{
@@ -221,22 +217,6 @@ func (c *Client) handleFailedHtlcEvents() {
 				}
 
 				c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, channelResp.Channels)
-			} else if forwardEvent != nil {
-				log.WithField("total", c.forwardTracker.Count()).Info("forward event", forwardEvent)
-				c.forwardTracker.AddForward(htlcEvent)
-			} else if settleEvent != nil {
-				if c.forwardTracker.RemoveForward(htlcEvent) {
-					log.Info("settle event", settleEvent)
-				} else {
-					log.WithField("htlc_event", htlcEvent).Debug("no matching forward event found for settle event")
-				}
-			} else if forwardFailEvent == nil {
-				if originalForward, exists := c.forwardTracker.GetForward(htlcEvent); exists {
-					log.Error("!!forward fail event!!", forwardFailEvent, originalForward)
-					c.forwardTracker.RemoveForward(htlcEvent)
-				} else {
-					log.WithField("htlc_event", htlcEvent).Debug("no matching forward event found for fail event")
-				}
 			} else {
 				log.WithField("htlc_event", htlcEvent).Debug("unhandled htlc event")
 			}

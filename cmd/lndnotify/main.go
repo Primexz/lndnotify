@@ -50,6 +50,12 @@ func main() {
 		log.WithError(err).Fatal("failed to load config file")
 	}
 
+	level, err := log.ParseLevel(cfg.LogLevel)
+	if err != nil {
+		log.WithError(err).Fatal("Invalid log level")
+	}
+	log.SetLevel(level)
+
 	// Create LND client
 	lndClient := lnd.NewClient(&lnd.ClientConfig{
 		Host:         cfg.LND.Host,

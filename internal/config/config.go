@@ -12,6 +12,7 @@ type Config struct {
 	LND           LNDConfig          `yaml:"lnd" validate:"required"`
 	Notifications NotificationConfig `yaml:"notifications" validate:"required"`
 	Events        EventConfig        `yaml:"events"`
+	LogLevel      string             `yaml:"log_level" validate:"omitempty,oneof=panic fatal error warn info debug trace"`
 }
 
 // LNDConfig holds the LND node connection settings
@@ -124,5 +125,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.FailedHtlc == "" {
 		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"
+	}
+	if c.LogLevel == "" {
+		c.LogLevel = "info"
 	}
 }
