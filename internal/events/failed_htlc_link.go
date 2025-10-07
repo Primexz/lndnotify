@@ -18,15 +18,17 @@ type FailedHtlcLinkEvent struct {
 }
 
 type FailedHtlcLinkTemplate struct {
-	OutChanId        uint64
-	InChanId         uint64
-	InChanAlias      string
-	OutChanAlias     string
-	OutChanLiquidity string
-	Amount           string
-	WireFailure      string
-	FailureDetail    string
-	MissedFee        string
+	OutChanId               uint64
+	InChanId                uint64
+	InChanAlias             string
+	OutChanAlias            string
+	OutChanLiquidity        string
+	MissingOutChanLiquidity string
+	IsLocalLiquidityFailure bool
+	Amount                  string
+	WireFailure             string
+	FailureDetail           string
+	MissedFee               string
 }
 
 func NewFailedHtlcLinkEvent(htlcEvent *routerrpc.HtlcEvent, failEvent *routerrpc.LinkFailEvent, channels []*lnrpc.Channel) *FailedHtlcLinkEvent {
@@ -68,14 +70,16 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 	}
 
 	return &FailedHtlcLinkTemplate{
-		InChanId:         inChanId,
-		OutChanId:        outChanId,
-		InChanAlias:      inChanAlias,
-		OutChanAlias:     outChanAlias,
-		OutChanLiquidity: format.FormatSats(float64(outChanLiquidity)),
-		Amount:           format.FormatSats(float64(failInfo.GetOutgoingAmtMsat()) / 1000),
-		WireFailure:      e.FailEvent.GetWireFailure().String(),
-		FailureDetail:    e.FailEvent.GetFailureDetail().String(),
-		MissedFee:        format.FormatSats((float64(failInfo.GetIncomingAmtMsat() - failInfo.GetOutgoingAmtMsat())) / 1000),
+		InChanId:                inChanId,
+		OutChanId:               outChanId,
+		InChanAlias:             inChanAlias,
+		OutChanAlias:            outChanAlias,
+		OutChanLiquidity:        format.FormatSats(float64(outChanLiquidity)),
+		MissingOutChanLiquidity: format.FormatSats(float64(failInfo.GetOutgoingAmtMsat())/1000 - float64(outChanLiquidity)),
+		IsLocalLiquidityFailure: float64(failInfo.GetOutgoingAmtMsat()/1000) > float64(outChanLiquidity),
+		Amount:                  format.FormatSats(float64(failInfo.GetOutgoingAmtMsat()) / 1000),
+		WireFailure:             e.FailEvent.GetWireFailure().String(),
+		FailureDetail:           e.FailEvent.GetFailureDetail().String(),
+		MissedFee:               format.FormatSats((float64(failInfo.GetIncomingAmtMsat() - failInfo.GetOutgoingAmtMsat())) / 1000),
 	}
 }
