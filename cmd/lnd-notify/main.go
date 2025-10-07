@@ -70,6 +70,9 @@ func main() {
 		Templates: cfg.Notifications.Templates,
 	})
 
+	notifier.Send("🟢 lndnotify connected")
+	defer notifier.Send("🔴 lndnotify disconnected")
+
 	// Create event processor
 	processor := events.NewProcessor(&events.ProcessorConfig{
 		EnabledEvents: cfg.Events,
