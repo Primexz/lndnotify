@@ -114,9 +114,8 @@ func (m *Manager) Send(message string) {
 	}
 
 	for name, provider := range m.providers {
-		log := log.WithField("provider", name)
-
-		log.Infof("sending notification: %s", message)
+		logger := log.WithField("provider", name).WithField("message", message)
+		logger.Info("sending notification")
 
 		errs := provider.Send(message, &types.Params{})
 		for _, err := range errs {
@@ -124,7 +123,7 @@ func (m *Manager) Send(message string) {
 				continue
 			}
 
-			log.WithError(err).Error("error sending notification")
+			logger.WithError(err).Error("error sending notification")
 		}
 	}
 }

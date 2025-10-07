@@ -1,9 +1,11 @@
 package lnd
 
 import (
+	"context"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
@@ -51,34 +53,42 @@ func (c *Client) handlePeerEvents() {
 	log.Debug("starting peer event handler")
 	defer c.wg.Done()
 
-	ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
-	if err != nil {
-		log.WithError(err).Error("error subscribing to peer events")
-		return
-	}
-
-	for {
-		peerEvent, err := ev.Recv()
+	retry(c.ctx, "peer event subscription", func() (string, error) {
+		ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
 		if err != nil {
-			log.WithError(err).Error("error receiving peer event")
-			return
+			return "", err
 		}
 
-		nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
-			PubKey: peerEvent.GetPubKey(),
-		})
-		if err != nil {
-			log.WithField("pubkey", peerEvent.GetPubKey()).WithError(err).Error("error fetching node info")
-			continue
-		}
+		log.Debug("peer event subscription established")
 
-		switch peerEvent.GetType() {
-		case lnrpc.PeerEvent_PEER_ONLINE:
-			c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node)
-		case lnrpc.PeerEvent_PEER_OFFLINE:
-			c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node)
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			peerEvent, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
+				PubKey: peerEvent.GetPubKey(),
+			})
+			if err != nil {
+				log.WithField("pubkey", peerEvent.GetPubKey()).WithError(err).Error("error fetching node info")
+				continue
+			}
+
+			switch peerEvent.GetType() {
+			case lnrpc.PeerEvent_PEER_ONLINE:
+				c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node)
+			case lnrpc.PeerEvent_PEER_OFFLINE:
+				c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node)
+			}
 		}
-	}
+	})
 }
 
 // handleChannelEvents handles channel open and close events
@@ -86,66 +96,98 @@ func (c *Client) handleChannelEvents() {
 	log.Debug("starting channel event handler")
 	defer c.wg.Done()
 
-	ev, err := c.client.SubscribeChannelEvents(c.ctx, &lnrpc.ChannelEventSubscription{})
-	if err != nil {
-		log.WithError(err).Error("error subscribing to channel events")
-		return
-	}
-
-	for {
-		peerEvent, err := ev.Recv()
+	retry(c.ctx, "channel event subscription", func() (string, error) {
+		ev, err := c.client.SubscribeChannelEvents(c.ctx, &lnrpc.ChannelEventSubscription{})
 		if err != nil {
-			log.WithError(err).Error("error receiving channel event")
-			return
+			return "", err
 		}
 
-		switch peerEvent.GetType() {
-		case lnrpc.ChannelEventUpdate_OPEN_CHANNEL:
-			channel := peerEvent.GetOpenChannel()
-			nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
-				PubKey: channel.RemotePubkey,
-			})
-			if err != nil {
-				log.WithError(err).Error("error fetching node info")
-				continue
+		log.Debug("channel event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
 			}
 
-			c.eventSub <- events.NewChannelOpenEvent(nodeInfo.Node, channel)
-		case lnrpc.ChannelEventUpdate_CLOSED_CHANNEL:
-			channel := peerEvent.GetClosedChannel()
-			nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
-				PubKey: channel.RemotePubkey,
-			})
+			peerEvent, err := ev.Recv()
 			if err != nil {
-				log.WithError(err).Error("error fetching node info")
-				continue
+				return "", err // Return error to trigger retry
 			}
 
-			c.eventSub <- events.NewChannelCloseEvent(nodeInfo.Node, channel)
+			switch peerEvent.GetType() {
+			case lnrpc.ChannelEventUpdate_OPEN_CHANNEL:
+				channel := peerEvent.GetOpenChannel()
+				nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
+					PubKey: channel.RemotePubkey,
+				})
+				if err != nil {
+					log.WithError(err).Error("error fetching node info")
+					continue
+				}
+
+				c.eventSub <- events.NewChannelOpenEvent(nodeInfo.Node, channel)
+			case lnrpc.ChannelEventUpdate_CLOSED_CHANNEL:
+				channel := peerEvent.GetClosedChannel()
+				nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
+					PubKey: channel.RemotePubkey,
+				})
+				if err != nil {
+					log.WithError(err).Error("error fetching node info")
+					continue
+				}
+
+				c.eventSub <- events.NewChannelCloseEvent(nodeInfo.Node, channel)
+			}
 		}
-	}
+	})
 }
 
 func (c *Client) handleInvoiceEvents() {
 	log.Debug("starting invoice event handler")
 	defer c.wg.Done()
 
-	ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
-	if err != nil {
-		log.WithError(err).Error("error subscribing to invoice events")
-		return
-	}
-
-	for {
-		invoice, err := ev.Recv()
+	retry(c.ctx, "invoice event subscription", func() (string, error) {
+		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
-			log.WithError(err).Error("error receiving invoice event")
-			return
+			return "", err
 		}
 
-		switch invoice.GetState() {
-		case lnrpc.Invoice_SETTLED:
-			c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+		log.Debug("invoice event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			invoice, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			switch invoice.GetState() {
+			case lnrpc.Invoice_SETTLED:
+				c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+			}
+		}
+	})
+}
+
+func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
+	logger := log.WithField("name", name)
+	notify := func(err error, duration time.Duration) {
+		logger.WithError(err).WithField("next_retry_in", duration).WithError(err).Warn("operation failed, retrying")
+	}
+
+	_, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify))
+	if err != nil {
+		if ctx.Err() != nil {
+			logger.Debug("context cancelled, stopping retry")
+		} else {
+			logger.WithError(err).Error("operation failed permanently")
 		}
 	}
 }
