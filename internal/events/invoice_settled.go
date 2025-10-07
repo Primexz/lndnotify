@@ -42,3 +42,16 @@ func (e *InvoiceSettledEvent) GetTemplateData() interface{} {
 		PaymentRequest: e.Invoice.PaymentRequest,
 	}
 }
+
+type InvoiceSettledFilter struct {
+	Enabled      bool
+	MinAmountSat uint64
+}
+
+func (f *InvoiceSettledFilter) ShouldProcess(event Event) bool {
+	invoiceEvent, ok := event.(*InvoiceSettledEvent)
+	if !ok {
+		return false
+	}
+	return f.Enabled && uint64(invoiceEvent.Invoice.Value) >= f.MinAmountSat // #nosec G115
+}

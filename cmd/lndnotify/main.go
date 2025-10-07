@@ -103,7 +103,7 @@ func main() {
 		select {
 		case event := <-eventChan:
 			if !processor.ShouldProcess(event) {
-				log.WithField("event_type", event.Type()).Debug("event type not enabled, skipping")
+				log.WithField("event_type", event.Type()).Debug("event filtered, skipping")
 				continue
 			}
 

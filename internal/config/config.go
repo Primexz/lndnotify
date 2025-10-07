@@ -48,12 +48,14 @@ type NotificationTemplate struct {
 
 // EventConfig controls which events to monitor
 type EventConfig struct {
-	ForwardEvents bool `yaml:"forward_events"`
-	PeerEvents    bool `yaml:"peer_events"`
-	ChannelEvents bool `yaml:"channel_events"`
-	InvoiceEvents bool `yaml:"invoice_events"`
-	FailedHtlc    bool `yaml:"failed_htlc_events"`
-	StatusEvents  bool `yaml:"status_events"`
+	ForwardEvents       bool   `yaml:"forward_events"`
+	ForwardMinAmountSat uint64 `yaml:"forward_min_amount_sat"`
+	PeerEvents          bool   `yaml:"peer_events"`
+	ChannelEvents       bool   `yaml:"channel_events"`
+	InvoiceEvents       bool   `yaml:"invoice_events"`
+	InvoiceMinAmountSat uint64 `yaml:"invoice_min_amount_sat"`
+	FailedHtlc          bool   `yaml:"failed_htlc_events"`
+	StatusEvents        bool   `yaml:"status_events"`
 }
 
 // LoadConfig loads configuration from a YAML file

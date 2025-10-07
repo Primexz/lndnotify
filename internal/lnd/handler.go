@@ -27,8 +27,8 @@ func (c *Client) handleForwards() {
 			return
 		case <-ticker.C:
 			log.WithFields(log.Fields{
-				"since":      start,
-				"lastOffset": lastOffset,
+				"since":       start,
+				"last_offset": lastOffset,
 			}).Debug("polling for forwarding events")
 
 			resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{

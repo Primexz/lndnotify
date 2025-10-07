@@ -48,3 +48,16 @@ func (e *ForwardEvent) GetTemplateData() interface{} {
 		Fee:          format.FormatDetailed(feeSats),
 	}
 }
+
+type ForwardFilter struct {
+	Enabled      bool
+	MinAmountSat uint64
+}
+
+func (f *ForwardFilter) ShouldProcess(event Event) bool {
+	forwardEvent, ok := event.(*ForwardEvent)
+	if !ok {
+		return false
+	}
+	return f.Enabled && forwardEvent.Forward.AmtOut >= f.MinAmountSat
+}

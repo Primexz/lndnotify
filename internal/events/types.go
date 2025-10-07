@@ -26,3 +26,7 @@ const (
 func (et EventType) String() string {
 	return string(et)
 }
+
+type EventFilter interface {
+	ShouldProcess(event Event) bool
+}

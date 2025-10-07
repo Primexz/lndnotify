@@ -10,13 +10,23 @@ type ProcessorConfig struct {
 }
 
 type Processor struct {
-	cfg *ProcessorConfig
+	cfg                  *ProcessorConfig
+	forwardFilter        EventFilter
+	invoiceSettledFilter EventFilter
 }
 
 // NewProcessor creates a new event processor
 func NewProcessor(cfg *ProcessorConfig) *Processor {
 	return &Processor{
 		cfg: cfg,
+		forwardFilter: &ForwardFilter{
+			Enabled:      cfg.EnabledEvents.ForwardEvents,
+			MinAmountSat: cfg.EnabledEvents.ForwardMinAmountSat,
+		},
+		invoiceSettledFilter: &InvoiceSettledFilter{
+			Enabled:      cfg.EnabledEvents.InvoiceEvents,
+			MinAmountSat: cfg.EnabledEvents.InvoiceMinAmountSat,
+		},
 	}
 }
 
@@ -24,13 +34,13 @@ func NewProcessor(cfg *ProcessorConfig) *Processor {
 func (p *Processor) ShouldProcess(event Event) bool {
 	switch event.Type() {
 	case Event_FORWARD:
-		return p.cfg.EnabledEvents.ForwardEvents
+		return p.forwardFilter.ShouldProcess(event)
 	case Event_PEER_ONLINE, Event_PEER_OFFLINE:
 		return p.cfg.EnabledEvents.PeerEvents
 	case Event_CHANNEL_OPEN, Event_CHANNEL_CLOSE:
 		return p.cfg.EnabledEvents.ChannelEvents
 	case Event_INVOICE_SETTLED:
-		return p.cfg.EnabledEvents.InvoiceEvents
+		return p.invoiceSettledFilter.ShouldProcess(event)
 	case Event_FAILED_HTLC:
 		return p.cfg.EnabledEvents.FailedHtlc
 	default:
