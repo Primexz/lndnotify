@@ -28,7 +28,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 - Running LND node with gRPC access
 - LND TLS certificate
 - LND readonly macaroon file
-- Basic Understanding of Docker and Docker Compose
+- Basic Understanding of Linux, Docker and Docker Compose
 
 ## Installation
 

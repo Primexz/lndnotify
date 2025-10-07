@@ -34,7 +34,7 @@ func TestFormatDetailed(t *testing.T) {
 	for _, tt := range tests {
 		got := FormatDetailed(tt.value)
 		if got != tt.expected {
-			t.Errorf("FormatSats(%v) = %q; want %q", tt.value, got, tt.expected)
+			t.Errorf("TestFormatDetailed(%v) = %q; want %q", tt.value, got, tt.expected)
 		}
 	}
 }
@@ -68,7 +68,7 @@ func TestFormatBasic(t *testing.T) {
 	for _, tt := range tests {
 		got := FormatBasic(tt.value)
 		if got != tt.expected {
-			t.Errorf("FormatWholeNumber(%v) = %q; want %q", tt.value, got, tt.expected)
+			t.Errorf("TestFormatBasic(%v) = %q; want %q", tt.value, got, tt.expected)
 		}
 	}
 }
