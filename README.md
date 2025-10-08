@@ -98,6 +98,8 @@ event_config:
     min_amount: 0
   invoice_event:
     min_amount: 0
+  failed_htlc_event:
+    min_amount: 0
 ```
 
 

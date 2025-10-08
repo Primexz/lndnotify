@@ -85,5 +85,10 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 }
 
 func (e *FailedHtlcLinkEvent) ShouldProcess(cfg *config.Config) bool {
-	return cfg.Events.FailedHtlc
+	if !cfg.Events.FailedHtlc {
+		return false
+	}
+	failInfo := e.FailEvent.GetInfo()
+	amountSats := uint64(failInfo.GetOutgoingAmtMsat() / 1000) // #nosec G115
+	return amountSats >= cfg.EventConfig.FailedHtlcEvent.MinAmount
 }

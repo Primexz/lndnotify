@@ -65,6 +65,9 @@ type EventConfig struct {
 	InvoiceEvent struct {
 		MinAmount uint64 `yaml:"min_amount"`
 	} `yaml:"invoice_event"`
+	FailedHtlcEvent struct {
+		MinAmount uint64 `yaml:"min_amount"`
+	} `yaml:"failed_htlc_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
