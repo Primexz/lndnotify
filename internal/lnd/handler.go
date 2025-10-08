@@ -314,12 +314,8 @@ func (c *Client) handlePaymentEvents() {
 					recPubkey = lastHop.PubKey
 				}
 
-				if recPubkey == localPubkey {
-					// TODO: Template for Rebalancing. Should be filled for each htlc
-					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, c.getAlias)
-				} else {
-					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, c.getAlias)
-				}
+				isRebalancing := recPubkey == localPubkey
+				c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, isRebalancing, c.getAlias)
 			}
 		}
 	})

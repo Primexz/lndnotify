@@ -11,10 +11,11 @@ import (
 )
 
 type PaymentSucceededEvent struct {
-	Payment   *lnrpc.Payment
-	PayReq    *lnrpc.PayReq
-	getAlias  func(pubKey string) string
-	timestamp time.Time
+	Payment       *lnrpc.Payment
+	PayReq        *lnrpc.PayReq
+	IsRebalancing bool
+	getAlias      func(pubKey string) string
+	timestamp     time.Time
 }
 
 type PaymentHopInfo struct {
@@ -45,17 +46,21 @@ type PaymentSucceededTemplate struct {
 }
 
 func NewPaymentSucceededEvent(payment *lnrpc.Payment, payReq *lnrpc.PayReq,
-	getAlias func(pubKey string) string) *PaymentSucceededEvent {
+	isRebalancing bool, getAlias func(pubKey string) string) *PaymentSucceededEvent {
 
 	return &PaymentSucceededEvent{
-		Payment:   payment,
-		PayReq:    payReq,
-		getAlias:  getAlias,
-		timestamp: time.Now(),
+		Payment:       payment,
+		PayReq:        payReq,
+		IsRebalancing: isRebalancing,
+		getAlias:      getAlias,
+		timestamp:     time.Now(),
 	}
 }
 
 func (e *PaymentSucceededEvent) Type() EventType {
+	if e.IsRebalancing {
+		return Event_REBALANCING_SUCCEEDED
+	}
 	return Event_PAYMENT_SUCCEEDED
 }
 
@@ -133,6 +138,9 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 }
 
 func (e *PaymentSucceededEvent) ShouldProcess(cfg *config.Config) bool {
+	if e.Type() == Event_REBALANCING_SUCCEEDED {
+		return cfg.Events.RebalancingEvents
+	}
 	return cfg.Events.PaymentEvents
 }
 

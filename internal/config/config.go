@@ -38,27 +38,29 @@ type ProviderConfig struct {
 
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
-	Forward          string `yaml:"forward_event"`
-	PeerOnline       string `yaml:"peer_online_event"`
-	PeerOffline      string `yaml:"peer_offline_event"`
-	ChannelOpen      string `yaml:"channel_open_event"`
-	ChannelClose     string `yaml:"channel_close_event"`
-	InvoiceSettled   string `yaml:"invoice_settled_event"`
-	FailedHtlc       string `yaml:"failed_htlc_event"`
-	Keysend          string `yaml:"keysend_event"`
-	PaymentSucceeded string `yaml:"payment_succeeded_event"`
+	Forward              string `yaml:"forward_event"`
+	PeerOnline           string `yaml:"peer_online_event"`
+	PeerOffline          string `yaml:"peer_offline_event"`
+	ChannelOpen          string `yaml:"channel_open_event"`
+	ChannelClose         string `yaml:"channel_close_event"`
+	InvoiceSettled       string `yaml:"invoice_settled_event"`
+	FailedHtlc           string `yaml:"failed_htlc_event"`
+	Keysend              string `yaml:"keysend_event"`
+	PaymentSucceeded     string `yaml:"payment_succeeded_event"`
+	RebalancingSucceeded string `yaml:"rebalancing_succeeded_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
 type EventFlags struct {
-	ForwardEvents bool `yaml:"forward_events"`
-	PeerEvents    bool `yaml:"peer_events"`
-	ChannelEvents bool `yaml:"channel_events"`
-	InvoiceEvents bool `yaml:"invoice_events"`
-	FailedHtlc    bool `yaml:"failed_htlc_events"`
-	StatusEvents  bool `yaml:"status_events"`
-	KeysendEvents bool `yaml:"keysend_events"`
-	PaymentEvents bool `yaml:"payment_events"`
+	ForwardEvents     bool `yaml:"forward_events"`
+	PeerEvents        bool `yaml:"peer_events"`
+	ChannelEvents     bool `yaml:"channel_events"`
+	InvoiceEvents     bool `yaml:"invoice_events"`
+	FailedHtlc        bool `yaml:"failed_htlc_events"`
+	StatusEvents      bool `yaml:"status_events"`
+	KeysendEvents     bool `yaml:"keysend_events"`
+	PaymentEvents     bool `yaml:"payment_events"`
+	RebalancingEvents bool `yaml:"rebalancing_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -154,5 +156,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.PaymentSucceeded == "" {
 		c.Notifications.Templates.PaymentSucceeded = "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  HTLC: {{.Amount}} via {{.FirstHop}} (fee: {{.Fee}}){{end}}\nHash: {{.PaymentHash}}"
+	}
+	if c.Notifications.Templates.RebalancingSucceeded == "" {
+		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
 	}
 }

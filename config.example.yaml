@@ -22,6 +22,7 @@ notifications:
     failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
     keysend_event: "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
     payment_succeeded_event: "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}, {{.FeeRate}} ppm) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}{{end}}\nHash: {{.PaymentHash}}"
+    rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
 
 # Event settings (feature flags)
 events:
@@ -33,6 +34,7 @@ events:
   status_events: true # Enable status change notifications (startup/shutdown)
   keysend_events: true # Enable keysend notifications
   payment_events: true # Enable outgoing payment succeeded notifications
+  rebalancing_events: true # Enable rebalancing succeeded notifications
 
 # Event configuration (specific settings for each event type)
 event_config:
@@ -42,4 +44,3 @@ event_config:
     min_amount: 0  # Minimum amount in sats to notify about invoice event
   failed_htlc_event:
     min_amount: 0  # Minimum amount in sats to notify about failed HTLC event
-

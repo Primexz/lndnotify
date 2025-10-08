@@ -20,6 +20,8 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Settled Invoice
   - Failed HTLCs
   - Payment Succeeded
+  - Succeeded Payment
+  - Succeeded Rebalancing
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
@@ -94,6 +96,7 @@ events:
   status_events: true
   keysend_events: true
   payment_events: true
+  rebalancing_events: true
 
 # Event-specific configuration
 event_config:
