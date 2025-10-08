@@ -3,6 +3,7 @@ package events
 import (
 	"time"
 
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 )
@@ -43,15 +44,9 @@ func (e *InvoiceSettledEvent) GetTemplateData() interface{} {
 	}
 }
 
-type InvoiceSettledFilter struct {
-	Enabled      bool
-	MinAmountSat uint64
-}
-
-func (f *InvoiceSettledFilter) ShouldProcess(event Event) bool {
-	invoiceEvent, ok := event.(*InvoiceSettledEvent)
-	if !ok {
+func (e *InvoiceSettledEvent) ShouldProcess(cfg *config.Config) bool {
+	if !cfg.Events.InvoiceEvents {
 		return false
 	}
-	return f.Enabled && uint64(invoiceEvent.Invoice.Value) >= f.MinAmountSat // #nosec G115
+	return uint64(e.Invoice.Value) >= cfg.EventConfig.InvoiceEvent.MinAmount // #nosec G115
 }

@@ -86,13 +86,18 @@ notifications:
 # Event settings
 events:
   forward_events: true
-  forward_min_amount: 0
   peer_events: true
   channel_events: true
   invoice_events: true
-  invoice_min_amount: 0
   failed_htlc_events: true
   status_events: true
+
+# Event-specific configuration
+event_config:
+  forward_event:
+    min_amount: 0
+  invoice_event:
+    min_amount: 0
 ```
 
 

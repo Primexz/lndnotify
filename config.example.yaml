@@ -21,13 +21,18 @@ notifications:
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
     failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
 
-# Event settings
+# Event settings (feature flags)
 events:
   forward_events: true  # Enable payment forwarding notifications
-  forward_min_amount_sat: 0  # Minimum outgoing amount in sats to notify about forward event
   peer_events: true # Enable peer events (online/offline) notifications
   channel_events: true # Enable channel events (open/close) notifications
   invoice_events: true # Enable invoice settled notifications
-  invoice_min_amount_sat: 0  # Minimum amount in sats to notify about invoice event
   failed_htlc_events: true # Enable failed HTLC notifications
   status_events: true # Enable status change notifications (startup/shutdown)
+
+# Event configuration (specific settings for each event type)
+event_config:
+  forward_event:
+    min_amount: 0  # Minimum outgoing amount in sats to notify about forward event
+  invoice_event:
+    min_amount: 0  # Minimum amount in sats to notify about invoice event

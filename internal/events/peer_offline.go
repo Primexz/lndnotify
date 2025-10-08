@@ -3,6 +3,7 @@ package events
 import (
 	"time"
 
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 )
@@ -46,4 +47,8 @@ func (e *PeerOfflineEvent) GetTemplateData() interface{} {
 		PeerPubKey:      e.Event.GetPubKey(),
 		PeerPubkeyShort: format.FormatPubKey(e.Event.GetPubKey()),
 	}
+}
+
+func (e *PeerOfflineEvent) ShouldProcess(cfg *config.Config) bool {
+	return cfg.Events.PeerEvents
 }

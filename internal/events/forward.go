@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 )
@@ -60,15 +61,9 @@ func (e *ForwardEvent) GetTemplateData() interface{} {
 	}
 }
 
-type ForwardFilter struct {
-	Enabled      bool
-	MinAmountSat uint64
-}
-
-func (f *ForwardFilter) ShouldProcess(event Event) bool {
-	forwardEvent, ok := event.(*ForwardEvent)
-	if !ok {
+func (e *ForwardEvent) ShouldProcess(cfg *config.Config) bool {
+	if !cfg.Events.ForwardEvents {
 		return false
 	}
-	return f.Enabled && forwardEvent.Forward.AmtOut >= f.MinAmountSat
+	return e.Forward.AmtOut >= cfg.EventConfig.ForwardEvent.MinAmount
 }

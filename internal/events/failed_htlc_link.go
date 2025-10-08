@@ -4,6 +4,7 @@ import (
 	"time"
 
 	channelmanager "github.com/Primexz/lndnotify/internal/channel_manager"
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
@@ -81,4 +82,8 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 		FailureDetail:           e.FailEvent.GetFailureDetail().String(),
 		MissedFee:               format.FormatDetailed((float64(failInfo.GetIncomingAmtMsat() - failInfo.GetOutgoingAmtMsat())) / 1000),
 	}
+}
+
+func (e *FailedHtlcLinkEvent) ShouldProcess(cfg *config.Config) bool {
+	return cfg.Events.FailedHtlc
 }

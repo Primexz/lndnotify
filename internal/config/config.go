@@ -11,7 +11,8 @@ import (
 type Config struct {
 	LND           LNDConfig          `yaml:"lnd" validate:"required"`
 	Notifications NotificationConfig `yaml:"notifications" validate:"required"`
-	Events        EventConfig        `yaml:"events"`
+	Events        EventFlags         `yaml:"events"`
+	EventConfig   EventConfig        `yaml:"event_config"`
 	LogLevel      string             `yaml:"log_level" validate:"omitempty,oneof=panic fatal error warn info debug trace"`
 }
 
@@ -46,16 +47,24 @@ type NotificationTemplate struct {
 	FailedHtlc     string `yaml:"failed_htlc_event"`
 }
 
-// EventConfig controls which events to monitor
+// EventFlags controls which events to monitor (feature flags)
+type EventFlags struct {
+	ForwardEvents bool `yaml:"forward_events"`
+	PeerEvents    bool `yaml:"peer_events"`
+	ChannelEvents bool `yaml:"channel_events"`
+	InvoiceEvents bool `yaml:"invoice_events"`
+	FailedHtlc    bool `yaml:"failed_htlc_events"`
+	StatusEvents  bool `yaml:"status_events"`
+}
+
+// EventConfig contains specific configuration for each event type
 type EventConfig struct {
-	ForwardEvents       bool   `yaml:"forward_events"`
-	ForwardMinAmountSat uint64 `yaml:"forward_min_amount_sat"`
-	PeerEvents          bool   `yaml:"peer_events"`
-	ChannelEvents       bool   `yaml:"channel_events"`
-	InvoiceEvents       bool   `yaml:"invoice_events"`
-	InvoiceMinAmountSat uint64 `yaml:"invoice_min_amount_sat"`
-	FailedHtlc          bool   `yaml:"failed_htlc_events"`
-	StatusEvents        bool   `yaml:"status_events"`
+	ForwardEvent struct {
+		MinAmount uint64 `yaml:"min_amount"`
+	} `yaml:"forward_event"`
+	InvoiceEvent struct {
+		MinAmount uint64 `yaml:"min_amount"`
+	} `yaml:"invoice_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
