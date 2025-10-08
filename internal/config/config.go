@@ -38,14 +38,15 @@ type ProviderConfig struct {
 
 // NotificationTemplate holds customizable message templates
 type NotificationTemplate struct {
-	Forward        string `yaml:"forward_event"`
-	PeerOnline     string `yaml:"peer_online_event"`
-	PeerOffline    string `yaml:"peer_offline_event"`
-	ChannelOpen    string `yaml:"channel_open_event"`
-	ChannelClose   string `yaml:"channel_close_event"`
-	InvoiceSettled string `yaml:"invoice_settled_event"`
-	FailedHtlc     string `yaml:"failed_htlc_event"`
-	Keysend        string `yaml:"keysend_event"`
+	Forward          string `yaml:"forward_event"`
+	PeerOnline       string `yaml:"peer_online_event"`
+	PeerOffline      string `yaml:"peer_offline_event"`
+	ChannelOpen      string `yaml:"channel_open_event"`
+	ChannelClose     string `yaml:"channel_close_event"`
+	InvoiceSettled   string `yaml:"invoice_settled_event"`
+	FailedHtlc       string `yaml:"failed_htlc_event"`
+	Keysend          string `yaml:"keysend_event"`
+	PaymentSucceeded string `yaml:"payment_succeeded_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
@@ -57,6 +58,7 @@ type EventFlags struct {
 	FailedHtlc    bool `yaml:"failed_htlc_events"`
 	StatusEvents  bool `yaml:"status_events"`
 	KeysendEvents bool `yaml:"keysend_events"`
+	PaymentEvents bool `yaml:"payment_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -149,5 +151,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.Keysend == "" {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
+	}
+	if c.Notifications.Templates.PaymentSucceeded == "" {
+		c.Notifications.Templates.PaymentSucceeded = "✅ Payment succeeded: to {{.RecHopAlias}} for {{.Value}} sats (fee: {{.Fee}} sats), memo: {{or .Memo \"No Memo\"}}, hash: {{.PaymentHash}}"
 	}
 }

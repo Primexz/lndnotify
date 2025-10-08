@@ -92,7 +92,8 @@ events:
   failed_htlc_events: true
   status_events: true
   keysend_events: true
-
+  payment_events: true
+  
 # Event-specific configuration
 event_config:
   forward_event:

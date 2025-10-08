@@ -96,6 +96,17 @@ Triggered when an HTLC (Hash Time Locked Contract) fails during routing.
 | `{{.FailureDetail}}` | Detailed description of the failure |
 | `{{.MissedFee}}` | The routing fee that was missed due to the failure (formatted) |
 
+## Payment Succeeded Event
+Triggered when an outgoing payment is successfully completed.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PaymentHash}}` | The payment hash of the completed payment |
+| `{{.Value}}` | The amount of the payment in satoshis (formatted) |
+| `{{.Fee}}` | The fee paid for the payment in satoshis (formatted) |
+| `{{.RecHopAlias}}` | The alias of the receiving node (final destination) |
+| `{{.Memo}}` | The memo/description from the payment request |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:

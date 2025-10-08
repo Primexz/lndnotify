@@ -263,6 +263,80 @@ func (c *Client) handleKeysendEvents() {
 	})
 }
 
+func (c *Client) handlePaymentEvents() {
+	log.Debug("starting payment event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "payment event subscription", func() (string, error) {
+		// Pubkey of the local node to distinguish between rebalancing and external payment
+		var localPubkey string
+		if info, err := c.client.GetInfo(c.ctx, &lnrpc.GetInfoRequest{}); err == nil {
+			localPubkey = info.IdentityPubkey
+		} else {
+			return "", err
+		}
+
+		ev, err := c.router.TrackPayments(c.ctx, &routerrpc.TrackPaymentsRequest{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("payment event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			payment, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			switch payment.Status {
+			case lnrpc.Payment_SUCCEEDED:
+				var payReq *lnrpc.PayReq
+				if payment.PaymentRequest != "" {
+					if decoded, err := c.client.DecodePayReq(c.ctx, &lnrpc.PayReqString{
+						PayReq: payment.PaymentRequest,
+					}); err == nil {
+						payReq = decoded
+					}
+				}
+
+				var recHopPubkey, recHopAlias string
+				// The pub_key of the last hop (receiver of the payment) has to be identical
+				// for all htlcs. Hence we use the first htlc.
+				if len(payment.Htlcs) > 0 && len(payment.Htlcs[0].Route.Hops) > 0 {
+					lastHop := payment.Htlcs[0].Route.Hops[len(payment.Htlcs[0].Route.Hops)-1]
+					recHopPubkey = lastHop.PubKey
+					recHopAlias = c.getAlias(recHopPubkey)
+				}
+
+				if recHopPubkey == localPubkey {
+					// TODO: Template for Rebalancing. Should be filled for each htlc
+					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, recHopAlias)
+				} else {
+					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, recHopAlias)
+				}
+			}
+		}
+	})
+}
+
+// getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
+// 21 characters of the pubkey.
+func (c *Client) getAlias(pubkey string) string {
+	if nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
+		PubKey: pubkey,
+	}); err == nil {
+		return nodeInfo.Node.Alias
+	}
+	return pubkey[:21]
+}
+
 func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {
