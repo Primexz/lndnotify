@@ -200,7 +200,6 @@ func (c *Client) handleFailedHtlcEvents() {
 
 			htlcEvent, err := ev.Recv()
 			if err != nil {
-				log.WithError(err).Error("error receiving failed htlc event")
 				return "", err
 			}
 
