@@ -207,16 +207,7 @@ func (c *Client) handleFailedHtlcEvents() {
 
 			linkFailEvent := htlcEvent.GetLinkFailEvent()
 			if linkFailEvent != nil {
-				log.Error("link fail event", linkFailEvent)
-				channelResp, err := c.client.ListChannels(c.ctx, &lnrpc.ListChannelsRequest{
-					PeerAliasLookup: true,
-				})
-				if err != nil {
-					log.WithError(err).Error("error listing channels")
-					continue
-				}
-
-				c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, channelResp.Channels)
+				c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, c.channelManager)
 			} else {
 				log.WithField("htlc_event", htlcEvent).Trace("unhandled htlc event")
 			}

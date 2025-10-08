@@ -3,18 +3,17 @@ package events
 import (
 	"time"
 
-	"github.com/Primexz/lndnotify/pkg/channel"
+	channelmanager "github.com/Primexz/lndnotify/internal/channel_manager"
 	"github.com/Primexz/lndnotify/pkg/format"
-	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
 )
 
 type FailedHtlcLinkEvent struct {
-	HtlcEvent *routerrpc.HtlcEvent
-	FailEvent *routerrpc.LinkFailEvent
-	Channels  []*lnrpc.Channel
-	timestamp time.Time
+	HtlcEvent      *routerrpc.HtlcEvent
+	FailEvent      *routerrpc.LinkFailEvent
+	channelManager *channelmanager.ChannelManager
+	timestamp      time.Time
 }
 
 type FailedHtlcLinkTemplate struct {
@@ -31,12 +30,12 @@ type FailedHtlcLinkTemplate struct {
 	MissedFee               string
 }
 
-func NewFailedHtlcLinkEvent(htlcEvent *routerrpc.HtlcEvent, failEvent *routerrpc.LinkFailEvent, channels []*lnrpc.Channel) *FailedHtlcLinkEvent {
+func NewFailedHtlcLinkEvent(htlcEvent *routerrpc.HtlcEvent, failEvent *routerrpc.LinkFailEvent, cm *channelmanager.ChannelManager) *FailedHtlcLinkEvent {
 	return &FailedHtlcLinkEvent{
-		HtlcEvent: htlcEvent,
-		FailEvent: failEvent,
-		Channels:  channels,
-		timestamp: time.Now(),
+		HtlcEvent:      htlcEvent,
+		FailEvent:      failEvent,
+		timestamp:      time.Now(),
+		channelManager: cm,
 	}
 }
 
@@ -56,14 +55,14 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 	outChanAlias := "unknown"
 	outChanLiquidity := int64(0)
 
-	if outChan := channel.GetChannelById(e.Channels, outChanId); outChan != nil {
+	if outChan := e.channelManager.GetChannelByID(outChanId); outChan != nil {
 		outChanAlias = outChan.PeerAlias
 		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat()
 	} else {
 		log.WithField("chan_id", outChanId).Warn("could not find outgoing channel")
 	}
 
-	if inChan := channel.GetChannelById(e.Channels, inChanId); inChan != nil {
+	if inChan := e.channelManager.GetChannelByID(inChanId); inChan != nil {
 		inChanAlias = inChan.PeerAlias
 	} else {
 		log.WithField("chan_id", inChanId).Warn("could not find incoming channel")
