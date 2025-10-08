@@ -4,3 +4,4 @@
     - Invoices (Exclude Rebalances)
 - Fee Report
 - Notifications per type to specific destinations
+- Keysends
