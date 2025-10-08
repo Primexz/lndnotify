@@ -24,6 +24,16 @@ Triggered when an invoice is paid/settled.
 | `{{.IsKeysend}}` | Boolean indicating if this was a keysend payment |
 | `{{.PaymentRequest}}` | The original payment request string (invoice) |
 
+## Keysend Event
+Triggered when a keysend payment is received through your node.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.Msg}}` | The message attached to the keysend payment |
+| `{{.InChanAlias}}` | The alias of the peer on the incoming channel |
+| `{{.InChanId}}` | The ID of the incoming channel |
+| `{{.Amount}}` | The amount of the keysend payment in satoshis (formatted) |
+
 ## Peer Online Event
 Triggered when a peer connects to your node.
 
