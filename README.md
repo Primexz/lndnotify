@@ -59,7 +59,10 @@ services:
 
 ### 💻 Run without Docker
 ```bash
-go install github.com/Primexz/lndnotify@latest
+git clone https://github.com/Primexz/lndnotify.git
+cd lndnotify
+go build ./cmd/lndnotify
+./lndnotify
 ```
 
 ## Configuration
