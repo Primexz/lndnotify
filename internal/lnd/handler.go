@@ -174,7 +174,23 @@ func (c *Client) handleInvoiceEvents() {
 
 			switch invoice.GetState() {
 			case lnrpc.Invoice_SETTLED:
-				c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+				// We check if there is a payment with this hash in our lnd instance.
+				// If yes, it is a rebalancing payment, so we do not send an invoice event.
+				stream, err := c.router.TrackPaymentV2(c.ctx, &routerrpc.TrackPaymentRequest{
+					PaymentHash: invoice.RHash,
+				})
+
+				// If an error occurs here, we assume that there is no payment with this hash.
+				if err != nil {
+					c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+					continue
+				}
+
+				// The rpc error "payment isn't initiated" is returned, when fetching the first
+				// element from the stream.
+				if _, err := stream.Recv(); err != nil {
+					c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+				}
 			}
 		}
 	})
