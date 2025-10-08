@@ -77,15 +77,14 @@ func (c *Client) handlePeerEvents() {
 				PubKey: peerEvent.GetPubKey(),
 			})
 			if err != nil {
-				log.WithField("pubkey", peerEvent.GetPubKey()).WithError(err).Error("error fetching node info")
-				continue
+				log.WithField("pubkey", peerEvent.GetPubKey()).WithError(err).Warn("error fetching node info")
 			}
 
 			switch peerEvent.GetType() {
 			case lnrpc.PeerEvent_PEER_ONLINE:
-				c.eventSub <- events.NewPeerOnlineEvent(nodeInfo.Node)
+				c.eventSub <- events.NewPeerOnlineEvent(nodeInfo, peerEvent)
 			case lnrpc.PeerEvent_PEER_OFFLINE:
-				c.eventSub <- events.NewPeerOfflineEvent(nodeInfo.Node)
+				c.eventSub <- events.NewPeerOfflineEvent(nodeInfo, peerEvent)
 			}
 		}
 	})

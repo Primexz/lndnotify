@@ -114,10 +114,10 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
 	}
 	if c.Notifications.Templates.PeerOnline == "" {
-		c.Notifications.Templates.PeerOnline = "✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online"
+		c.Notifications.Templates.PeerOnline = `{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}`
 	}
 	if c.Notifications.Templates.PeerOffline == "" {
-		c.Notifications.Templates.PeerOffline = "⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline"
+		c.Notifications.Templates.PeerOffline = `{{if .PeerAlias}}⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline{{else}}⚠️ Peer {{.PeerPubKey}} went offline{{end}}`
 	}
 	if c.Notifications.Templates.ChannelOpen == "" {
 		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"

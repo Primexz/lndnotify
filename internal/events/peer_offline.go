@@ -8,7 +8,8 @@ import (
 )
 
 type PeerOfflineEvent struct {
-	Node      *lnrpc.LightningNode
+	NodeInfo  *lnrpc.NodeInfo
+	Event     *lnrpc.PeerEvent
 	timestamp time.Time
 }
 
@@ -18,9 +19,10 @@ type PeerOfflineTemplate struct {
 	PeerPubkeyShort string
 }
 
-func NewPeerOfflineEvent(node *lnrpc.LightningNode) *PeerOfflineEvent {
+func NewPeerOfflineEvent(nodeInfo *lnrpc.NodeInfo, event *lnrpc.PeerEvent) *PeerOfflineEvent {
 	return &PeerOfflineEvent{
-		Node:      node,
+		NodeInfo:  nodeInfo,
+		Event:     event,
 		timestamp: time.Now(),
 	}
 }
@@ -34,9 +36,14 @@ func (e *PeerOfflineEvent) Timestamp() time.Time {
 }
 
 func (e *PeerOfflineEvent) GetTemplateData() interface{} {
+	var alias string
+	if e.NodeInfo != nil {
+		alias = e.NodeInfo.Node.Alias
+	}
+
 	return &PeerOfflineTemplate{
-		PeerAlias:       e.Node.Alias,
-		PeerPubKey:      e.Node.PubKey,
-		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
+		PeerAlias:       alias,
+		PeerPubKey:      e.Event.GetPubKey(),
+		PeerPubkeyShort: format.FormatPubKey(e.Event.GetPubKey()),
 	}
 }
