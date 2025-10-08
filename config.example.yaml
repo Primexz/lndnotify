@@ -20,6 +20,7 @@ notifications:
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
     failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
+    keysend_event: "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 
 # Event settings
 events:
@@ -29,3 +30,4 @@ events:
   invoice_events: true # Enable invoice settled notifications
   failed_htlc_events: true # Enable failed HTLC notifications
   status_events: true # Enable status change notifications (startup/shutdown)
+  keysend_events: true # Enable keysend notifications

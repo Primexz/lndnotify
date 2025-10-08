@@ -44,6 +44,7 @@ type NotificationTemplate struct {
 	ChannelClose   string `yaml:"channel_close_event"`
 	InvoiceSettled string `yaml:"invoice_settled_event"`
 	FailedHtlc     string `yaml:"failed_htlc_event"`
+	Keysend        string `yaml:"keysend_event"`
 }
 
 // EventConfig controls which events to monitor
@@ -54,6 +55,7 @@ type EventConfig struct {
 	InvoiceEvents bool `yaml:"invoice_events"`
 	FailedHtlc    bool `yaml:"failed_htlc_events"`
 	StatusEvents  bool `yaml:"status_events"`
+	KeysendEvents bool `yaml:"keysend_events"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -130,5 +132,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.FailedHtlc == "" {
 		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"
+	}
+	if c.Notifications.Templates.Keysend == "" {
+		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
 }

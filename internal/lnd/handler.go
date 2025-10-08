@@ -214,6 +214,51 @@ func (c *Client) handleFailedHtlcEvents() {
 	})
 }
 
+func (c *Client) handleKeysendEvents() {
+	log.Debug("keysend event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "keysend event subscription", func() (string, error) {
+		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("keysend (invoice) event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			invoice, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			if invoice.GetState() != lnrpc.Invoice_SETTLED {
+				continue
+			}
+
+			htlcs := invoice.GetHtlcs()
+			for _, htlc := range htlcs {
+				records := htlc.GetCustomRecords()
+
+				// https://github.com/satoshisstream/satoshis.stream/blob/main/TLV_registry.md
+				if msgBuf, ok := records[34349334]; ok {
+					channel := c.channelManager.GetChannelById(htlc.ChanId)
+					msg := string(msgBuf)
+
+					c.eventSub <- events.NewKeysendEvent(msg, channel, htlc)
+					break
+				}
+			}
+		}
+	})
+}
+
 func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {

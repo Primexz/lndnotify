@@ -33,6 +33,8 @@ func (p *Processor) ShouldProcess(event Event) bool {
 		return p.cfg.EnabledEvents.InvoiceEvents
 	case Event_FAILED_HTLC:
 		return p.cfg.EnabledEvents.FailedHtlc
+	case Event_KEYSEND:
+		return p.cfg.EnabledEvents.KeysendEvents
 	default:
 		log.WithField("event_type", event.Type()).Warn("unknown event type")
 		return false
