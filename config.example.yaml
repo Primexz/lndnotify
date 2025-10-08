@@ -21,7 +21,7 @@ notifications:
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
     failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
     keysend_event: "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
-    payment_succeeded_event: "✅ Payment succeeded: to {{.RecHopAlias}} for {{.Value}} sats (fee: {{.Fee}} sats), memo: {{or .Memo \"No Memo\"}}, hash: {{.PaymentHash}}"
+    payment_succeeded_event: "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}, {{.FeeRate}} ppm) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}{{end}}\nHash: {{.PaymentHash}}"
 
 # Event settings (feature flags)
 events:

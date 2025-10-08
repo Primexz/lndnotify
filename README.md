@@ -19,6 +19,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Peer Offline
   - Settled Invoice
   - Failed HTLCs
+  - Payment Succeeded
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
@@ -93,7 +94,7 @@ events:
   status_events: true
   keysend_events: true
   payment_events: true
-  
+
 # Event-specific configuration
 event_config:
   forward_event:

@@ -306,20 +306,19 @@ func (c *Client) handlePaymentEvents() {
 					}
 				}
 
-				var recHopPubkey, recHopAlias string
+				var recPubkey string
 				// The pub_key of the last hop (receiver of the payment) has to be identical
 				// for all htlcs. Hence we use the first htlc.
 				if len(payment.Htlcs) > 0 && len(payment.Htlcs[0].Route.Hops) > 0 {
 					lastHop := payment.Htlcs[0].Route.Hops[len(payment.Htlcs[0].Route.Hops)-1]
-					recHopPubkey = lastHop.PubKey
-					recHopAlias = c.getAlias(recHopPubkey)
+					recPubkey = lastHop.PubKey
 				}
 
-				if recHopPubkey == localPubkey {
+				if recPubkey == localPubkey {
 					// TODO: Template for Rebalancing. Should be filled for each htlc
-					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, recHopAlias)
+					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, c.getAlias)
 				} else {
-					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, recHopAlias)
+					c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, c.getAlias)
 				}
 			}
 		}

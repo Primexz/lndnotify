@@ -153,6 +153,6 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
 	if c.Notifications.Templates.PaymentSucceeded == "" {
-		c.Notifications.Templates.PaymentSucceeded = "✅ Payment succeeded: to {{.RecHopAlias}} for {{.Value}} sats (fee: {{.Fee}} sats), memo: {{or .Memo \"No Memo\"}}, hash: {{.PaymentHash}}"
+		c.Notifications.Templates.PaymentSucceeded = "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  HTLC: {{.Amount}} via {{.FirstHop}} (fee: {{.Fee}}){{end}}\nHash: {{.PaymentHash}}"
 	}
 }
