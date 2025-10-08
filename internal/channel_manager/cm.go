@@ -50,7 +50,7 @@ func (cm *ChannelManager) Stop() {
 	cm.wg.Wait()
 }
 
-func (cm *ChannelManager) GetChannelByID(chanID uint64) *lnrpc.Channel {
+func (cm *ChannelManager) GetChannelById(chanID uint64) *lnrpc.Channel {
 	cm.mu.RLock()
 	defer cm.mu.RUnlock()
 

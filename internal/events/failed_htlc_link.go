@@ -55,14 +55,14 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 	outChanAlias := "unknown"
 	outChanLiquidity := int64(0)
 
-	if outChan := e.channelManager.GetChannelByID(outChanId); outChan != nil {
+	if outChan := e.channelManager.GetChannelById(outChanId); outChan != nil {
 		outChanAlias = outChan.PeerAlias
 		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat()
 	} else {
 		log.WithField("chan_id", outChanId).Warn("could not find outgoing channel")
 	}
 
-	if inChan := e.channelManager.GetChannelByID(inChanId); inChan != nil {
+	if inChan := e.channelManager.GetChannelById(inChanId); inChan != nil {
 		inChanAlias = inChan.PeerAlias
 	} else {
 		log.WithField("chan_id", inChanId).Warn("could not find incoming channel")
