@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
+	channelmanager "github.com/Primexz/lndnotify/internal/channel_manager"
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
@@ -25,15 +26,16 @@ type ClientConfig struct {
 
 // Client represents an LND node client
 type Client struct {
-	cfg      *ClientConfig
-	conn     *grpc.ClientConn
-	client   lnrpc.LightningClient
-	router   routerrpc.RouterClient
-	mu       sync.Mutex
-	eventSub chan events.Event
-	ctx      context.Context
-	cancel   context.CancelFunc
-	wg       sync.WaitGroup
+	cfg            *ClientConfig
+	conn           *grpc.ClientConn
+	client         lnrpc.LightningClient
+	router         routerrpc.RouterClient
+	channelManager *channelmanager.ChannelManager
+	mu             sync.Mutex
+	eventSub       chan events.Event
+	ctx            context.Context
+	cancel         context.CancelFunc
+	wg             sync.WaitGroup
 }
 
 // NewClient creates a new LND client
@@ -83,6 +85,7 @@ func (c *Client) Connect() error {
 	c.conn = conn
 	c.client = lnrpc.NewLightningClient(conn)
 	c.router = routerrpc.NewRouterClient(conn)
+	c.channelManager = channelmanager.NewChannelManager(c.client)
 
 	return nil
 }
@@ -94,6 +97,11 @@ func (c *Client) Disconnect() error {
 
 	c.cancel()
 	c.wg.Wait()
+
+	if c.channelManager != nil {
+		c.channelManager.Stop()
+		c.channelManager = nil
+	}
 
 	if c.conn != nil {
 		if err := c.conn.Close(); err != nil {
@@ -120,12 +128,17 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		}
 	}
 
+	if err := c.channelManager.Start(); err != nil {
+		return nil, fmt.Errorf("starting channel manager: %w", err)
+	}
+
 	// Start subscription handlers
-	c.wg.Add(4)
+	c.wg.Add(5)
 	go c.handleForwards()
 	go c.handlePeerEvents()
 	go c.handleChannelEvents()
 	go c.handleInvoiceEvents()
+	go c.handleFailedHtlcEvents()
 
 	return c.eventSub, nil
 }

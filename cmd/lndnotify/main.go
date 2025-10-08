@@ -50,6 +50,12 @@ func main() {
 		log.WithError(err).Fatal("failed to load config file")
 	}
 
+	level, err := log.ParseLevel(cfg.LogLevel)
+	if err != nil {
+		log.WithError(err).Fatal("Invalid log level")
+	}
+	log.SetLevel(level)
+
 	// Create LND client
 	lndClient := lnd.NewClient(&lnd.ClientConfig{
 		Host:         cfg.LND.Host,
@@ -70,8 +76,10 @@ func main() {
 		Templates: cfg.Notifications.Templates,
 	})
 
-	notifier.Send("🟢 lndnotify connected")
-	defer notifier.Send("🔴 lndnotify disconnected")
+	if cfg.Events.StatusEvents {
+		notifier.Send("🟢 lndnotify connected")
+		defer notifier.Send("🔴 lndnotify disconnected")
+	}
 
 	// Create event processor
 	processor := events.NewProcessor(&events.ProcessorConfig{

@@ -18,6 +18,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Peer Online
   - Peer Offline
   - Settled Invoice
+  - Failed HTLCs
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
@@ -27,7 +28,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 - Running LND node with gRPC access
 - LND TLS certificate
 - LND readonly macaroon file
-- Basic Understanding of Docker and Docker Compose
+- Basic Understanding of Linux, Docker and Docker Compose
 
 ## Installation
 
@@ -76,15 +77,8 @@ lnd:
 # Notification settings
 notifications:
   providers:
-    - url: "discord://token@channel"  # Discord webhook URL
+    - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
-  templates:   # See TEMPLATES.md for all available variables
-    forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
-    peer_online_event: "✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online"
-    peer_offline_event: "⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline"
-    channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
-    channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
-    invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
 
 # Event settings
 events:
@@ -92,6 +86,8 @@ events:
   peer_events: true
   channel_events: true
   invoice_events: true
+  failed_htlc_events: true
+  status_events: true
 ```
 
 

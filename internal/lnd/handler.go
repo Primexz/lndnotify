@@ -7,6 +7,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -170,6 +171,45 @@ func (c *Client) handleInvoiceEvents() {
 			switch invoice.GetState() {
 			case lnrpc.Invoice_SETTLED:
 				c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+			}
+		}
+	})
+}
+
+func (c *Client) handleFailedHtlcEvents() {
+	log.Debug("starting failed htlc event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "htlc event subscription", func() (string, error) {
+		ev, err := c.router.SubscribeHtlcEvents(c.ctx, &routerrpc.SubscribeHtlcEventsRequest{})
+		if err != nil {
+			log.WithError(err).Error("error subscribing to failed htlc events")
+			return "", err
+		}
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			htlcEvent, err := ev.Recv()
+			if err != nil {
+				log.WithError(err).Error("error receiving failed htlc event")
+				return "", err
+			}
+
+			if htlcEvent.GetEventType() != routerrpc.HtlcEvent_FORWARD {
+				log.WithField("htlc_event", htlcEvent).Trace("ignoring non-forward htlc event")
+				continue
+			}
+
+			linkFailEvent := htlcEvent.GetLinkFailEvent()
+			if linkFailEvent != nil {
+				c.eventSub <- events.NewFailedHtlcLinkEvent(htlcEvent, linkFailEvent, c.channelManager)
+			} else {
+				log.WithField("htlc_event", htlcEvent).Trace("unhandled htlc event")
 			}
 		}
 	})

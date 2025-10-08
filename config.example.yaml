@@ -1,3 +1,5 @@
+log_level: "info"  # Log level: panic, fatal, error, warn, info, debug, trace
+
 # LND connection settings
 lnd:
   host: "localhost"
@@ -8,7 +10,7 @@ lnd:
 # Notification settings
 notifications:
   providers:
-    - url: "discord://token@channel"  # Discord webhook URL
+    - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
   templates:
     forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
@@ -17,6 +19,7 @@ notifications:
     channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
+    failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
 
 # Event settings
 events:
@@ -24,3 +27,5 @@ events:
   peer_events: true # Enable peer events (online/offline) notifications
   channel_events: true # Enable channel events (open/close) notifications
   invoice_events: true # Enable invoice settled notifications
+  failed_htlc_events: true # Enable failed HTLC notifications
+  status_events: true # Enable status change notifications (startup/shutdown)

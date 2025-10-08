@@ -69,6 +69,21 @@ Triggered when a channel is closed.
 | `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
 | `{{.SettledBalance}}` | The final settled balance in satoshis (formatted) |
 
+## Failed HTLC Event
+Triggered when an HTLC (Hash Time Locked Contract) fails during routing.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.InChanId}}` | The ID of the incoming channel |
+| `{{.OutChanId}}` | The ID of the outgoing channel |
+| `{{.InChanAlias}}` | The alias of the peer on the incoming channel |
+| `{{.OutChanAlias}}` | The alias of the peer on the outgoing channel |
+| `{{.OutChanLiquidity}}` | The available local balance in the outgoing channel (formatted) |
+| `{{.Amount}}` | The amount that was attempted to be forwarded (formatted) |
+| `{{.WireFailure}}` | The type of wire failure that occurred |
+| `{{.FailureDetail}}` | Detailed description of the failure |
+| `{{.MissedFee}}` | The routing fee that was missed due to the failure (formatted) |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:

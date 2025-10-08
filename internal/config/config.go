@@ -12,6 +12,7 @@ type Config struct {
 	LND           LNDConfig          `yaml:"lnd" validate:"required"`
 	Notifications NotificationConfig `yaml:"notifications" validate:"required"`
 	Events        EventConfig        `yaml:"events"`
+	LogLevel      string             `yaml:"log_level" validate:"omitempty,oneof=panic fatal error warn info debug trace"`
 }
 
 // LNDConfig holds the LND node connection settings
@@ -42,6 +43,7 @@ type NotificationTemplate struct {
 	ChannelOpen    string `yaml:"channel_open_event"`
 	ChannelClose   string `yaml:"channel_close_event"`
 	InvoiceSettled string `yaml:"invoice_settled_event"`
+	FailedHtlc     string `yaml:"failed_htlc_event"`
 }
 
 // EventConfig controls which events to monitor
@@ -50,6 +52,8 @@ type EventConfig struct {
 	PeerEvents    bool `yaml:"peer_events"`
 	ChannelEvents bool `yaml:"channel_events"`
 	InvoiceEvents bool `yaml:"invoice_events"`
+	FailedHtlc    bool `yaml:"failed_htlc_events"`
+	StatusEvents  bool `yaml:"status_events"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -102,6 +106,10 @@ func (c *Config) validate() error {
 
 // Set default templates if not specified
 func (c *Config) setDefaults() {
+	if c.LogLevel == "" {
+		c.LogLevel = "info"
+	}
+
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
 	}
@@ -119,5 +127,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.InvoiceSettled == "" {
 		c.Notifications.Templates.InvoiceSettled = "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
+	}
+	if c.Notifications.Templates.FailedHtlc == "" {
+		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"
 	}
 }

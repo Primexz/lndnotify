@@ -37,7 +37,7 @@ func (e *InvoiceSettledEvent) Timestamp() time.Time {
 func (e *InvoiceSettledEvent) GetTemplateData() interface{} {
 	return &InvoiceSettledTemplate{
 		Memo:           e.Invoice.Memo,
-		Value:          format.FormatSats(float64(e.Invoice.Value)),
+		Value:          format.FormatBasic(float64(e.Invoice.Value)),
 		IsKeysend:      e.Invoice.IsKeysend,
 		PaymentRequest: e.Invoice.PaymentRequest,
 	}

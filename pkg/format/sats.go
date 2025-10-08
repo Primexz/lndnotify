@@ -2,14 +2,15 @@ package format
 
 import (
 	"math"
+	"strings"
 
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-// FormatSats formats a float64 with thousand separators.
-// Whole numbers are displayed without decimals, others show up to 3 decimal places.
-func FormatSats(value float64) string {
+// FormatSats formats a number with thousand separators and up to 3 decimal places.
+// Should be used for fees or other fractional amounts.
+func FormatDetailed(value float64) string {
 	p := message.NewPrinter(language.English)
 
 	if value == math.Floor(value) {
@@ -22,5 +23,19 @@ func FormatSats(value float64) string {
 		truncated = -truncated
 	}
 
-	return p.Sprintf("%.3f", truncated)
+	formatted := p.Sprintf("%.3f", truncated)
+	// Remove trailing zeros and decimal point if necessary
+	formatted = strings.TrimRight(formatted, "0")
+	formatted = strings.TrimRight(formatted, ".")
+
+	return formatted
+}
+
+// FormatWholeNumber formats a number with thousand separators, rounding to the nearest integer.
+// Should be used for high-value amounts where fractional parts are not relevant.
+func FormatBasic(value float64) string {
+	p := message.NewPrinter(language.English)
+	// Round to nearest integer
+	rounded := math.Round(value)
+	return p.Sprintf("%.0f", rounded)
 }
