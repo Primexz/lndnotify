@@ -91,6 +91,15 @@ events:
   invoice_events: true
   failed_htlc_events: true
   status_events: true
+
+# Event-specific configuration
+event_config:
+  forward_event:
+    min_amount: 0
+  invoice_event:
+    min_amount: 0
+  failed_htlc_event:
+    min_amount: 0
 ```
 
 

@@ -3,6 +3,7 @@ package events
 import (
 	"time"
 
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 )
@@ -41,4 +42,11 @@ func (e *InvoiceSettledEvent) GetTemplateData() interface{} {
 		IsKeysend:      e.Invoice.IsKeysend,
 		PaymentRequest: e.Invoice.PaymentRequest,
 	}
+}
+
+func (e *InvoiceSettledEvent) ShouldProcess(cfg *config.Config) bool {
+	if !cfg.Events.InvoiceEvents {
+		return false
+	}
+	return uint64(e.Invoice.Value) >= cfg.EventConfig.InvoiceEvent.MinAmount // #nosec G115
 }

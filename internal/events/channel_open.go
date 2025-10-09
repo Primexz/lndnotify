@@ -3,6 +3,7 @@ package events
 import (
 	"time"
 
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 )
@@ -50,4 +51,8 @@ func (e *ChannelOpenEvent) GetTemplateData() interface{} {
 		Capacity:        format.FormatBasic(float64(e.Channel.Capacity)),
 		RemotePubkey:    e.Channel.RemotePubkey,
 	}
+}
+
+func (e *ChannelOpenEvent) ShouldProcess(cfg *config.Config) bool {
+	return cfg.Events.ChannelEvents
 }

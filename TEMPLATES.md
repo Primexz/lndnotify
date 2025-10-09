@@ -11,8 +11,10 @@ Triggered when a payment is forwarded through your node.
 |----------|-------------|
 | `{{.PeerAliasIn}}` | The alias of the peer that sent the payment to your node |
 | `{{.PeerAliasOut}}` | The alias of the peer that received the payment from your node |
-| `{{.Amount}}` | The amount of the payment in satoshis (formatted) |
-| `{{.Fee}}` | The fee earned from forwarding the payment (formatted) |
+| `{{.Amount}}` | The incoming amount of the forward in satoshis (formatted) |
+| `{{.AmountOut}}` | The outgoing amount of the forward in satoshis (formatted) |
+| `{{.Fee}}` | The fee earned from forwarding the payment in satoshis (formatted) |
+| `{{.FeeRate}}` | The fee rate in ppm earned from forwarding the payment (formatted) |
 
 ## Invoice Settled Event
 Triggered when an invoice is paid/settled.

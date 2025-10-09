@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/Primexz/lndnotify/internal/config"
-	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/Primexz/lndnotify/internal/lnd"
 	"github.com/Primexz/lndnotify/internal/notify"
 	log "github.com/sirupsen/logrus"
@@ -81,11 +80,6 @@ func main() {
 		defer notifier.Send("🔴 lndnotify disconnected")
 	}
 
-	// Create event processor
-	processor := events.NewProcessor(&events.ProcessorConfig{
-		EnabledEvents: cfg.Events,
-	})
-
 	// Subscribe to events
 	eventChan, err := lndClient.SubscribeEvents()
 	if err != nil {
@@ -102,8 +96,8 @@ func main() {
 	for {
 		select {
 		case event := <-eventChan:
-			if !processor.ShouldProcess(event) {
-				log.WithField("event_type", event.Type()).Debug("event type not enabled, skipping")
+			if !event.ShouldProcess(cfg) {
+				log.WithField("event_type", event.Type()).Debug("event filtered, skipping")
 				continue
 			}
 
