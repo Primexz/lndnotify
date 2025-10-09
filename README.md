@@ -19,6 +19,8 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Peer Offline
   - Settled Invoice
   - Failed HTLCs
+  - Payment Succeeded
+  - Rebalancing Succeeded 
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
@@ -85,21 +87,27 @@ notifications:
 
 # Event settings
 events:
-  forward_events: true
-  peer_events: true
   channel_events: true
-  invoice_events: true
   failed_htlc_events: true
-  status_events: true
+  forward_events: true
+  invoice_events: true
   keysend_events: true
+  payment_events: true
+  peer_events: true
+  rebalancing_events: true
+  status_events: true
 
 # Event-specific configuration
 event_config:
+  failed_htlc_event:
+    min_amount: 0
   forward_event:
     min_amount: 0
   invoice_event:
     min_amount: 0
-  failed_htlc_event:
+  payment_event:
+    min_amount: 0
+  rebalancing_event:
     min_amount: 0
 ```
 

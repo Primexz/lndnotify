@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
@@ -174,7 +175,26 @@ func (c *Client) handleInvoiceEvents() {
 
 			switch invoice.GetState() {
 			case lnrpc.Invoice_SETTLED:
-				c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+				// We check if there is a payment with this hash in our lnd instance.
+				// If yes, it is a rebalancing payment, so we do not send an invoice event.
+				ctx, cancel := context.WithCancel(c.ctx)
+				stream, err := c.router.TrackPaymentV2(ctx, &routerrpc.TrackPaymentRequest{
+					PaymentHash: invoice.RHash,
+				})
+
+				// If an error occurs here, we assume that there is no payment with this hash.
+				if err != nil {
+					c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+					cancel()
+					continue
+				}
+
+				// The rpc error "payment isn't initiated" is returned, when fetching the first
+				// element from the stream.
+				if _, err := stream.Recv(); err != nil {
+					c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+				}
+				cancel()
 			}
 		}
 	})
@@ -261,6 +281,75 @@ func (c *Client) handleKeysendEvents() {
 			}
 		}
 	})
+}
+
+func (c *Client) handlePaymentEvents() {
+	log.Debug("starting payment event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "payment event subscription", func() (string, error) {
+		// Pubkey of the local node to distinguish between rebalancing and external payment
+		var localPubkey string
+		if info, err := c.client.GetInfo(c.ctx, &lnrpc.GetInfoRequest{}); err == nil {
+			localPubkey = info.IdentityPubkey
+		} else {
+			return "", err
+		}
+
+		ev, err := c.router.TrackPayments(c.ctx, &routerrpc.TrackPaymentsRequest{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("payment event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			payment, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			switch payment.Status {
+			case lnrpc.Payment_SUCCEEDED:
+				var payReq *lnrpc.PayReq
+				if payment.PaymentRequest != "" {
+					if decoded, err := c.client.DecodePayReq(c.ctx, &lnrpc.PayReqString{
+						PayReq: payment.PaymentRequest,
+					}); err == nil {
+						payReq = decoded
+					}
+				}
+
+				var recPubkey string
+				// The pub_key of the last hop (receiver of the payment) has to be identical
+				// for all htlcs. Hence we use the first htlc.
+				if len(payment.Htlcs) > 0 && len(payment.Htlcs[0].Route.Hops) > 0 {
+					lastHop := payment.Htlcs[0].Route.Hops[len(payment.Htlcs[0].Route.Hops)-1]
+					recPubkey = lastHop.PubKey
+				}
+
+				isRebalancing := recPubkey == localPubkey
+				c.eventSub <- events.NewPaymentSucceededEvent(payment, payReq, isRebalancing, c.getAlias)
+			}
+		}
+	})
+}
+
+// getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
+// 21 characters of the pubkey.
+func (c *Client) getAlias(pubkey string) string {
+	if nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
+		PubKey: pubkey,
+	}); err == nil {
+		return nodeInfo.Node.Alias
+	}
+	return format.FormatPubKey(pubkey)
 }
 
 func retry(ctx context.Context, name string, operation backoff.Operation[string]) {

@@ -1,8 +1,9 @@
 package format
 
-// FormatSats formats a pubkey to a shorter version
+// FormatPubKey formats a pubkey to a shorter version
 func FormatPubKey(value string) string {
-	if len(value) < 10 {
+	// Check just for safety preventing panics.
+	if len(value) < 9 {
 		return value
 	}
 

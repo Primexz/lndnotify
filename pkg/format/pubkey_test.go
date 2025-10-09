@@ -7,10 +7,10 @@ func TestFormatPubKey(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{"abcdef", "abcdef"},                       // less than 10 chars
-		{"123456789", "123456789"},                 // exactly 9 chars
-		{"1234567890", "12345678"},                 // exactly 10 chars
-		{"abcdefghijklmnopqrstuvwxyz", "abcdefgh"}, // more than 10 chars
+		{"abcdef", "abcdef"},                       // less than 8 chars
+		{"12345678", "12345678"},                   // exactly 8 chars
+		{"123456789", "12345678"},                  // exactly 9 chars
+		{"abcdefghijklmnopqrstuvwxyz", "abcdefgh"}, // more than 9 chars
 		{"", ""}, // empty string
 	}
 

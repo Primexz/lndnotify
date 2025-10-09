@@ -70,14 +70,16 @@ func NewManager(cfg *ManagerConfig) *Manager {
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
 	templates := map[events.EventType]string{
-		events.Event_FORWARD:         m.cfg.Templates.Forward,
-		events.Event_PEER_OFFLINE:    m.cfg.Templates.PeerOffline,
-		events.Event_PEER_ONLINE:     m.cfg.Templates.PeerOnline,
-		events.Event_CHANNEL_OPEN:    m.cfg.Templates.ChannelOpen,
-		events.Event_CHANNEL_CLOSE:   m.cfg.Templates.ChannelClose,
-		events.Event_INVOICE_SETTLED: m.cfg.Templates.InvoiceSettled,
-		events.Event_FAILED_HTLC:     m.cfg.Templates.FailedHtlc,
-		events.Event_KEYSEND:         m.cfg.Templates.Keysend,
+		events.Event_FORWARD:               m.cfg.Templates.Forward,
+		events.Event_PEER_OFFLINE:          m.cfg.Templates.PeerOffline,
+		events.Event_PEER_ONLINE:           m.cfg.Templates.PeerOnline,
+		events.Event_CHANNEL_OPEN:          m.cfg.Templates.ChannelOpen,
+		events.Event_CHANNEL_CLOSE:         m.cfg.Templates.ChannelClose,
+		events.Event_INVOICE_SETTLED:       m.cfg.Templates.InvoiceSettled,
+		events.Event_FAILED_HTLC:           m.cfg.Templates.FailedHtlc,
+		events.Event_KEYSEND:               m.cfg.Templates.Keysend,
+		events.Event_PAYMENT_SUCCEEDED:     m.cfg.Templates.PaymentSucceeded,
+		events.Event_REBALANCING_SUCCEEDED: m.cfg.Templates.RebalancingSucceeded,
 	}
 
 	for name, text := range templates {

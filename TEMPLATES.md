@@ -96,6 +96,44 @@ Triggered when an HTLC (Hash Time Locked Contract) fails during routing.
 | `{{.FailureDetail}}` | Detailed description of the failure |
 | `{{.MissedFee}}` | The routing fee that was missed due to the failure (formatted) |
 
+## Payment Succeeded Event
+Triggered when an outgoing payment is successfully completed.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PaymentHash}}` | The payment hash of the completed payment |
+| `{{.Amount}}` | The total amount of the payment in satoshis (formatted) |
+| `{{.Fee}}` | The total fee paid for the payment in satoshis (formatted) |
+| `{{.FeeRate}}` | The total fee rate of the payment in ppm |
+| `{{.Receiver}}` | The alias of the receiving node (final destination) |
+| `{{.Memo}}` | The memo/description from the payment request |
+| `{{.HtlcInfo}}` | List of HTLC information (see below) |
+
+### HTLC Information ({{.HtlcInfo}})
+Each HTLC in the list contains:
+
+| Variable | Description |
+|----------|-------------|
+| `{{.FirstHop}}` | The alias of the first hop in this HTLC route |
+| `{{.PenultHop}}` | The alias of the penultimate (second-to-last) hop |
+| `{{.Amount}}` | The amount sent via this HTLC in satoshis (formatted) |
+| `{{.Fee}}` | The fee paid for this HTLC in satoshis (formatted) |
+| `{{.FeeRate}}` | The fee rate for this HTLC in ppm |
+| `{{.HopInfo}}` | List of individual hop information (see below) |
+
+### Hop Information ({{.HopInfo}})
+Each hop in an HTLC route contains:
+
+| Variable | Description |
+|----------|-------------|
+| `{{.Pubkey}}` | The public key of this hop |
+| `{{.Alias}}` | The alias of this hop |
+| `{{.Amount}}` | The amount forwarded to this hop in satoshis (formatted) |
+| `{{.Fee}}` | The fee paid to this hop in satoshis (formatted) |
+| `{{.FeeRate}}` | The fee rate for this hop in ppm |
+
+For rebalancing payments, the last hop (which is always your own node) is excluded from the `HopInfo` list.
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:
