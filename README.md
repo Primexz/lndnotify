@@ -63,7 +63,7 @@ services:
 ```bash
 git clone https://github.com/Primexz/lndnotify.git
 cd lndnotify
-go build ./cmd/lndnotify
+go build .
 ./lndnotify
 ```
 
