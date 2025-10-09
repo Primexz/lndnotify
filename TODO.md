@@ -5,3 +5,6 @@
 - Fee Report
 - Notifications per type to specific destinations
 - Keysends
+
+- Batched Notifications
+- Channel downtime (configurable intervals)
