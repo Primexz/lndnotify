@@ -5,9 +5,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- add new event: keysend notifications
+
+### Fixed
+
+### Changed
+
+### Removed
+
+## [1.2.0] - 2025-10-09
+
+### Added
+- new event: payment succeeded and rebalancing succeeded notifications
+- new event: keysend notifications
 - filter for `forward_min_amount` and `invoice_min_amount` to skip events with
-low values.
+low values
 - new template variables `{{.FeeRate}}` for `forward_event`. See
-[TEMPLATES.md](TEMPLATES.md) for details. 
-- add new event: payment succeeded and rebalancing succeeded notifications
+[TEMPLATES.md](TEMPLATES.md) for details.
+
+### Fixed
+
+- peer event: use pubey as fallback
+
+### Changed
+
+- internal: new ppm rate formatting
+
+### Removed
