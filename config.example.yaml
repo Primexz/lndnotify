@@ -13,37 +13,37 @@ notifications:
     - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
   templates:
-    forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
-    peer_online_event: "{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}
-    peer_offline_event: "{{if .PeerAlias}}⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline{{else}}⚠️ Peer {{.PeerPubKey}} went offline{{end}}"
-    channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
-    invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
+    channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
     failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
+    forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
+    invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
     keysend_event: "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
     payment_succeeded_event: "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}, {{.FeeRate}} ppm) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}{{end}}\nHash: {{.PaymentHash}}"
+    peer_offline_event: "{{if .PeerAlias}}⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline{{else}}⚠️ Peer {{.PeerPubKey}} went offline{{end}}"
+    peer_online_event: "{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}"
     rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
 
 # Event settings (feature flags)
 events:
-  forward_events: true  # Enable payment forwarding notifications
-  peer_events: true # Enable peer events (online/offline) notifications
   channel_events: true # Enable channel events (open/close) notifications
-  invoice_events: true # Enable invoice settled notifications
   failed_htlc_events: true # Enable failed HTLC notifications
-  status_events: true # Enable status change notifications (startup/shutdown)
+  forward_events: true # Enable payment forwarding notifications
+  invoice_events: true # Enable invoice settled notifications
   keysend_events: true # Enable keysend notifications
   payment_events: true # Enable outgoing payment succeeded notifications
+  peer_events: true # Enable peer events (online/offline) notifications
   rebalancing_events: true # Enable rebalancing succeeded notifications
+  status_events: true # Enable status change notifications (startup/shutdown)
 
 # Event configuration (specific settings for each event type)
 event_config:
+  failed_htlc_event:
+    min_amount: 0  # Minimum amount in sats to notify about failed HTLC event
   forward_event:
     min_amount: 0  # Minimum outgoing amount in sats to notify about forward event
   invoice_event:
     min_amount: 0  # Minimum amount in sats to notify about invoice event
-  failed_htlc_event:
-    min_amount: 0  # Minimum amount in sats to notify about failed HTLC event
   payment_event:
     min_amount: 0  # Minimum amount in sats to notify about payment succeeded event
   rebalancing_event:

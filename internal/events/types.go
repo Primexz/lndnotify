@@ -16,16 +16,17 @@ type Event interface {
 
 type EventType string
 
+// NOTE: Keep constants in alphabetical order to prevent merge conflicts when adding new events
 const (
-	Event_FORWARD               EventType = "forward_event"
-	Event_PEER_ONLINE           EventType = "peer_online_event"
-	Event_PEER_OFFLINE          EventType = "peer_offline_event"
-	Event_CHANNEL_OPEN          EventType = "channel_open_event"
 	Event_CHANNEL_CLOSE         EventType = "channel_close_event"
-	Event_INVOICE_SETTLED       EventType = "invoice_settled_event"
+	Event_CHANNEL_OPEN          EventType = "channel_open_event"
 	Event_FAILED_HTLC           EventType = "failed_htlc_event"
+	Event_FORWARD               EventType = "forward_event"
+	Event_INVOICE_SETTLED       EventType = "invoice_settled_event"
 	Event_KEYSEND               EventType = "keysend_event"
 	Event_PAYMENT_SUCCEEDED     EventType = "payment_succeeded_event"
+	Event_PEER_OFFLINE          EventType = "peer_offline_event"
+	Event_PEER_ONLINE           EventType = "peer_online_event"
 	Event_REBALANCING_SUCCEEDED EventType = "rebalancing_succeeded_event"
 )
 
