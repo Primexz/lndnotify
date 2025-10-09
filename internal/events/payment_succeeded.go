@@ -91,8 +91,15 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 			continue
 		}
 
-		hopInfo := make([]PaymentHopInfo, 0, len(htlc.Route.Hops))
-		for _, hop := range htlc.Route.Hops {
+		// We exclude the last hop for rebalancing payments, as it is
+		// always our own node.
+		hopsToProcess := htlc.Route.Hops
+		if e.IsRebalancing && len(hopsToProcess) > 0 {
+			hopsToProcess = hopsToProcess[:len(hopsToProcess)-1]
+		}
+
+		hopInfo := make([]PaymentHopInfo, 0, len(hopsToProcess))
+		for _, hop := range hopsToProcess {
 			feeSats := float64(hop.FeeMsat) / 1000
 			amountSats := float64(hop.AmtToForwardMsat) / 1000
 			feeRate := FormattedFeeRate(feeSats, amountSats)

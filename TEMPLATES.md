@@ -132,6 +132,8 @@ Each hop in an HTLC route contains:
 | `{{.Fee}}` | The fee paid to this hop in satoshis (formatted) |
 | `{{.FeeRate}}` | The fee rate for this hop in ppm |
 
+For rebalancing payments, the last hop (which is always your own node) is excluded from the `HopInfo` list.
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:
