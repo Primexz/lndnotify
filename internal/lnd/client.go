@@ -133,12 +133,18 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 	}
 
 	// Start subscription handlers
-	c.wg.Add(5)
-	go c.handleForwards()
-	go c.handlePeerEvents()
-	go c.handleChannelEvents()
-	go c.handleInvoiceEvents()
-	go c.handleFailedHtlcEvents()
+	handlers := []func(){
+		c.handleForwards,
+		c.handlePeerEvents,
+		c.handleChannelEvents,
+		c.handleInvoiceEvents,
+		c.handleFailedHtlcEvents,
+		c.handleKeysendEvents,
+	}
+	c.wg.Add(len(handlers))
+	for _, h := range handlers {
+		go h()
+	}
 
 	return c.eventSub, nil
 }

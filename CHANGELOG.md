@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- add new event: keysend notifications
 - filter for `forward_min_amount` and `invoice_min_amount` to skip events with
 low values.
 - new template variables for `forward_event`: `{{.AmountIn}}`, `{{.AmountOut}}`

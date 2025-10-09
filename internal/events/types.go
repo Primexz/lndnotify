@@ -24,6 +24,7 @@ const (
 	Event_CHANNEL_CLOSE   EventType = "channel_close_event"
 	Event_INVOICE_SETTLED EventType = "invoice_settled_event"
 	Event_FAILED_HTLC     EventType = "failed_htlc_event"
+	Event_KEYSEND         EventType = "keysend_event"
 )
 
 func (et EventType) String() string {

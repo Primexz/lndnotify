@@ -50,11 +50,11 @@ func (cm *ChannelManager) Stop() {
 	cm.wg.Wait()
 }
 
-func (cm *ChannelManager) GetChannelById(chanID uint64) *lnrpc.Channel {
+func (cm *ChannelManager) GetChannelById(chanId uint64) *lnrpc.Channel {
 	cm.mu.RLock()
 	defer cm.mu.RUnlock()
 
-	ch, exists := cm.channels[chanID]
+	ch, exists := cm.channels[chanId]
 	if !exists {
 		return nil
 	}

@@ -91,6 +91,7 @@ events:
   invoice_events: true
   failed_htlc_events: true
   status_events: true
+  keysend_events: true
 
 # Event-specific configuration
 event_config:
