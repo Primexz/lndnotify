@@ -7,3 +7,7 @@
 
 - Batched Notifications
 - Channel downtime (configurable intervals)
+
+- Improve CLI Interface
+  - version
+  - simple help
