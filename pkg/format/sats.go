@@ -39,3 +39,14 @@ func FormatBasic(value float64) string {
 	rounded := math.Round(value)
 	return p.Sprintf("%.0f", rounded)
 }
+
+// FormatRatePPM formats a rate as parts per million (ppm), rounding to the nearest integer.
+// If the total is zero, it returns "0".
+func FormatRatePPM(value, total float64) string {
+	var rate float64
+
+	if total > 0 {
+		rate = value * 1e6 / total
+	}
+	return FormatBasic(rate)
+}

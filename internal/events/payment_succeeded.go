@@ -1,8 +1,6 @@
 package events
 
 import (
-	"fmt"
-	"math"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
@@ -71,7 +69,6 @@ func (e *PaymentSucceededEvent) Timestamp() time.Time {
 func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 	amountSats := float64(e.Payment.ValueMsat) / 1000
 	feeSats := float64(e.Payment.FeeMsat) / 1000
-	feeRate := FormattedFeeRate(feeSats, amountSats)
 
 	// Get memo from PayReq
 	var memo string
@@ -102,21 +99,19 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 		for _, hop := range hopsToProcess {
 			feeSats := float64(hop.FeeMsat) / 1000
 			amountSats := float64(hop.AmtToForwardMsat) / 1000
-			feeRate := FormattedFeeRate(feeSats, amountSats)
 
 			hopInfo = append(hopInfo, PaymentHopInfo{
 				Pubkey:  hop.PubKey,
 				Alias:   e.getAlias(hop.PubKey),
 				Amount:  format.FormatBasic(amountSats),
 				Fee:     format.FormatDetailed(feeSats),
-				FeeRate: feeRate,
+				FeeRate: format.FormatRatePPM(feeSats, amountSats),
 			})
 		}
 
 		firstHop := htlc.Route.Hops[0]
 		feeSats := float64(htlc.Route.TotalFeesMsat) / 1000
 		amountSats := float64(htlc.Route.TotalAmtMsat)/1000 - feeSats
-		feeRate := FormattedFeeRate(feeSats, amountSats)
 
 		var penultHop string
 		if len(htlc.Route.Hops) > 1 {
@@ -128,7 +123,7 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 			PenultHop: penultHop,
 			HopInfo:   hopInfo,
 			Fee:       format.FormatDetailed(feeSats),
-			FeeRate:   feeRate,
+			FeeRate:   format.FormatRatePPM(feeSats, amountSats),
 			Amount:    format.FormatBasic(amountSats),
 		})
 	}
@@ -137,7 +132,7 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 		PaymentHash: e.Payment.PaymentHash,
 		Amount:      format.FormatBasic(amountSats),
 		Fee:         format.FormatDetailed(feeSats),
-		FeeRate:     feeRate,
+		FeeRate:     format.FormatRatePPM(feeSats, amountSats),
 		HtlcInfo:    htlcInfo,
 		Receiver:    receiver,
 		Memo:        memo,
@@ -161,15 +156,4 @@ func (e *PaymentSucceededEvent) ShouldProcess(cfg *config.Config) bool {
 	default:
 		return false
 	}
-}
-
-func FormattedFeeRate(fee, amount float64) string {
-	var rate int32
-
-	// Since the amounts in LN are rounded down, we have to round
-	// commercially in order to reconstruct a correct ppm.
-	if amount > 0 {
-		rate = int32(math.Round(fee * 1e6 / amount))
-	}
-	return fmt.Sprintf("%d", rate)
 }
