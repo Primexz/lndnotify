@@ -27,8 +27,8 @@ low values (@feelancer21)
 
 ### Fixed
 
-- peer event: use pubey as fallback
+- peer event: use pubey as fallback (@Primexz)
 
 ### Changed
 
-- internal: new ppm rate formatting
+- internal: new ppm rate formatting (@feelancer21)
