@@ -132,7 +132,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		return nil, fmt.Errorf("starting channel manager: %w", err)
 	}
 
-	// Start subscription handlers generically
+	// Start subscription handlers
 	handlers := []func(){
 		c.handleForwards,
 		c.handlePeerEvents,
