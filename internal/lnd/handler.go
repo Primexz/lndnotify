@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
@@ -345,7 +346,7 @@ func (c *Client) getAlias(pubkey string) string {
 	}); err == nil {
 		return nodeInfo.Node.Alias
 	}
-	return pubkey[:21]
+	return format.FormatPubKey(pubkey)
 }
 
 func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
