@@ -140,6 +140,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		c.handleInvoiceEvents,
 		c.handleFailedHtlcEvents,
 		c.handleKeysendEvents,
+		c.handleOnChainEvents,
 	}
 	c.wg.Add(len(handlers))
 	for _, h := range handlers {

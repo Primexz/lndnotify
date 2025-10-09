@@ -25,6 +25,7 @@ const (
 	Event_INVOICE_SETTLED EventType = "invoice_settled_event"
 	Event_FAILED_HTLC     EventType = "failed_htlc_event"
 	Event_KEYSEND         EventType = "keysend_event"
+	Event_ONCHAIN         EventType = "onchain_transaction_event"
 )
 
 func (et EventType) String() string {

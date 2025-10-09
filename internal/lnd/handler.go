@@ -263,6 +263,35 @@ func (c *Client) handleKeysendEvents() {
 	})
 }
 
+func (c *Client) handleOnChainEvents() {
+	log.Debug("starting on chain event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "on chain event subscription", func() (string, error) {
+		ev, err := c.client.SubscribeTransactions(c.ctx, &lnrpc.GetTransactionsRequest{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("on chain event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			event, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			c.eventSub <- events.NewOnChainTransactionEvent(event)
+		}
+	})
+}
+
 func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {

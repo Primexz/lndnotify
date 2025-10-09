@@ -57,6 +57,7 @@ type EventFlags struct {
 	FailedHtlc    bool `yaml:"failed_htlc_events"`
 	StatusEvents  bool `yaml:"status_events"`
 	KeysendEvents bool `yaml:"keysend_events"`
+	OnChainEvents bool `yaml:"on_chain_events"`
 }
 
 // EventConfig contains specific configuration for each event type
