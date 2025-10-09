@@ -177,13 +177,15 @@ func (c *Client) handleInvoiceEvents() {
 			case lnrpc.Invoice_SETTLED:
 				// We check if there is a payment with this hash in our lnd instance.
 				// If yes, it is a rebalancing payment, so we do not send an invoice event.
-				stream, err := c.router.TrackPaymentV2(c.ctx, &routerrpc.TrackPaymentRequest{
+				ctx, cancel := context.WithCancel(c.ctx)
+				stream, err := c.router.TrackPaymentV2(ctx, &routerrpc.TrackPaymentRequest{
 					PaymentHash: invoice.RHash,
 				})
 
 				// If an error occurs here, we assume that there is no payment with this hash.
 				if err != nil {
 					c.eventSub <- events.NewInvoiceSettledEvent(invoice)
+					cancel()
 					continue
 				}
 
@@ -192,6 +194,7 @@ func (c *Client) handleInvoiceEvents() {
 				if _, err := stream.Recv(); err != nil {
 					c.eventSub <- events.NewInvoiceSettledEvent(invoice)
 				}
+				cancel()
 			}
 		}
 	})

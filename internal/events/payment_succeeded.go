@@ -16,12 +16,14 @@ type PaymentSucceededEvent struct {
 	timestamp     time.Time
 }
 
-type PaymentHopInfo struct {
-	Pubkey  string
-	Alias   string
-	Amount  string
-	Fee     string
-	FeeRate string
+type PaymentSucceededTemplate struct {
+	PaymentHash string
+	Amount      string
+	Fee         string
+	FeeRate     string
+	HtlcInfo    []PaymentHtlcInfo
+	Receiver    string
+	Memo        string
 }
 
 type PaymentHtlcInfo struct {
@@ -33,14 +35,12 @@ type PaymentHtlcInfo struct {
 	FeeRate   string
 }
 
-type PaymentSucceededTemplate struct {
-	PaymentHash string
-	Amount      string
-	Fee         string
-	FeeRate     string
-	HtlcInfo    []PaymentHtlcInfo
-	Receiver    string
-	Memo        string
+type PaymentHopInfo struct {
+	Pubkey  string
+	Alias   string
+	Amount  string
+	Fee     string
+	FeeRate string
 }
 
 func NewPaymentSucceededEvent(payment *lnrpc.Payment, payReq *lnrpc.PayReq,

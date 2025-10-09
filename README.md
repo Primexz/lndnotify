@@ -20,8 +20,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Settled Invoice
   - Failed HTLCs
   - Payment Succeeded
-  - Succeeded Payment
-  - Succeeded Rebalancing
+  - Rebalancing Succeeded 
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering

@@ -42,7 +42,7 @@ func FormatBasic(value float64) string {
 
 // FormatRatePPM formats a rate as parts per million (ppm), rounding to the nearest integer.
 // If the total is zero, it returns "0".
-func FormatRatePPM(value, total float64) string {
+func FormatRatePPM(value float64, total float64) string {
 	var rate float64
 
 	if total > 0 {
