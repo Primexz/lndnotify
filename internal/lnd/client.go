@@ -132,14 +132,19 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		return nil, fmt.Errorf("starting channel manager: %w", err)
 	}
 
-	// Start subscription handlers
-	c.wg.Add(6)
-	go c.handleForwards()
-	go c.handlePeerEvents()
-	go c.handleChannelEvents()
-	go c.handleInvoiceEvents()
-	go c.handleFailedHtlcEvents()
-	go c.handleKeysendEvents()
+	// Start subscription handlers generically
+	handlers := []func(){
+		c.handleForwards,
+		c.handlePeerEvents,
+		c.handleChannelEvents,
+		c.handleInvoiceEvents,
+		c.handleFailedHtlcEvents,
+		c.handleKeysendEvents,
+	}
+	c.wg.Add(len(handlers))
+	for _, h := range handlers {
+		go h()
+	}
 
 	return c.eventSub, nil
 }
