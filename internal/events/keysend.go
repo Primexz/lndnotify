@@ -3,6 +3,7 @@ package events
 import (
 	"time"
 
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 )
@@ -50,4 +51,8 @@ func (e *KeysendEvent) GetTemplateData() interface{} {
 		InChanId:    e.Htlc.ChanId,
 		Amount:      format.FormatDetailed(float64(e.Htlc.AmtMsat / 1000)),
 	}
+}
+
+func (e *KeysendEvent) ShouldProcess(cfg *config.Config) bool {
+	return cfg.Events.KeysendEvents
 }

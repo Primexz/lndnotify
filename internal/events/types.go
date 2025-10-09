@@ -2,6 +2,8 @@ package events
 
 import (
 	"time"
+
+	"github.com/Primexz/lndnotify/internal/config"
 )
 
 // Event is the base interface for all Lightning Network events
@@ -9,6 +11,7 @@ type Event interface {
 	Type() EventType
 	Timestamp() time.Time
 	GetTemplateData() interface{}
+	ShouldProcess(cfg *config.Config) bool
 }
 
 type EventType string

@@ -92,6 +92,15 @@ events:
   failed_htlc_events: true
   status_events: true
   keysend_events: true
+
+# Event-specific configuration
+event_config:
+  forward_event:
+    min_amount: 0
+  invoice_event:
+    min_amount: 0
+  failed_htlc_event:
+    min_amount: 0
 ```
 
 
