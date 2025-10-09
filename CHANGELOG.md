@@ -5,12 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-
 ### Fixed
-
 ### Changed
-
 ### Removed
+
+## [1.2.1] - 2025-10-09
+
+### Added
+- ``--version`` command to get the current version of the app
+
 
 ## [1.2.0] - 2025-10-09
 
@@ -29,5 +32,3 @@ low values
 ### Changed
 
 - internal: new ppm rate formatting
-
-### Removed
