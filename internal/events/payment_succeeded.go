@@ -138,10 +138,22 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 }
 
 func (e *PaymentSucceededEvent) ShouldProcess(cfg *config.Config) bool {
-	if e.Type() == Event_REBALANCING_SUCCEEDED {
-		return cfg.Events.RebalancingEvents
+	switch e.Type() {
+	case Event_REBALANCING_SUCCEEDED:
+		if !cfg.Events.RebalancingEvents {
+			return false
+		}
+		return uint64(e.Payment.ValueSat) >= cfg.EventConfig.RebalancingEvent.MinAmount // #nosec G115
+
+	case Event_PAYMENT_SUCCEEDED:
+		if !cfg.Events.PaymentEvents {
+			return false
+		}
+		return uint64(e.Payment.ValueSat) >= cfg.EventConfig.PaymentEvent.MinAmount // #nosec G115
+
+	default:
+		return false
 	}
-	return cfg.Events.PaymentEvents
 }
 
 func FormattedFeeRate(fee, amount float64) string {

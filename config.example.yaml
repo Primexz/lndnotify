@@ -44,3 +44,7 @@ event_config:
     min_amount: 0  # Minimum amount in sats to notify about invoice event
   failed_htlc_event:
     min_amount: 0  # Minimum amount in sats to notify about failed HTLC event
+  payment_event:
+    min_amount: 0  # Minimum amount in sats to notify about payment succeeded event
+  rebalancing_event:
+    min_amount: 0  # Minimum amount in sats to notify about rebalancing
