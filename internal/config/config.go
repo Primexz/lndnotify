@@ -46,6 +46,7 @@ type NotificationTemplate struct {
 	InvoiceSettled string `yaml:"invoice_settled_event"`
 	FailedHtlc     string `yaml:"failed_htlc_event"`
 	Keysend        string `yaml:"keysend_event"`
+	OnChain        string `yaml:"on_chain_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
@@ -150,5 +151,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.Keysend == "" {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
+	}
+	if c.Notifications.Templates.OnChain == "" {
+		c.Notifications.Templates.OnChain = "🔗 On-chain transaction: {{.Amount}} sats\nTxID: {{.TxHash}}\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\n\nRaw TX: {{.RawTxHex}}"
 	}
 }

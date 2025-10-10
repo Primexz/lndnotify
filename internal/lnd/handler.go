@@ -287,6 +287,8 @@ func (c *Client) handleOnChainEvents() {
 				return "", err // Return error to trigger retry
 			}
 
+			log.Printf("onchain event %v", event)
+
 			c.eventSub <- events.NewOnChainTransactionEvent(event)
 		}
 	})
