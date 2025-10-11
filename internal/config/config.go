@@ -45,7 +45,8 @@ type NotificationTemplate struct {
 	Forward              string `yaml:"forward_event"`
 	InvoiceSettled       string `yaml:"invoice_settled_event"`
 	Keysend              string `yaml:"keysend_event"`
-	OnChain              string `yaml:"on_chain_event"`
+	OnChainConfirmed     string `yaml:"on_chain_confirmed_event"`
+	OnChainMempool       string `yaml:"on_chain_mempool_event"`
 	PaymentSucceeded     string `yaml:"payment_succeeded_event"`
 	PeerOffline          string `yaml:"peer_offline_event"`
 	PeerOnline           string `yaml:"peer_online_event"`
@@ -163,8 +164,11 @@ func (c *Config) setDefaults() {
 	if c.Notifications.Templates.Keysend == "" {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
-	if c.Notifications.Templates.OnChain == "" {
-		c.Notifications.Templates.OnChain = "🔗 On-chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
+	if c.Notifications.Templates.OnChainMempool == "" {
+		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
+	}
+	if c.Notifications.Templates.OnChainConfirmed == "" {
+		c.Notifications.Templates.OnChainConfirmed = "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
 	}
 	if c.Notifications.Templates.PaymentSucceeded == "" {
 		c.Notifications.Templates.PaymentSucceeded = "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  HTLC: {{.Amount}} via {{.FirstHop}} (fee: {{.Fee}}){{end}}\nHash: {{.PaymentHash}}"

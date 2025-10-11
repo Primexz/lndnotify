@@ -18,6 +18,7 @@ type OnChainTransactionTemplate struct {
 	RawTxHex  string
 	Amount    string
 	TotalFees string
+	Confirmed bool
 	Outputs   []OnChainOutput
 }
 
@@ -36,7 +37,11 @@ func NewOnChainTransactionEvent(event *lnrpc.Transaction) *OnChainTransactionEve
 }
 
 func (e *OnChainTransactionEvent) Type() EventType {
-	return Event_ONCHAIN
+	if e.Event.GetNumConfirmations() > 0 {
+		return Event_ONCHAIN_CONFIRMED
+	}
+
+	return Event_ONCHAIN_MEMPOOL
 }
 
 func (e *OnChainTransactionEvent) Timestamp() time.Time {
@@ -60,6 +65,7 @@ func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
 		Outputs:   outputs,
 		Amount:    format.FormatBasic(float64(e.Event.Amount)),
 		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees)),
+		Confirmed: e.Event.NumConfirmations > 0,
 	}
 }
 

@@ -365,7 +365,10 @@ func (c *Client) handleOnChainEvents() {
 				return "", err // Return error to trigger retry
 			}
 
-			c.eventSub <- events.NewOnChainTransactionEvent(event)
+			confirmCnt := event.GetNumConfirmations()
+			if confirmCnt == 0 || confirmCnt == 1 {
+				c.eventSub <- events.NewOnChainTransactionEvent(event)
+			}
 		}
 	})
 }
