@@ -96,6 +96,7 @@ events:
   peer_events: true
   rebalancing_events: true
   status_events: true
+  on_chain_events: true
 
 # Event-specific configuration
 event_config:
