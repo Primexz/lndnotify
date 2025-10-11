@@ -37,7 +37,7 @@ func (e *PeerOfflineEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PeerOfflineEvent) GetTemplateData(langTag language.Tag) interface{} {
+func (e *PeerOfflineEvent) GetTemplateData(lang language.Tag) interface{} {
 	var alias string
 	if e.NodeInfo != nil {
 		alias = e.NodeInfo.Node.Alias

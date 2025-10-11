@@ -67,7 +67,7 @@ func (e *PaymentSucceededEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PaymentSucceededEvent) GetTemplateData(langTag language.Tag) interface{} {
+func (e *PaymentSucceededEvent) GetTemplateData(lang language.Tag) interface{} {
 	amountSats := float64(e.Payment.ValueMsat) / 1000
 	feeSats := float64(e.Payment.FeeMsat) / 1000
 
@@ -104,9 +104,9 @@ func (e *PaymentSucceededEvent) GetTemplateData(langTag language.Tag) interface{
 			hopInfo = append(hopInfo, PaymentHopInfo{
 				Pubkey:  hop.PubKey,
 				Alias:   e.getAlias(hop.PubKey),
-				Amount:  format.FormatBasic(amountSats, langTag),
-				Fee:     format.FormatDetailed(feeSats, langTag),
-				FeeRate: format.FormatRatePPM(feeSats, amountSats, langTag),
+				Amount:  format.FormatBasic(amountSats, lang),
+				Fee:     format.FormatDetailed(feeSats, lang),
+				FeeRate: format.FormatRatePPM(feeSats, amountSats, lang),
 			})
 		}
 
@@ -123,17 +123,17 @@ func (e *PaymentSucceededEvent) GetTemplateData(langTag language.Tag) interface{
 			FirstHop:  e.getAlias(firstHop.PubKey),
 			PenultHop: penultHop,
 			HopInfo:   hopInfo,
-			Fee:       format.FormatDetailed(feeSats, langTag),
-			FeeRate:   format.FormatRatePPM(feeSats, amountSats, langTag),
-			Amount:    format.FormatBasic(amountSats, langTag),
+			Fee:       format.FormatDetailed(feeSats, lang),
+			FeeRate:   format.FormatRatePPM(feeSats, amountSats, lang),
+			Amount:    format.FormatBasic(amountSats, lang),
 		})
 	}
 
 	return &PaymentSucceededTemplate{
 		PaymentHash: e.Payment.PaymentHash,
-		Amount:      format.FormatBasic(amountSats, langTag),
-		Fee:         format.FormatDetailed(feeSats, langTag),
-		FeeRate:     format.FormatRatePPM(feeSats, amountSats, langTag),
+		Amount:      format.FormatBasic(amountSats, lang),
+		Fee:         format.FormatDetailed(feeSats, lang),
+		FeeRate:     format.FormatRatePPM(feeSats, amountSats, lang),
 		HtlcInfo:    htlcInfo,
 		Receiver:    receiver,
 		Memo:        memo,

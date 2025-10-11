@@ -11,7 +11,7 @@ import (
 type Event interface {
 	Type() EventType
 	Timestamp() time.Time
-	GetTemplateData(langTag language.Tag) interface{}
+	GetTemplateData(lang language.Tag) interface{}
 	ShouldProcess(cfg *config.Config) bool
 }
 

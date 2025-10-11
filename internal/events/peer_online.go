@@ -37,7 +37,7 @@ func (e *PeerOnlineEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PeerOnlineEvent) GetTemplateData(langTag language.Tag) interface{} {
+func (e *PeerOnlineEvent) GetTemplateData(lang language.Tag) interface{} {
 	var alias string
 	if e.NodeInfo != nil {
 		alias = e.NodeInfo.Node.Alias

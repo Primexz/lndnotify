@@ -38,7 +38,7 @@ func (e *ForwardEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ForwardEvent) GetTemplateData(langTag language.Tag) interface{} {
+func (e *ForwardEvent) GetTemplateData(lang language.Tag) interface{} {
 	amtInSats := float64(e.Forward.AmtInMsat) / 1000
 	amtOutSats := float64(e.Forward.AmtOutMsat) / 1000
 	feeSats := float64(e.Forward.FeeMsat) / 1000
@@ -46,10 +46,10 @@ func (e *ForwardEvent) GetTemplateData(langTag language.Tag) interface{} {
 	return &ForwardTemplate{
 		PeerAliasIn:  e.Forward.PeerAliasIn,
 		PeerAliasOut: e.Forward.PeerAliasOut,
-		Amount:       format.FormatBasic(amtInSats, langTag),
-		AmountOut:    format.FormatBasic(amtOutSats, langTag),
-		Fee:          format.FormatDetailed(feeSats, langTag),
-		FeeRate:      format.FormatRatePPM(feeSats, amtOutSats, langTag),
+		Amount:       format.FormatBasic(amtInSats, lang),
+		AmountOut:    format.FormatBasic(amtOutSats, lang),
+		Fee:          format.FormatDetailed(feeSats, lang),
+		FeeRate:      format.FormatRatePPM(feeSats, amtOutSats, lang),
 	}
 }
 

@@ -36,10 +36,10 @@ func (e *InvoiceSettledEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *InvoiceSettledEvent) GetTemplateData(langTag language.Tag) interface{} {
+func (e *InvoiceSettledEvent) GetTemplateData(lang language.Tag) interface{} {
 	return &InvoiceSettledTemplate{
 		Memo:           e.Invoice.Memo,
-		Value:          format.FormatBasic(float64(e.Invoice.Value), langTag),
+		Value:          format.FormatBasic(float64(e.Invoice.Value), lang),
 		IsKeysend:      e.Invoice.IsKeysend,
 		PaymentRequest: e.Invoice.PaymentRequest,
 	}
