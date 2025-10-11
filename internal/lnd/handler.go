@@ -341,6 +341,38 @@ func (c *Client) handlePaymentEvents() {
 	})
 }
 
+func (c *Client) handleOnChainEvents() {
+	log.Debug("starting on chain event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "on chain event subscription", func() (string, error) {
+		ev, err := c.client.SubscribeTransactions(c.ctx, &lnrpc.GetTransactionsRequest{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("on chain event subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			event, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			confirmCnt := event.GetNumConfirmations()
+			if confirmCnt == 0 || confirmCnt == 1 {
+				c.eventSub <- events.NewOnChainTransactionEvent(event)
+			}
+		}
+	})
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 21 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {

@@ -21,6 +21,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Failed HTLCs
   - Payment Succeeded
   - Rebalancing Succeeded 
+  - On-Chain Transactions
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Event filtering
@@ -96,6 +97,7 @@ events:
   peer_events: true
   rebalancing_events: true
   status_events: true
+  on_chain_events: true
 
 # Event-specific configuration
 event_config:

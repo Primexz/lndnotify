@@ -134,6 +134,27 @@ Each hop in an HTLC route contains:
 
 For rebalancing payments, the last hop (which is always your own node) is excluded from the `HopInfo` list.
 
+## On-Chain Transaction Event
+Triggered when an on-chain transaction is detected involving your node's wallet.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.TxHash}}` | The transaction hash (txid) of the on-chain transaction |
+| `{{.RawTxHex}}` | The raw transaction data in hexadecimal format |
+| `{{.Amount}}` | The net amount of the transaction in satoshis (formatted) |
+| `{{.TotalFees}}` | The total fees paid for the transaction in satoshis (formatted) |
+| `{{.Outputs}}` | List of transaction outputs (see below) |
+
+### Transaction Output Information ({{.Outputs}})
+Each output in the transaction contains:
+
+| Variable | Description |
+|----------|-------------|
+| `{{.Amount}}` | The amount sent to this output in satoshis (formatted) |
+| `{{.Address}}` | The destination address for this output |
+| `{{.OutputType}}` | The type of output |
+| `{{.IsOurAddress}}` | Boolean indicating if this address belongs to your wallet |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:

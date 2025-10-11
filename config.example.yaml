@@ -23,6 +23,8 @@ notifications:
     peer_offline_event: "{{if .PeerAlias}}⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline{{else}}⚠️ Peer {{.PeerPubKey}} went offline{{end}}"
     peer_online_event: "{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}"
     rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
+    on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
+    on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
 
 # Event settings (feature flags)
 events:
@@ -35,6 +37,7 @@ events:
   peer_events: true # Enable peer events (online/offline) notifications
   rebalancing_events: true # Enable rebalancing succeeded notifications
   status_events: true # Enable status change notifications (startup/shutdown)
+  on_chain_events: true # Enable on-chain transaction notifications
 
 # Event configuration (specific settings for each event type)
 event_config:
@@ -48,3 +51,5 @@ event_config:
     min_amount: 0  # Minimum amount in sats to notify about payment succeeded event
   rebalancing_event:
     min_amount: 0  # Minimum amount in sats to notify about rebalancing
+  on_chain_event:
+    min_amount: 0  # Minimum amount in sats to notify about on-chain transaction

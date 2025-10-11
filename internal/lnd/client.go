@@ -140,6 +140,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		c.handleForwards,
 		c.handleInvoiceEvents,
 		c.handleKeysendEvents,
+		c.handleOnChainEvents,
 		c.handlePaymentEvents,
 		c.handlePeerEvents,
 	}
