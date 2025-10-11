@@ -390,7 +390,7 @@ func retry(ctx context.Context, name string, operation backoff.Operation[string]
 		logger.WithError(err).WithField("next_retry_in", duration).WithError(err).Warn("operation failed, retrying")
 	}
 
-	_, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify))
+	_, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))
 	if err != nil {
 		if ctx.Err() != nil {
 			logger.Debug("context cancelled, stopping retry")

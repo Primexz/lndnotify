@@ -3,38 +3,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [Unreleased]
 ### Added
 ### Fixed
 ### Changed
 ### Removed
 
+## [1.3.1] - 2025-10-11
+
+### Fixed
+- LND Connection attempts are now performed indefinitely (Previously, it was automatically abandoned after 15 minutes) (@Primexz)
+
+
 ## [1.3.0] - 2025-10-11
 
 ### Added
-- new event: on chain transaction
+- New event: on chain transaction (@Primexz)
 
 
 ## [1.2.1] - 2025-10-09
 
 ### Added
-- ``--version`` command to get the current version of the app
+- ``--version`` command to get the current version of the app (@Primexz)
 
 
 ## [1.2.0] - 2025-10-09
 
 ### Added
-- new event: payment succeeded and rebalancing succeeded notifications (@feelancer21)
-- new event: keysend notifications (@Primexz)
-- filter for `forward_min_amount` and `invoice_min_amount` to skip events with
+- New event: payment succeeded and rebalancing succeeded notifications (@feelancer21)
+- New event: keysend notifications (@Primexz)
+- Filter for `forward_min_amount` and `invoice_min_amount` to skip events with
 low values (@feelancer21)
-- new template variables `{{.FeeRate}}` for `forward_event`. See
+- New template variables `{{.FeeRate}}` for `forward_event`. See
 [TEMPLATES.md](TEMPLATES.md) for details. (@feelancer21)
 
 ### Fixed
 
-- peer event: use pubey as fallback (@Primexz)
+- Peer event: use pubkey as fallback (@Primexz)
 
 ### Changed
 
-- internal: new ppm rate formatting (@feelancer21)
+- Internal: new ppm rate formatting (@feelancer21)
