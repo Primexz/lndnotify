@@ -13,8 +13,6 @@ import (
 func FormatDetailed(value float64, lang language.Tag) string {
 	p := message.NewPrinter(lang)
 
-	// language.Parse()
-
 	if value == math.Floor(value) {
 		return p.Sprintf("%.0f", value)
 	}

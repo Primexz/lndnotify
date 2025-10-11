@@ -24,6 +24,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - On-Chain Transactions
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
+- Customizable notification formatting (e.g., number formatting based on locale)
 - Event filtering
 
 ## Prerequisites
@@ -79,6 +80,10 @@ lnd:
   port: 10009
   tls_cert_path: "~/.lnd/tls.cert"
   macaroon_path: "~/.lnd/data/chain/bitcoin/mainnet/readonly.macaroon"
+
+# Notification formatting settings
+formatting:
+  locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
 # Notification settings
 notifications:
