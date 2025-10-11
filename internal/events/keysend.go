@@ -39,7 +39,8 @@ func (e *KeysendEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *KeysendEvent) GetTemplateData() interface{} {
+func (e *KeysendEvent) GetTemplateData(cfg *config.Config) interface{} {
+	langTag := cfg.Formatting.Language.Tag
 	var inChanAlias string
 	if e.Channel != nil {
 		inChanAlias = e.Channel.PeerAlias
@@ -49,7 +50,7 @@ func (e *KeysendEvent) GetTemplateData() interface{} {
 		Msg:         e.Msg,
 		InChanAlias: inChanAlias,
 		InChanId:    e.Htlc.ChanId,
-		Amount:      format.FormatDetailed(float64(e.Htlc.AmtMsat / 1000)),
+		Amount:      format.FormatDetailed(float64(e.Htlc.AmtMsat/1000), langTag),
 	}
 }
 

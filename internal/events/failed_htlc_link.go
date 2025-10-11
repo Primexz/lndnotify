@@ -48,7 +48,8 @@ func (e *FailedHtlcLinkEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
+func (e *FailedHtlcLinkEvent) GetTemplateData(cfg *config.Config) interface{} {
+	langTag := cfg.Formatting.Language.Tag
 	failInfo := e.FailEvent.GetInfo()
 	inChanId := e.HtlcEvent.GetIncomingChannelId()
 	outChanId := e.HtlcEvent.GetOutgoingChannelId()
@@ -74,13 +75,13 @@ func (e *FailedHtlcLinkEvent) GetTemplateData() interface{} {
 		OutChanId:               outChanId,
 		InChanAlias:             inChanAlias,
 		OutChanAlias:            outChanAlias,
-		OutChanLiquidity:        format.FormatBasic(float64(outChanLiquidity)),
-		MissingOutChanLiquidity: format.FormatDetailed(float64(failInfo.GetOutgoingAmtMsat())/1000 - float64(outChanLiquidity)),
+		OutChanLiquidity:        format.FormatBasic(float64(outChanLiquidity), langTag),
+		MissingOutChanLiquidity: format.FormatDetailed(float64(failInfo.GetOutgoingAmtMsat())/1000-float64(outChanLiquidity), langTag),
 		IsLocalLiquidityFailure: float64(failInfo.GetOutgoingAmtMsat()/1000) > float64(outChanLiquidity),
-		Amount:                  format.FormatBasic(float64(failInfo.GetOutgoingAmtMsat()) / 1000),
+		Amount:                  format.FormatBasic(float64(failInfo.GetOutgoingAmtMsat())/1000, langTag),
 		WireFailure:             e.FailEvent.GetWireFailure().String(),
 		FailureDetail:           e.FailEvent.GetFailureDetail().String(),
-		MissedFee:               format.FormatDetailed((float64(failInfo.GetIncomingAmtMsat() - failInfo.GetOutgoingAmtMsat())) / 1000),
+		MissedFee:               format.FormatDetailed((float64(failInfo.GetIncomingAmtMsat()-failInfo.GetOutgoingAmtMsat()))/1000, langTag),
 	}
 }
 

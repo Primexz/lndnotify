@@ -81,7 +81,7 @@ func Run(configPath string) {
 				continue
 			}
 
-			msg, err := notifier.RenderTemplate(event.Type().String(), event.GetTemplateData())
+			msg, err := notifier.RenderTemplate(event.Type().String(), event.GetTemplateData(cfg))
 			if err != nil {
 				log.WithError(err).Error("error rendering template")
 				continue

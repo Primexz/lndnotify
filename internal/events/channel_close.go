@@ -41,16 +41,18 @@ func (e *ChannelCloseEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ChannelCloseEvent) GetTemplateData() interface{} {
+func (e *ChannelCloseEvent) GetTemplateData(cfg *config.Config) interface{} {
+	langTag := cfg.Formatting.Language.Tag
+
 	return &ChannelCloseTemplate{
 		PeerAlias:       e.Node.Alias,
 		PeerPubKey:      e.Node.PubKey,
 		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
 		ChanId:          e.Channel.ChanId,
 		ChannelPoint:    e.Channel.ChannelPoint,
-		Capacity:        format.FormatBasic(float64(e.Channel.Capacity)),
+		Capacity:        format.FormatBasic(float64(e.Channel.Capacity), langTag),
 		RemotePubkey:    e.Channel.RemotePubkey,
-		SettledBalance:  format.FormatBasic(float64(e.Channel.SettledBalance)),
+		SettledBalance:  format.FormatBasic(float64(e.Channel.SettledBalance), langTag),
 	}
 }
 

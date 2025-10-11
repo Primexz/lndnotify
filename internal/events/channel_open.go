@@ -41,14 +41,16 @@ func (e *ChannelOpenEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ChannelOpenEvent) GetTemplateData() interface{} {
+func (e *ChannelOpenEvent) GetTemplateData(cfg *config.Config) interface{} {
+	langTag := cfg.Formatting.Language.Tag
+
 	return &ChannelOpenTemplate{
 		PeerAlias:       e.Node.Alias,
 		PeerPubKey:      e.Node.PubKey,
 		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
 		ChanId:          e.Channel.ChanId,
 		ChannelPoint:    e.Channel.ChannelPoint,
-		Capacity:        format.FormatBasic(float64(e.Channel.Capacity)),
+		Capacity:        format.FormatBasic(float64(e.Channel.Capacity), langTag),
 		RemotePubkey:    e.Channel.RemotePubkey,
 	}
 }

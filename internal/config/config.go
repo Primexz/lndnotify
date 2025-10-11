@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/text/language"
 	"gopkg.in/yaml.v3"
 )
 
@@ -14,6 +15,11 @@ type Config struct {
 	Events        EventFlags         `yaml:"events"`
 	EventConfig   EventConfig        `yaml:"event_config"`
 	LogLevel      string             `yaml:"log_level" validate:"omitempty,oneof=panic fatal error warn info debug trace"`
+	Formatting    Formatting         `yaml:"formatting"`
+}
+
+type Formatting struct {
+	Language LanguageTag `yaml:"language"`
 }
 
 // LNDConfig holds the LND node connection settings
@@ -144,6 +150,9 @@ func (c *Config) setDefaults() {
 	if c.LogLevel == "" {
 		c.LogLevel = "info"
 	}
+	if c.Formatting.Language.Tag == language.Und {
+		c.Formatting.Language.Tag = language.English
+	}
 
 	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.ChannelClose == "" {
@@ -153,7 +162,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
 	}
 	if c.Notifications.Templates.FailedHtlc == "" {
-		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"
+		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats\nLocal liquidity failure: {{if .IsLocalLiquidityFailure}}✅{{else}}❌{{end}}"
 	}
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"

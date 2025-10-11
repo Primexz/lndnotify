@@ -35,10 +35,12 @@ func (e *InvoiceSettledEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *InvoiceSettledEvent) GetTemplateData() interface{} {
+func (e *InvoiceSettledEvent) GetTemplateData(cfg *config.Config) interface{} {
+	langTag := cfg.Formatting.Language.Tag
+
 	return &InvoiceSettledTemplate{
 		Memo:           e.Invoice.Memo,
-		Value:          format.FormatBasic(float64(e.Invoice.Value)),
+		Value:          format.FormatBasic(float64(e.Invoice.Value), langTag),
 		IsKeysend:      e.Invoice.IsKeysend,
 		PaymentRequest: e.Invoice.PaymentRequest,
 	}

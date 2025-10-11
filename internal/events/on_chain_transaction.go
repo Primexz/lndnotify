@@ -48,11 +48,12 @@ func (e *OnChainTransactionEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
+func (e *OnChainTransactionEvent) GetTemplateData(cfg *config.Config) interface{} {
+	langTag := cfg.Formatting.Language.Tag
 	outputs := make([]OnChainOutput, 0, len(e.Event.OutputDetails))
 	for _, output := range e.Event.OutputDetails {
 		outputs = append(outputs, OnChainOutput{
-			Amount:       format.FormatBasic(float64(output.Amount)),
+			Amount:       format.FormatBasic(float64(output.Amount), langTag),
 			OutputType:   output.OutputType.String(),
 			IsOurAddress: output.IsOurAddress,
 			Address:      output.Address,
@@ -63,8 +64,8 @@ func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
 		TxHash:    e.Event.TxHash,
 		RawTxHex:  e.Event.RawTxHex,
 		Outputs:   outputs,
-		Amount:    format.FormatBasic(float64(e.Event.Amount)),
-		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees)),
+		Amount:    format.FormatBasic(float64(e.Event.Amount), langTag),
+		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees), langTag),
 		Confirmed: e.Event.NumConfirmations > 0,
 	}
 }

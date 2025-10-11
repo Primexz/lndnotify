@@ -36,7 +36,7 @@ func (e *PeerOfflineEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PeerOfflineEvent) GetTemplateData() interface{} {
+func (e *PeerOfflineEvent) GetTemplateData(cfg *config.Config) interface{} {
 	var alias string
 	if e.NodeInfo != nil {
 		alias = e.NodeInfo.Node.Alias

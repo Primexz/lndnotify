@@ -10,7 +10,7 @@ import (
 type Event interface {
 	Type() EventType
 	Timestamp() time.Time
-	GetTemplateData() interface{}
+	GetTemplateData(cfg *config.Config) interface{}
 	ShouldProcess(cfg *config.Config) bool
 }
 
