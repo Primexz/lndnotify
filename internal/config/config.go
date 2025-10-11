@@ -15,11 +15,6 @@ type Config struct {
 	Events        EventFlags         `yaml:"events"`
 	EventConfig   EventConfig        `yaml:"event_config"`
 	LogLevel      string             `yaml:"log_level" validate:"omitempty,oneof=panic fatal error warn info debug trace"`
-	Formatting    Formatting         `yaml:"formatting"`
-}
-
-type Formatting struct {
-	Language LanguageTag `yaml:"language"`
 }
 
 // LNDConfig holds the LND node connection settings
@@ -32,8 +27,13 @@ type LNDConfig struct {
 
 // NotificationConfig holds notification service settings
 type NotificationConfig struct {
-	Providers []ProviderConfig     `yaml:"providers" validate:"required,min=1"`
-	Templates NotificationTemplate `yaml:"templates"`
+	Providers  []ProviderConfig     `yaml:"providers" validate:"required,min=1"`
+	Templates  NotificationTemplate `yaml:"templates"`
+	Formatting Formatting           `yaml:"formatting"`
+}
+
+type Formatting struct {
+	Locale LanguageTag `yaml:"locale"`
 }
 
 // ProviderConfig represents a single notification provider configuration
@@ -150,8 +150,8 @@ func (c *Config) setDefaults() {
 	if c.LogLevel == "" {
 		c.LogLevel = "info"
 	}
-	if c.Formatting.Language.Tag == language.Und {
-		c.Formatting.Language.Tag = language.English
+	if c.Notifications.Formatting.Locale.Tag == language.Und {
+		c.Notifications.Formatting.Locale.Tag = language.English
 	}
 
 	// Set default templates in alphabetical order to prevent merge conflicts

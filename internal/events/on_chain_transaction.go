@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type OnChainTransactionEvent struct {
@@ -48,8 +49,7 @@ func (e *OnChainTransactionEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *OnChainTransactionEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
+func (e *OnChainTransactionEvent) GetTemplateData(langTag language.Tag) interface{} {
 	outputs := make([]OnChainOutput, 0, len(e.Event.OutputDetails))
 	for _, output := range e.Event.OutputDetails {
 		outputs = append(outputs, OnChainOutput{

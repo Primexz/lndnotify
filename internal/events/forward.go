@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type ForwardEvent struct {
@@ -37,8 +38,7 @@ func (e *ForwardEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ForwardEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
+func (e *ForwardEvent) GetTemplateData(langTag language.Tag) interface{} {
 	amtInSats := float64(e.Forward.AmtInMsat) / 1000
 	amtOutSats := float64(e.Forward.AmtOutMsat) / 1000
 	feeSats := float64(e.Forward.FeeMsat) / 1000

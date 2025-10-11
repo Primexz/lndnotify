@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type KeysendEvent struct {
@@ -39,8 +40,7 @@ func (e *KeysendEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *KeysendEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
+func (e *KeysendEvent) GetTemplateData(langTag language.Tag) interface{} {
 	var inChanAlias string
 	if e.Channel != nil {
 		inChanAlias = e.Channel.PeerAlias

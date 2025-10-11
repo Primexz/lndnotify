@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type PaymentSucceededEvent struct {
@@ -66,8 +67,7 @@ func (e *PaymentSucceededEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PaymentSucceededEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
+func (e *PaymentSucceededEvent) GetTemplateData(langTag language.Tag) interface{} {
 	amountSats := float64(e.Payment.ValueMsat) / 1000
 	feeSats := float64(e.Payment.FeeMsat) / 1000
 

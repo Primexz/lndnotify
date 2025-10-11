@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type ChannelOpenEvent struct {
@@ -41,9 +42,7 @@ func (e *ChannelOpenEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ChannelOpenEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
-
+func (e *ChannelOpenEvent) GetTemplateData(langTag language.Tag) interface{} {
 	return &ChannelOpenTemplate{
 		PeerAlias:       e.Node.Alias,
 		PeerPubKey:      e.Node.PubKey,

@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type PeerOnlineEvent struct {
@@ -36,7 +37,7 @@ func (e *PeerOnlineEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PeerOnlineEvent) GetTemplateData(cfg *config.Config) interface{} {
+func (e *PeerOnlineEvent) GetTemplateData(langTag language.Tag) interface{} {
 	var alias string
 	if e.NodeInfo != nil {
 		alias = e.NodeInfo.Node.Alias

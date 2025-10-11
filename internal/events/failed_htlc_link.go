@@ -8,6 +8,7 @@ import (
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/text/language"
 )
 
 type FailedHtlcLinkEvent struct {
@@ -48,8 +49,7 @@ func (e *FailedHtlcLinkEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *FailedHtlcLinkEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
+func (e *FailedHtlcLinkEvent) GetTemplateData(langTag language.Tag) interface{} {
 	failInfo := e.FailEvent.GetInfo()
 	inChanId := e.HtlcEvent.GetIncomingChannelId()
 	outChanId := e.HtlcEvent.GetOutgoingChannelId()

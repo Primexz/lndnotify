@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type ChannelCloseEvent struct {
@@ -41,9 +42,7 @@ func (e *ChannelCloseEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ChannelCloseEvent) GetTemplateData(cfg *config.Config) interface{} {
-	langTag := cfg.Formatting.Language.Tag
-
+func (e *ChannelCloseEvent) GetTemplateData(langTag language.Tag) interface{} {
 	return &ChannelCloseTemplate{
 		PeerAlias:       e.Node.Alias,
 		PeerPubKey:      e.Node.PubKey,

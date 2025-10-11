@@ -81,15 +81,13 @@ lnd:
   tls_cert_path: "~/.lnd/tls.cert"
   macaroon_path: "~/.lnd/data/chain/bitcoin/mainnet/readonly.macaroon"
 
-# Notification formatting settings
-formatting:
-  locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
-
 # Notification settings
 notifications:
   providers:
     - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
+  formatting:
+    locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
 # Event settings
 events:

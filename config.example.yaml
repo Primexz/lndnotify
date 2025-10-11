@@ -7,10 +7,6 @@ lnd:
   tls_cert_path: "~/.lnd/tls.cert"
   macaroon_path: "~/.lnd/data/chain/bitcoin/mainnet/readonly.macaroon"
 
-# Notification formatting settings
-formatting:
-  locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
-
 # Notification settings
 notifications:
   providers:
@@ -29,6 +25,8 @@ notifications:
     rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
     on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
     on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
+  formatting:
+    locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
 # Event settings (feature flags)
 events:
