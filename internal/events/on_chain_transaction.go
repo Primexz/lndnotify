@@ -29,7 +29,6 @@ type OnChainOutput struct {
 }
 
 func NewOnChainTransactionEvent(event *lnrpc.Transaction) *OnChainTransactionEvent {
-
 	return &OnChainTransactionEvent{
 		Event:     event,
 		timestamp: time.Now(),
@@ -65,5 +64,9 @@ func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
 }
 
 func (e *OnChainTransactionEvent) ShouldProcess(cfg *config.Config) bool {
-	return cfg.Events.OnChainEvents
+	if !cfg.Events.OnChainEvents {
+		return false
+	}
+
+	return uint64(e.Event.Amount) >= cfg.EventConfig.OnChainEvent.MinAmount // #nosec G115
 }

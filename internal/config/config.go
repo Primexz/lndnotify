@@ -85,6 +85,9 @@ type EventConfig struct {
 	RebalancingEvent struct {
 		MinAmount uint64 `yaml:"min_amount"`
 	} `yaml:"rebalancing_event"`
+	OnChainEvent struct {
+		MinAmount uint64 `yaml:"min_amount"`
+	} `yaml:"on_chain_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
