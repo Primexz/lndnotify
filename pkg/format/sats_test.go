@@ -2,6 +2,8 @@ package format
 
 import (
 	"testing"
+
+	"golang.org/x/text/language"
 )
 
 func TestFormatDetailed(t *testing.T) {
@@ -32,7 +34,7 @@ func TestFormatDetailed(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := FormatDetailed(tt.value)
+		got := FormatDetailed(tt.value, language.English)
 		if got != tt.expected {
 			t.Errorf("TestFormatDetailed(%v) = %q; want %q", tt.value, got, tt.expected)
 		}
@@ -66,7 +68,7 @@ func TestFormatBasic(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := FormatBasic(tt.value)
+		got := FormatBasic(tt.value, language.English)
 		if got != tt.expected {
 			t.Errorf("TestFormatBasic(%v) = %q; want %q", tt.value, got, tt.expected)
 		}
@@ -95,10 +97,85 @@ func TestFormatRatePPM(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		got := FormatRatePPM(tt.numerator, tt.denominator)
+		got := FormatRatePPM(tt.numerator, tt.denominator, language.English)
 		if got != tt.expected {
 			t.Errorf("Test %d: FormatRatePPM(%.1f, %.0f) = %s; want %s",
 				i+1, tt.numerator, tt.denominator, got, tt.expected)
+		}
+	}
+}
+
+func TestFormatDetailedWithDifferentLanguages(t *testing.T) {
+	tests := []struct {
+		value    float64
+		lang     language.Tag
+		expected string
+	}{
+		// English
+		{1234567.89, language.English, "1,234,567.89"},
+		{1000000, language.English, "1,000,000"},
+		{1234567.123, language.English, "1,234,567.123"},
+
+		// German
+		{1234567.89, language.German, "1.234.567,89"},
+		{1000000, language.German, "1.000.000"},
+		{1234567.123, language.German, "1.234.567,123"},
+	}
+
+	for _, tt := range tests {
+		got := FormatDetailed(tt.value, tt.lang)
+		if got != tt.expected {
+			t.Errorf("FormatDetailed(%v, %v) = %q; want %q", tt.value, tt.lang, got, tt.expected)
+		}
+	}
+}
+
+func TestFormatBasicWithDifferentLanguages(t *testing.T) {
+	tests := []struct {
+		value    float64
+		lang     language.Tag
+		expected string
+	}{
+		// English
+		{1234567, language.English, "1,234,567"},
+		{1000000, language.English, "1,000,000"},
+		{1234567.123, language.English, "1,234,567"},
+
+		// German
+		{1234567, language.German, "1.234.567"},
+		{1000000, language.German, "1.000.000"},
+		{1234567.123, language.German, "1.234.567"},
+	}
+
+	for _, tt := range tests {
+		got := FormatBasic(tt.value, tt.lang)
+		if got != tt.expected {
+			t.Errorf("FormatBasic(%v, %v) = %q; want %q", tt.value, tt.lang, got, tt.expected)
+		}
+	}
+}
+
+func TestFormatRatePPMWithDifferentLanguages(t *testing.T) {
+	tests := []struct {
+		numerator, denominator float64
+		lang                   language.Tag
+		expected               string
+	}{
+		// English
+		{50, 1000, language.English, "50,000"},
+		{2, 10000, language.English, "200"},
+		{100, 100000, language.English, "1,000"},
+
+		// German
+		{50, 1000, language.German, "50.000"},
+		{2, 10000, language.German, "200"},
+		{100, 100000, language.German, "1.000"},
+	}
+
+	for _, tt := range tests {
+		got := FormatRatePPM(tt.numerator, tt.denominator, tt.lang)
+		if got != tt.expected {
+			t.Errorf("FormatRatePPM(%v, %v, %v) = %q; want %q", tt.numerator, tt.denominator, tt.lang, got, tt.expected)
 		}
 	}
 }
