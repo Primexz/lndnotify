@@ -153,6 +153,6 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
 	if c.Notifications.Templates.OnChain == "" {
-		c.Notifications.Templates.OnChain = "🔗 On-chain transaction: {{.Amount}} sats\nTxID: {{.TxHash}}\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\n\nRaw TX: {{.RawTxHex}}"
+		c.Notifications.Templates.OnChain = "🔗 On-chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
 	}
 }

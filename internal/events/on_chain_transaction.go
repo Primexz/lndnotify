@@ -13,18 +13,19 @@ type OnChainTransactionEvent struct {
 	timestamp time.Time
 }
 
+type OnChainTransactionTemplate struct {
+	TxHash    string
+	RawTxHex  string
+	Amount    string
+	TotalFees string
+	Outputs   []OnChainOutput
+}
+
 type OnChainOutput struct {
 	Amount       string
 	Address      string
 	OutputType   string
 	IsOurAddress bool
-}
-
-type OnChainTransactionTemplate struct {
-	TxHash   string
-	RawTxHex string
-	Amount   string
-	Outputs  []OnChainOutput
 }
 
 func NewOnChainTransactionEvent(event *lnrpc.Transaction) *OnChainTransactionEvent {
@@ -55,10 +56,11 @@ func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
 	}
 
 	return &OnChainTransactionTemplate{
-		TxHash:   e.Event.TxHash,
-		RawTxHex: e.Event.RawTxHex,
-		Outputs:  outputs,
-		Amount:   format.FormatBasic(float64(e.Event.Amount)),
+		TxHash:    e.Event.TxHash,
+		RawTxHex:  e.Event.RawTxHex,
+		Outputs:   outputs,
+		Amount:    format.FormatBasic(float64(e.Event.Amount)),
+		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees)),
 	}
 }
 
