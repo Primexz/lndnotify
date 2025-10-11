@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+
+- Configuration option for number formatting locale (e.g., "en-US" for English, "de-DE" for German) (@Primexz)
+
 ### Fixed
 ### Changed
 ### Removed
