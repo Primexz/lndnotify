@@ -114,6 +114,8 @@ event_config:
     min_amount: 0
   rebalancing_event:
     min_amount: 0
+  on_chain_event:
+    min_amount: 0
 ```
 
 
