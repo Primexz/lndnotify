@@ -72,3 +72,33 @@ func TestFormatBasic(t *testing.T) {
 		}
 	}
 }
+
+func TestFormatRatePPM(t *testing.T) {
+	tests := []struct {
+		numerator, denominator float64
+		expected               string
+	}{
+		{0, 100, "0"},          // Zero numerator
+		{50, 0, "0"},           // Zero denominator
+		{1, 1000, "1,000"},     // 1000 ppm
+		{5, 1000, "5,000"},     // 5000 ppm
+		{10, 100000, "100"},    // 100 ppm
+		{0.5, 1000, "500"},     // Fractional
+		{1.7, 3000, "567"},     // Rounds up
+		{50, 1000, "50,000"},   // 5%
+		{100, 1000, "100,000"}, // 10%
+		{2, 10000, "200"},      // Typical LN fee
+		{1, 100000000, "0"},    // Very small rate
+		{90, 100, "900,000"},   // 90%
+		{-5, 1000, "-5,000"},   // Negative
+		{5, -1000, "0"},        // Negative denominator
+	}
+
+	for i, tt := range tests {
+		got := FormatRatePPM(tt.numerator, tt.denominator)
+		if got != tt.expected {
+			t.Errorf("Test %d: FormatRatePPM(%.1f, %.0f) = %s; want %s",
+				i+1, tt.numerator, tt.denominator, got, tt.expected)
+		}
+	}
+}

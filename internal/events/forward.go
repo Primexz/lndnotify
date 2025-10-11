@@ -1,8 +1,6 @@
 package events
 
 import (
-	"fmt"
-	"math"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
@@ -44,20 +42,13 @@ func (e *ForwardEvent) GetTemplateData() interface{} {
 	amtOutSats := float64(e.Forward.AmtOutMsat) / 1000
 	feeSats := float64(e.Forward.FeeMsat) / 1000
 
-	var feeRatePpm int32
-	// Since the amounts in LN are rounded down, we have to round
-	// commercially in order to reconstruct a correct ppm.
-	if amtOutSats > 0 {
-		feeRatePpm = int32(math.Round(feeSats * 1e6 / amtOutSats))
-	}
-
 	return &ForwardTemplate{
 		PeerAliasIn:  e.Forward.PeerAliasIn,
 		PeerAliasOut: e.Forward.PeerAliasOut,
 		Amount:       format.FormatBasic(amtInSats),
 		AmountOut:    format.FormatBasic(amtOutSats),
 		Fee:          format.FormatDetailed(feeSats),
-		FeeRate:      fmt.Sprintf("%d", feeRatePpm),
+		FeeRate:      format.FormatRatePPM(feeSats, amtOutSats),
 	}
 }
 

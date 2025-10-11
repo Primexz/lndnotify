@@ -1,10 +1,8 @@
-package main
+package app
 
 import (
-	"flag"
 	"os"
 	"os/signal"
-	"runtime"
 	"syscall"
 
 	"github.com/Primexz/lndnotify/internal/config"
@@ -14,13 +12,7 @@ import (
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
-
-func init() {
+func Run(configPath string) {
 	log.SetFormatter(&prefixed.TextFormatter{
 		TimestampFormat:  "2006/01/02 - 15:04:05",
 		FullTimestamp:    true,
@@ -29,22 +21,10 @@ func init() {
 	})
 
 	log.SetReportCaller(true)
-
 	log.SetLevel(log.DebugLevel)
-}
-
-func main() {
-	log.WithFields(log.Fields{
-		"commit":  commit,
-		"runtime": runtime.Version(),
-		"arch":    runtime.GOARCH,
-	}).Infof("⚡️ starting lndnotify %s", version)
-
-	configPath := flag.String("config", "config.yaml", "Path to configuration file")
-	flag.Parse()
 
 	// Load configuration
-	cfg, err := config.LoadConfig(*configPath)
+	cfg, err := config.LoadConfig(configPath)
 	if err != nil {
 		log.WithError(err).Fatal("failed to load config file")
 	}
