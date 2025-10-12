@@ -23,6 +23,8 @@ type ChannelCloseTemplate struct {
 	ChannelPoint    string
 	RemotePubkey    string
 	Capacity        string
+	CloseInitiator  bool
+	CloseType       int32
 }
 
 func NewChannelCloseEvent(node *lnrpc.LightningNode, channel *lnrpc.ChannelCloseSummary) *ChannelCloseEvent {
@@ -51,6 +53,8 @@ func (e *ChannelCloseEvent) GetTemplateData() interface{} {
 		Capacity:        format.FormatBasic(float64(e.Channel.Capacity)),
 		RemotePubkey:    e.Channel.RemotePubkey,
 		SettledBalance:  format.FormatBasic(float64(e.Channel.SettledBalance)),
+		CloseInitiator:  e.Channel.CloseInitiator == lnrpc.Initiator_INITIATOR_LOCAL,
+		CloseType:       int32(e.Channel.CloseType),
 	}
 }
 

@@ -109,6 +109,8 @@ Triggered when a channel is closed.
 | `{{.RemotePubkey}}` | The public key of the remote peer |
 | `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
 | `{{.SettledBalance}}` | The final settled balance in satoshis (formatted) |
+| `{{.CloseInitiator}}` | Boolean indicating if the channel close was initiated by your node |
+| `{{.CloseType}}` | Integer indicating the type of close: 0=Cooperative, 1=Local Force, 2=Remote Force, 3=Breach, 4=Funding Canceled, 5=Abandoned |
 
 ## Failed HTLC Event
 Triggered when an HTLC (Hash Time Locked Contract) fails during routing.

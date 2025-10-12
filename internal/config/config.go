@@ -149,7 +149,7 @@ func (c *Config) setDefaults() {
 
 	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.ChannelClose == "" {
-		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
+		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, capacity {{.Capacity}} sats, settled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
 	}
 	if c.Notifications.Templates.ChannelClosing == "" {
 		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}, capacity {{.Capacity}} sats, limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
