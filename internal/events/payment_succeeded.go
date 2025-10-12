@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type PaymentSucceededEvent struct {
@@ -66,7 +67,7 @@ func (e *PaymentSucceededEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
+func (e *PaymentSucceededEvent) GetTemplateData(lang language.Tag) interface{} {
 	amountSats := float64(e.Payment.ValueMsat) / 1000
 	feeSats := float64(e.Payment.FeeMsat) / 1000
 
@@ -103,9 +104,9 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 			hopInfo = append(hopInfo, PaymentHopInfo{
 				Pubkey:  hop.PubKey,
 				Alias:   e.getAlias(hop.PubKey),
-				Amount:  format.FormatBasic(amountSats),
-				Fee:     format.FormatDetailed(feeSats),
-				FeeRate: format.FormatRatePPM(feeSats, amountSats),
+				Amount:  format.FormatBasic(amountSats, lang),
+				Fee:     format.FormatDetailed(feeSats, lang),
+				FeeRate: format.FormatRatePPM(feeSats, amountSats, lang),
 			})
 		}
 
@@ -122,17 +123,17 @@ func (e *PaymentSucceededEvent) GetTemplateData() interface{} {
 			FirstHop:  e.getAlias(firstHop.PubKey),
 			PenultHop: penultHop,
 			HopInfo:   hopInfo,
-			Fee:       format.FormatDetailed(feeSats),
-			FeeRate:   format.FormatRatePPM(feeSats, amountSats),
-			Amount:    format.FormatBasic(amountSats),
+			Fee:       format.FormatDetailed(feeSats, lang),
+			FeeRate:   format.FormatRatePPM(feeSats, amountSats, lang),
+			Amount:    format.FormatBasic(amountSats, lang),
 		})
 	}
 
 	return &PaymentSucceededTemplate{
 		PaymentHash: e.Payment.PaymentHash,
-		Amount:      format.FormatBasic(amountSats),
-		Fee:         format.FormatDetailed(feeSats),
-		FeeRate:     format.FormatRatePPM(feeSats, amountSats),
+		Amount:      format.FormatBasic(amountSats, lang),
+		Fee:         format.FormatDetailed(feeSats, lang),
+		FeeRate:     format.FormatRatePPM(feeSats, amountSats, lang),
 		HtlcInfo:    htlcInfo,
 		Receiver:    receiver,
 		Memo:        memo,

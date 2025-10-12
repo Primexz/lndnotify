@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type ChannelOpenEvent struct {
@@ -41,14 +42,14 @@ func (e *ChannelOpenEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ChannelOpenEvent) GetTemplateData() interface{} {
+func (e *ChannelOpenEvent) GetTemplateData(lang language.Tag) interface{} {
 	return &ChannelOpenTemplate{
 		PeerAlias:       e.Node.Alias,
 		PeerPubKey:      e.Node.PubKey,
 		PeerPubkeyShort: format.FormatPubKey(e.Node.PubKey),
 		ChanId:          e.Channel.ChanId,
 		ChannelPoint:    e.Channel.ChannelPoint,
-		Capacity:        format.FormatBasic(float64(e.Channel.Capacity)),
+		Capacity:        format.FormatBasic(float64(e.Channel.Capacity), lang),
 		RemotePubkey:    e.Channel.RemotePubkey,
 	}
 }

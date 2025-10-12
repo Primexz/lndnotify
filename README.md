@@ -26,6 +26,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - On-Chain Transactions
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
+- Customizable notification formatting (e.g., number formatting based on locale)
 - Event filtering
 
 ## Prerequisites
@@ -87,6 +88,8 @@ notifications:
   providers:
     - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
+  formatting:
+    locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
 # Event settings
 events:
@@ -112,6 +115,8 @@ event_config:
   payment_event:
     min_amount: 0
   rebalancing_event:
+    min_amount: 0
+  on_chain_event:
     min_amount: 0
 ```
 

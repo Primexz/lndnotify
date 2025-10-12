@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type PeerOfflineEvent struct {
@@ -36,7 +37,7 @@ func (e *PeerOfflineEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *PeerOfflineEvent) GetTemplateData() interface{} {
+func (e *PeerOfflineEvent) GetTemplateData(lang language.Tag) interface{} {
 	var alias string
 	if e.NodeInfo != nil {
 		alias = e.NodeInfo.Node.Alias

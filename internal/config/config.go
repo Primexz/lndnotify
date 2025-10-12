@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"golang.org/x/text/language"
 	"gopkg.in/yaml.v3"
 )
 
@@ -26,8 +27,13 @@ type LNDConfig struct {
 
 // NotificationConfig holds notification service settings
 type NotificationConfig struct {
-	Providers []ProviderConfig     `yaml:"providers" validate:"required,min=1"`
-	Templates NotificationTemplate `yaml:"templates"`
+	Providers  []ProviderConfig     `yaml:"providers" validate:"required,min=1"`
+	Templates  NotificationTemplate `yaml:"templates"`
+	Formatting Formatting           `yaml:"formatting"`
+}
+
+type Formatting struct {
+	Locale LanguageTag `yaml:"locale"`
 }
 
 // ProviderConfig represents a single notification provider configuration
@@ -146,6 +152,9 @@ func (c *Config) setDefaults() {
 	if c.LogLevel == "" {
 		c.LogLevel = "info"
 	}
+	if c.Notifications.Formatting.Locale.Tag == language.Und {
+		c.Notifications.Formatting.Locale.Tag = language.English
+	}
 
 	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.ChannelClose == "" {
@@ -161,7 +170,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.ChannelOpening = "{{if .Initiator}}⏳ Opening new {{.Capacity}} sats channel to {{.PeerAlias}}{{else}}⏳ Accepting new {{.Capacity}} sats channel from {{.PeerAlias}}{{end}}"
 	}
 	if c.Notifications.Templates.FailedHtlc == "" {
-		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"
+		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats\nLocal liquidity failure: {{if .IsLocalLiquidityFailure}}✅{{else}}❌{{end}}"
 	}
 	if c.Notifications.Templates.Forward == "" {
 		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"

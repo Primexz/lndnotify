@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type OnChainTransactionEvent struct {
@@ -48,11 +49,11 @@ func (e *OnChainTransactionEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
+func (e *OnChainTransactionEvent) GetTemplateData(lang language.Tag) interface{} {
 	outputs := make([]OnChainOutput, 0, len(e.Event.OutputDetails))
 	for _, output := range e.Event.OutputDetails {
 		outputs = append(outputs, OnChainOutput{
-			Amount:       format.FormatBasic(float64(output.Amount)),
+			Amount:       format.FormatBasic(float64(output.Amount), lang),
 			OutputType:   output.OutputType.String(),
 			IsOurAddress: output.IsOurAddress,
 			Address:      output.Address,
@@ -63,8 +64,8 @@ func (e *OnChainTransactionEvent) GetTemplateData() interface{} {
 		TxHash:    e.Event.TxHash,
 		RawTxHex:  e.Event.RawTxHex,
 		Outputs:   outputs,
-		Amount:    format.FormatBasic(float64(e.Event.Amount)),
-		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees)),
+		Amount:    format.FormatBasic(float64(e.Event.Amount), lang),
+		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees), lang),
 		Confirmed: e.Event.NumConfirmations > 0,
 	}
 }

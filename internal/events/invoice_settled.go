@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type InvoiceSettledEvent struct {
@@ -35,10 +36,10 @@ func (e *InvoiceSettledEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *InvoiceSettledEvent) GetTemplateData() interface{} {
+func (e *InvoiceSettledEvent) GetTemplateData(lang language.Tag) interface{} {
 	return &InvoiceSettledTemplate{
 		Memo:           e.Invoice.Memo,
-		Value:          format.FormatBasic(float64(e.Invoice.Value)),
+		Value:          format.FormatBasic(float64(e.Invoice.Value), lang),
 		IsKeysend:      e.Invoice.IsKeysend,
 		PaymentRequest: e.Invoice.PaymentRequest,
 	}

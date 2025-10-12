@@ -6,6 +6,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"golang.org/x/text/language"
 )
 
 type ChannelClosingEvent struct {
@@ -41,7 +42,7 @@ func (e *ChannelClosingEvent) Timestamp() time.Time {
 	return e.timestamp
 }
 
-func (e *ChannelClosingEvent) GetTemplateData() interface{} {
+func (e *ChannelClosingEvent) GetTemplateData(lang language.Tag) interface{} {
 	remotePubkey := e.Channel.Channel.RemoteNodePub
 
 	return &ChannelClosingTemplate{
@@ -49,8 +50,8 @@ func (e *ChannelClosingEvent) GetTemplateData() interface{} {
 		PeerPubKey:      remotePubkey,
 		PeerPubkeyShort: format.FormatPubKey(remotePubkey),
 		ChannelPoint:    e.Channel.Channel.ChannelPoint,
-		Capacity:        format.FormatBasic(float64(e.Channel.Channel.Capacity)),
-		LimboBalance:    format.FormatBasic(float64(e.Channel.LimboBalance)),
+		Capacity:        format.FormatBasic(float64(e.Channel.Channel.Capacity), lang),
+		LimboBalance:    format.FormatBasic(float64(e.Channel.LimboBalance), lang),
 		ClosingTxid:     e.Channel.ClosingTxid,
 		ClosingTxHex:    e.Channel.ClosingTxHex,
 	}

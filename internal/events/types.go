@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
+	"golang.org/x/text/language"
 )
 
 // Event is the base interface for all Lightning Network events
 type Event interface {
 	Type() EventType
 	Timestamp() time.Time
-	GetTemplateData() interface{}
+	GetTemplateData(lang language.Tag) interface{}
 	ShouldProcess(cfg *config.Config) bool
 }
 
