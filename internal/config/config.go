@@ -45,6 +45,8 @@ type ProviderConfig struct {
 // NotificationTemplate holds customizable message templates
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type NotificationTemplate struct {
+	ChainSyncLost        string `yaml:"chain_sync_lost_event"`
+	ChainSyncRestored    string `yaml:"chain_sync_restored_event"`
 	ChannelClose         string `yaml:"channel_close_event"`
 	ChannelClosing       string `yaml:"channel_closing_event"`
 	ChannelOpen          string `yaml:"channel_open_event"`
@@ -64,6 +66,7 @@ type NotificationTemplate struct {
 // EventFlags controls which events to monitor (feature flags)
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventFlags struct {
+	ChainSyncEvents   bool `yaml:"chain_sync_events"`
 	ChannelEvents     bool `yaml:"channel_events"`
 	FailedHtlc        bool `yaml:"failed_htlc_events"`
 	ForwardEvents     bool `yaml:"forward_events"`
@@ -180,6 +183,12 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.Keysend == "" {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
+	}
+	if c.Notifications.Templates.ChainSyncLost == "" {
+		c.Notifications.Templates.ChainSyncLost = "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
+	}
+	if c.Notifications.Templates.ChainSyncRestored == "" {
+		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync!\nDuration: {{.Duration}}"
 	}
 	if c.Notifications.Templates.OnChainMempool == "" {
 		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"

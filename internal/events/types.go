@@ -19,6 +19,8 @@ type EventType string
 
 // NOTE: Keep constants in alphabetical order to prevent merge conflicts when adding new events
 const (
+	Event_CHAIN_SYNC_LOST       EventType = "chain_sync_lost_event"
+	Event_CHAIN_SYNC_RESTORED   EventType = "chain_sync_restored_event"
 	Event_CHANNEL_CLOSE         EventType = "channel_close_event"
 	Event_CHANNEL_CLOSING       EventType = "channel_closing_event"
 	Event_CHANNEL_OPEN          EventType = "channel_open_event"
