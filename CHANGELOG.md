@@ -5,15 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+### Fixed
+### Changed
+### Removed
 
+
+## [1.4.0] - 2025-10-12
+
+### Added
 - New event: opening channel notification (@Feelancer21)
 - New event: closing channel notification (@Feelancer21)
 - Configuration option for number formatting locale (e.g., "en-US" for English, "de-DE" for German) (@Primexz)
 - New template variables `{{.CloseInitiator}}` and `{{.CloseType}}` for `channel_close_event`. (@Feelancer21)
 
-### Fixed
-### Changed
-### Removed
 
 ## [1.3.1] - 2025-10-11
 
