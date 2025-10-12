@@ -14,6 +14,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
+	"google.golang.org/protobuf/proto"
 )
 
 // ClientConfig holds the configuration for the LND client
@@ -32,7 +33,7 @@ type Client struct {
 	router          routerrpc.RouterClient
 	channelManager  *channelmanager.ChannelManager
 	pendChanManager *channelmanager.PendingChannelManager
-	pendChanUpdates chan interface{}
+	pendChanUpdates chan proto.Message
 	mu              sync.Mutex
 	eventSub        chan events.Event
 	ctx             context.Context
@@ -46,7 +47,7 @@ func NewClient(cfg *ClientConfig) *Client {
 	return &Client{
 		cfg:             cfg,
 		eventSub:        make(chan events.Event, 100),
-		pendChanUpdates: make(chan interface{}, 100),
+		pendChanUpdates: make(chan proto.Message, 100),
 		ctx:             ctx,
 		cancel:          cancel,
 	}

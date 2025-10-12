@@ -7,6 +7,7 @@ import (
 
 	"github.com/lightningnetwork/lnd/lnrpc"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/proto"
 )
 
 type PendingChannelManager struct {
@@ -17,7 +18,7 @@ type PendingChannelManager struct {
 	chanPointsClosing map[string]struct{}
 
 	firstPollDone  bool
-	pendingUpdates chan interface{}
+	pendingUpdates chan proto.Message
 	mu             sync.RWMutex
 	ctx            context.Context
 	cancel         context.CancelFunc
@@ -27,8 +28,7 @@ type PendingChannelManager struct {
 	refreshDelay    time.Duration
 }
 
-func NewPendingChannelManager(client lnrpc.LightningClient,
-	pendingUpdates chan interface{}) *PendingChannelManager {
+func NewPendingChannelManager(client lnrpc.LightningClient, pendingUpdates chan proto.Message) *PendingChannelManager {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	return &PendingChannelManager{
