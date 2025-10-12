@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
 	channelmanager "github.com/Primexz/lndnotify/internal/channel_manager"
 	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/Primexz/lndnotify/pkg/file"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	"google.golang.org/protobuf/proto"
@@ -165,4 +167,26 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 	}
 
 	return c.eventSub, nil
+}
+
+func (c *Client) GetMultiSigChannelBackup() (*file.File, error) {
+	if !c.IsConnected() {
+		if err := c.Connect(); err != nil {
+			return nil, fmt.Errorf("connecting to LND: %w", err)
+		}
+	}
+
+	resp, err := c.client.ExportAllChannelBackups(c.ctx, &lnrpc.ChanBackupExportRequest{})
+	if err != nil {
+		return nil, fmt.Errorf("exporting channel backups: %w", err)
+	}
+
+	// Create filename with timestamp
+	timestamp := time.Now().Format("20060102_150405")
+	file := &file.File{
+		Filename: fmt.Sprintf("channel_backup_%s.pb", timestamp),
+		Content:  resp.MultiChanBackup.MultiChanBackup,
+	}
+
+	return file, nil
 }

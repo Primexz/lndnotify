@@ -55,6 +55,16 @@ func Run(configPath string) {
 		Templates: cfg.Notifications.Templates,
 	})
 
+	file, err := lndClient.GetMultiSigChannelBackup()
+	if err == nil && notifier.Uploader != nil {
+		err = notifier.Uploader.Upload("❗️Channel backup received", file)
+		if err != nil {
+			log.WithError(err).Error("error uploading channel backup")
+		} else {
+			log.Info("channel backup uploaded successfully")
+		}
+	}
+
 	if cfg.Events.StatusEvents {
 		notifier.Send("🟢 lndnotify connected")
 		defer notifier.Send("🔴 lndnotify disconnected")

@@ -11,6 +11,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
+	"github.com/nicholas-fedor/shoutrrr/pkg/services/push/ntfy"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
@@ -40,6 +41,7 @@ type Manager struct {
 	mu        sync.Mutex
 	sent      int
 	lastReset time.Time
+	Uploader  *Uploader
 }
 
 // NewManager creates a new notification manager
@@ -59,6 +61,20 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			continue
 		}
 		m.providers[p.Name] = sender
+
+		_, url, err := sender.ExtractServiceName(p.URL)
+		if err != nil {
+			log.WithField("provider", p.Name).WithError(err).Error("error extracting service name")
+			continue
+		}
+		service := ntfy.Service{}
+		service.Initialize(url, log.StandardLogger())
+		ntfyUrl, err := url.Parse(service.Config.GetAPIURL())
+		if err != nil {
+			log.WithField("provider", p.Name).WithError(err).Error("error parsing ntfy url")
+			continue
+		}
+		m.Uploader = &Uploader{Url: ntfyUrl}
 	}
 
 	// Initialize templates
