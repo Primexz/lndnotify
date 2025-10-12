@@ -40,7 +40,9 @@ type ProviderConfig struct {
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type NotificationTemplate struct {
 	ChannelClose         string `yaml:"channel_close_event"`
+	ChannelClosing       string `yaml:"channel_closing_event"`
 	ChannelOpen          string `yaml:"channel_open_event"`
+	ChannelOpening       string `yaml:"channel_opening_event"`
 	FailedHtlc           string `yaml:"failed_htlc_event"`
 	Forward              string `yaml:"forward_event"`
 	InvoiceSettled       string `yaml:"invoice_settled_event"`
@@ -147,10 +149,16 @@ func (c *Config) setDefaults() {
 
 	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.ChannelClose == "" {
-		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, settled balance {{.SettledBalance}} sats"
+		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, capacity {{.Capacity}} sats, settled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
+	}
+	if c.Notifications.Templates.ChannelClosing == "" {
+		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}, capacity {{.Capacity}} sats, limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
 	}
 	if c.Notifications.Templates.ChannelOpen == "" {
 		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
+	}
+	if c.Notifications.Templates.ChannelOpening == "" {
+		c.Notifications.Templates.ChannelOpening = "{{if .Initiator}}⏳ Opening new {{.Capacity}} sats channel to {{.PeerAlias}}{{else}}⏳ Accepting new {{.Capacity}} sats channel from {{.PeerAlias}}{{end}}"
 	}
 	if c.Notifications.Templates.FailedHtlc == "" {
 		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats"

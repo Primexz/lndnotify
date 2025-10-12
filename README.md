@@ -13,7 +13,9 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 - Real-time monitoring of LND node events
 - Configurable notifications for:
   - Payment forward
+  - Channel Opening (pending)
   - Channel Open
+  - Channel Closing (pending)
   - Channel Close
   - Peer Online
   - Peer Offline

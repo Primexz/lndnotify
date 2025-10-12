@@ -116,14 +116,18 @@ func (c *Client) handleChannelEvents() {
 			default:
 			}
 
-			peerEvent, err := ev.Recv()
+			chanEvent, err := ev.Recv()
 			if err != nil {
 				return "", err // Return error to trigger retry
 			}
 
-			switch peerEvent.GetType() {
+			log.WithField("channel_event", chanEvent).Trace("received channel event")
+
+			switch chanEvent.GetType() {
+			case lnrpc.ChannelEventUpdate_PENDING_OPEN_CHANNEL:
+				c.pendChanManager.RefreshDelayed()
 			case lnrpc.ChannelEventUpdate_OPEN_CHANNEL:
-				channel := peerEvent.GetOpenChannel()
+				channel := chanEvent.GetOpenChannel()
 				nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
 					PubKey: channel.RemotePubkey,
 				})
@@ -134,7 +138,7 @@ func (c *Client) handleChannelEvents() {
 
 				c.eventSub <- events.NewChannelOpenEvent(nodeInfo.Node, channel)
 			case lnrpc.ChannelEventUpdate_CLOSED_CHANNEL:
-				channel := peerEvent.GetClosedChannel()
+				channel := chanEvent.GetClosedChannel()
 				nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
 					PubKey: channel.RemotePubkey,
 				})
@@ -368,13 +372,35 @@ func (c *Client) handleOnChainEvents() {
 			confirmCnt := event.GetNumConfirmations()
 			if confirmCnt == 0 || confirmCnt == 1 {
 				c.eventSub <- events.NewOnChainTransactionEvent(event)
+				c.pendChanManager.RefreshDelayed()
 			}
 		}
 	})
 }
 
+func (c *Client) handlePendingChannels() {
+	log.Debug("starting pending channel event handler")
+	defer c.wg.Done()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case update := <-c.pendChanUpdates:
+			switch ev := update.(type) {
+			case *lnrpc.PendingChannelsResponse_PendingOpenChannel:
+				c.eventSub <- events.NewChannelOpeningEvent(ev, c.getAlias)
+			case *lnrpc.PendingChannelsResponse_WaitingCloseChannel:
+				c.eventSub <- events.NewChannelClosingEvent(ev, c.getAlias)
+			default:
+				log.WithField("update", update).Warn("unknown pending channel update type")
+			}
+		}
+	}
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
-// 21 characters of the pubkey.
+// 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {
 	if nodeInfo, err := c.client.GetNodeInfo(c.ctx, &lnrpc.NodeInfoRequest{
 		PubKey: pubkey,
@@ -387,7 +413,7 @@ func (c *Client) getAlias(pubkey string) string {
 func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {
-		logger.WithError(err).WithField("next_retry_in", duration).WithError(err).Warn("operation failed, retrying")
+		logger.WithError(err).WithField("next_retry_in", duration).Warn("operation failed, retrying")
 	}
 
 	_, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))

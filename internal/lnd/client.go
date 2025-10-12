@@ -14,6 +14,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
+	"google.golang.org/protobuf/proto"
 )
 
 // ClientConfig holds the configuration for the LND client
@@ -26,26 +27,29 @@ type ClientConfig struct {
 
 // Client represents an LND node client
 type Client struct {
-	cfg            *ClientConfig
-	conn           *grpc.ClientConn
-	client         lnrpc.LightningClient
-	router         routerrpc.RouterClient
-	channelManager *channelmanager.ChannelManager
-	mu             sync.Mutex
-	eventSub       chan events.Event
-	ctx            context.Context
-	cancel         context.CancelFunc
-	wg             sync.WaitGroup
+	cfg             *ClientConfig
+	conn            *grpc.ClientConn
+	client          lnrpc.LightningClient
+	router          routerrpc.RouterClient
+	channelManager  *channelmanager.ChannelManager
+	pendChanManager *channelmanager.PendingChannelManager
+	pendChanUpdates chan proto.Message
+	mu              sync.Mutex
+	eventSub        chan events.Event
+	ctx             context.Context
+	cancel          context.CancelFunc
+	wg              sync.WaitGroup
 }
 
 // NewClient creates a new LND client
 func NewClient(cfg *ClientConfig) *Client {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Client{
-		cfg:      cfg,
-		eventSub: make(chan events.Event, 100),
-		ctx:      ctx,
-		cancel:   cancel,
+		cfg:             cfg,
+		eventSub:        make(chan events.Event, 100),
+		pendChanUpdates: make(chan proto.Message, 100),
+		ctx:             ctx,
+		cancel:          cancel,
 	}
 }
 
@@ -86,6 +90,7 @@ func (c *Client) Connect() error {
 	c.client = lnrpc.NewLightningClient(conn)
 	c.router = routerrpc.NewRouterClient(conn)
 	c.channelManager = channelmanager.NewChannelManager(c.client)
+	c.pendChanManager = channelmanager.NewPendingChannelManager(c.client, c.pendChanUpdates)
 
 	return nil
 }
@@ -101,6 +106,11 @@ func (c *Client) Disconnect() error {
 	if c.channelManager != nil {
 		c.channelManager.Stop()
 		c.channelManager = nil
+	}
+
+	if c.pendChanManager != nil {
+		c.pendChanManager.Stop()
+		c.pendChanManager = nil
 	}
 
 	if c.conn != nil {
@@ -132,6 +142,10 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		return nil, fmt.Errorf("starting channel manager: %w", err)
 	}
 
+	if err := c.pendChanManager.Start(); err != nil {
+		return nil, fmt.Errorf("starting pending channel manager: %w", err)
+	}
+
 	// Start subscription handlers
 	// NOTE: Keep handlers in alphabetical order to prevent merge conflicts when adding new handlers
 	handlers := []func(){
@@ -143,6 +157,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		c.handleOnChainEvents,
 		c.handlePaymentEvents,
 		c.handlePeerEvents,
+		c.handlePendingChannels,
 	}
 	c.wg.Add(len(handlers))
 	for _, h := range handlers {
