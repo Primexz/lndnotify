@@ -54,6 +54,19 @@ Triggered when a peer disconnects from your node.
 | `{{.PeerPubKey}}` | The full public key of the peer |
 | `{{.PeerPubkeyShort}}` | A shortened version of the peer's public key |
 
+## Channel Opening Event
+Triggered when a channel is in the process of being opened (pending).
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PeerAlias}}` | The alias of the peer with whom the channel is being opened |
+| `{{.PeerPubKey}}` | The full public key of the peer |
+| `{{.PeerPubkeyShort}}` | A shortened version of the peer's public key |
+| `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
+| `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
+| `{{.Initiator}}` | Boolean indicating if the channel was initiated by your node |
+| `{{.IsPrivate}}` | Boolean indicating if this is a private channel |
+
 ## Channel Open Event
 Triggered when a new channel is opened with your node.
 
@@ -66,6 +79,22 @@ Triggered when a new channel is opened with your node.
 | `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
 | `{{.RemotePubkey}}` | The public key of the remote peer |
 | `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
+
+## Channel Closing Event
+Triggered when a channel close is in progress (waiting for confirmation).
+It is sent when a cooperative or force close is initiated. Force closes are only sent when
+they are initiated by your node.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PeerAlias}}` | The alias of the peer with whom the channel is being closed |
+| `{{.PeerPubKey}}` | The full public key of the peer |
+| `{{.PeerPubkeyShort}}` | A shortened version of the peer's public key |
+| `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
+| `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
+| `{{.LimboBalance}}` | The balance in satoshis encumbered in this pending close (formatted) |
+| `{{.ClosingTxid}}` | The transaction ID of the closing transaction |
+| `{{.ClosingTxHex}}` | The full hex of the closing transaction |
 
 ## Channel Close Event
 Triggered when a channel is closed.
@@ -80,6 +109,8 @@ Triggered when a channel is closed.
 | `{{.RemotePubkey}}` | The public key of the remote peer |
 | `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
 | `{{.SettledBalance}}` | The final settled balance in satoshis (formatted) |
+| `{{.CloseInitiator}}` | Boolean indicating if the channel close was initiated by your node |
+| `{{.CloseType}}` | Integer indicating the type of close: 0=Cooperative, 1=Local Force, 2=Remote Force, 3=Breach, 4=Funding Canceled, 5=Abandoned |
 
 ## Failed HTLC Event
 Triggered when an HTLC (Hash Time Locked Contract) fails during routing.
