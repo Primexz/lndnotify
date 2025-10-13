@@ -19,7 +19,7 @@ type BackupMultiEvent struct {
 
 type BackupMultiTemplate struct {
 	ChanPoints    []string
-	NumChanPoints int32
+	NumChanPoints int
 	Filename      string
 	Sha256Sum     string
 }
@@ -51,7 +51,7 @@ func (e *BackupMultiEvent) GetTemplateData(lang language.Tag) interface{} {
 	sha256sum := hex.EncodeToString(hash[:])
 
 	return &BackupMultiTemplate{
-		NumChanPoints: int32(len(e.Backup.ChanPoints)),
+		NumChanPoints: len(e.Backup.ChanPoints),
 		ChanPoints:    chanPoints,
 		Filename:      e.getFileName(),
 		Sha256Sum:     sha256sum,
