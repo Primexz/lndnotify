@@ -74,6 +74,9 @@ go build .
 
 ## Configuration
 
+> [!TIP] 
+> The full configuration options can be found in the[example config file](config.example.yaml).
+
 Create a configuration file `config.yaml`:
 
 ```yaml
@@ -120,8 +123,10 @@ event_config:
     min_amount: 0
   on_chain_event:
     min_amount: 0
+  chain_lost_event:
+    threshold: 5m 
+    warning_interval: 15m 
 ```
-
 
 ### Notification Providers
 
