@@ -71,7 +71,12 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			m.providers[p.Name] = Provider{Sender: sender, Uploader: nil}
 			continue
 		}
-		upl := uploader.NewUploader(name, url)
+		upl, err := uploader.NewUploader(name, url)
+		if err != nil {
+			log.WithField("provider", p.Name).WithError(err).Error("error creating uploader")
+			m.providers[p.Name] = Provider{Sender: sender, Uploader: nil}
+			continue
+		}
 		m.providers[p.Name] = Provider{Sender: sender, Uploader: upl}
 	}
 
@@ -145,20 +150,14 @@ func (m *Manager) Send(message string) {
 	for name, p := range m.providers {
 		logger := log.WithField("provider", name).WithField("message", message)
 
-		m.sendRouter(message, p.Sender, logger)
-	}
-}
-
-// sendRouter sends a notification using a specific router
-func (m *Manager) sendRouter(message string, router *router.ServiceRouter, logger *log.Entry) {
-	logger.Info("sending notification")
-
-	errs := router.Send(message, &types.Params{})
-	for _, err := range errs {
-		if err == nil {
-			continue
+		logger.Info("sending notification")
+		errs := p.Sender.Send(message, &types.Params{})
+		for _, err := range errs {
+			if err == nil {
+				continue
+			}
+			logger.WithError(err).Error("error sending notification")
 		}
-		logger.WithError(err).Error("error sending notification")
 	}
 }
 
@@ -206,7 +205,15 @@ func (m *Manager) UploadFile(message string, file *uploader.File) {
 			} else {
 				msg += " (file upload not supported for this provider)"
 			}
-			m.sendRouter(msg, p.Sender, logger)
+			logger.Info("sending notification")
+
+			errs := p.Sender.Send(msg, &types.Params{})
+			for _, err := range errs {
+				if err == nil {
+					continue
+				}
+				logger.WithError(err).Error("error sending notification")
+			}
 		}
 
 		if p.Uploader == nil {

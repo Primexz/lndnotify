@@ -1,42 +1,23 @@
 package uploader
 
 import (
+	"fmt"
 	"net/url"
-
-	"github.com/nicholas-fedor/shoutrrr/pkg/services/push/ntfy"
-	log "github.com/sirupsen/logrus"
 )
 
-func NewUploader(provider string, shoutrrrUrl *url.URL) Uploader {
+func NewUploader(provider string, shoutrrrUrl *url.URL) (Uploader, error) {
 	if shoutrrrUrl == nil {
-		log.Error("No URL provided for uploader")
-		return nil
+		return nil, fmt.Errorf("no URL provided for uploader")
 	}
 
 	switch provider {
 	case "ntfy":
 		uploader, err := NewNtfyUploader(shoutrrrUrl)
 		if err != nil {
-			log.WithError(err).Error("error creating ntfy uploader")
-			return nil
+			return nil, fmt.Errorf("error creating ntfy uploader: %w", err)
 		}
-		return uploader
+		return uploader, nil
 	default:
-		log.WithField("provider", provider).Warn("file upload not supported for this provider")
-		return nil
+		return nil, fmt.Errorf("file upload not supported for provider: %s", provider)
 	}
-}
-
-func NewNtfyUploader(shoutrrrUrl *url.URL) (*HttpUploader, error) {
-	service := ntfy.Service{}
-	err := service.Initialize(shoutrrrUrl, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	ntfyUrl, err := url.Parse(service.Config.GetAPIURL())
-	if err != nil {
-		return nil, err
-	}
-	return &HttpUploader{Url: ntfyUrl}, nil
 }
