@@ -399,6 +399,68 @@ func (c *Client) handlePendingChannels() {
 	}
 }
 
+func (c *Client) handleChainSyncState() {
+	log.Debug("starting sync state event handler")
+	defer c.wg.Done()
+
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
+	unsyncedThreshold := c.cfg.EventConfig.ChainLostEvent.Threshold
+	warningInterval := c.cfg.EventConfig.ChainLostEvent.WarningInterval
+
+	var lastUnsyncedTime *time.Time
+	var lastWarningTime *time.Time
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("polling for sync state")
+
+			info, err := c.client.GetInfo(c.ctx, &lnrpc.GetInfoRequest{})
+			if err != nil {
+				log.WithError(err).Error("error fetching node info")
+				continue
+			}
+
+			if info.SyncedToChain {
+				if lastUnsyncedTime != nil {
+					log.Debug("chain sync restored")
+					c.eventSub <- events.NewChainSyncRestoredEvent(time.Since(*lastUnsyncedTime))
+					lastUnsyncedTime = nil
+					lastWarningTime = nil
+				}
+			} else {
+				now := time.Now()
+				if lastUnsyncedTime == nil {
+					// first time we detect chain is not synced
+					lastUnsyncedTime = &now
+					log.Debug("chain sync lost, starting timer")
+				} else {
+					unsyncedDuration := now.Sub(*lastUnsyncedTime)
+					if unsyncedDuration >= unsyncedThreshold {
+						shouldWarn := false
+						if lastWarningTime == nil {
+							// initial warning after threshold
+							shouldWarn = true
+						} else if now.Sub(*lastWarningTime) >= warningInterval {
+							// oh no, it's time for another warning
+							shouldWarn = true
+						}
+
+						if shouldWarn {
+							// chain has been unsynced for longer than threshold
+							c.eventSub <- events.NewChainSyncLostEvent(unsyncedDuration)
+							lastWarningTime = &now
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {

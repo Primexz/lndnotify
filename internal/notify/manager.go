@@ -73,6 +73,8 @@ func (m *Manager) parseTemplates() {
 		events.Event_FORWARD:               m.cfg.Templates.Forward,
 		events.Event_PEER_OFFLINE:          m.cfg.Templates.PeerOffline,
 		events.Event_PEER_ONLINE:           m.cfg.Templates.PeerOnline,
+		events.Event_CHAIN_SYNC_LOST:       m.cfg.Templates.ChainSyncLost,
+		events.Event_CHAIN_SYNC_RESTORED:   m.cfg.Templates.ChainSyncRestored,
 		events.Event_CHANNEL_OPEN:          m.cfg.Templates.ChannelOpen,
 		events.Event_CHANNEL_OPENING:       m.cfg.Templates.ChannelOpening,
 		events.Event_CHANNEL_CLOSE:         m.cfg.Templates.ChannelClose,

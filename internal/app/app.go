@@ -36,12 +36,7 @@ func Run(configPath string) {
 	log.SetLevel(level)
 
 	// Create LND client
-	lndClient := lnd.NewClient(&lnd.ClientConfig{
-		Host:         cfg.LND.Host,
-		Port:         cfg.LND.Port,
-		TLSCertPath:  cfg.LND.TLSCertPath,
-		MacaroonPath: cfg.LND.MacaroonPath,
-	})
+	lndClient := lnd.NewClient(cfg)
 
 	// Connect to LND
 	if err := lndClient.Connect(); err != nil {

@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"golang.org/x/text/language"
 	"gopkg.in/yaml.v3"
@@ -45,6 +46,8 @@ type ProviderConfig struct {
 // NotificationTemplate holds customizable message templates
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type NotificationTemplate struct {
+	ChainSyncLost        string `yaml:"chain_sync_lost_event"`
+	ChainSyncRestored    string `yaml:"chain_sync_restored_event"`
 	ChannelClose         string `yaml:"channel_close_event"`
 	ChannelClosing       string `yaml:"channel_closing_event"`
 	ChannelOpen          string `yaml:"channel_open_event"`
@@ -64,6 +67,7 @@ type NotificationTemplate struct {
 // EventFlags controls which events to monitor (feature flags)
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventFlags struct {
+	ChainSyncEvents   bool `yaml:"chain_sync_events"`
 	ChannelEvents     bool `yaml:"channel_events"`
 	FailedHtlc        bool `yaml:"failed_htlc_events"`
 	ForwardEvents     bool `yaml:"forward_events"`
@@ -97,6 +101,10 @@ type EventConfig struct {
 	OnChainEvent struct {
 		MinAmount uint64 `yaml:"min_amount"`
 	} `yaml:"on_chain_event"`
+	ChainLostEvent struct {
+		Threshold       time.Duration `yaml:"threshold"`
+		WarningInterval time.Duration `yaml:"warning_interval"`
+	} `yaml:"chain_lost_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -181,6 +189,12 @@ func (c *Config) setDefaults() {
 	if c.Notifications.Templates.Keysend == "" {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
+	if c.Notifications.Templates.ChainSyncLost == "" {
+		c.Notifications.Templates.ChainSyncLost = "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
+	}
+	if c.Notifications.Templates.ChainSyncRestored == "" {
+		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync!\nDuration: {{.Duration}}"
+	}
 	if c.Notifications.Templates.OnChainMempool == "" {
 		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
 	}
@@ -198,5 +212,11 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.RebalancingSucceeded == "" {
 		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}\nFee: {{.Fee}} sats ({{.FeeRate}} ppm)\nRoute: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
+	}
+	if c.EventConfig.ChainLostEvent.Threshold == 0 {
+		c.EventConfig.ChainLostEvent.Threshold = 5 * time.Minute
+	}
+	if c.EventConfig.ChainLostEvent.WarningInterval == 0 {
+		c.EventConfig.ChainLostEvent.WarningInterval = 15 * time.Minute
 	}
 }
