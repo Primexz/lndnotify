@@ -75,7 +75,7 @@ go build .
 ## Configuration
 
 > [!TIP] 
-> The full configuration options can be found in the[example config file](config.example.yaml).
+> The full configuration options can be found in the [example config file](config.example.yaml).
 
 Create a configuration file `config.yaml`:
 
