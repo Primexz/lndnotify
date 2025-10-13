@@ -403,17 +403,14 @@ func (c *Client) handleChainSyncState() {
 	log.Debug("starting sync state event handler")
 	defer c.wg.Done()
 
-	// TODO: CONFIG VAR
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 
+	unsyncedThreshold := c.cfg.EventConfig.ChainLostEvent.Threshold
+	warningInterval := c.cfg.EventConfig.ChainLostEvent.WarningInterval
+
 	var lastUnsyncedTime *time.Time
 	var lastWarningTime *time.Time
-
-	// TODO: CONFIG VARS
-	const unsyncedThreshold = 1 * time.Minute
-	const warningInterval = 15 * time.Minute
-
 	for {
 		select {
 		case <-c.ctx.Done():

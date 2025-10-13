@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"golang.org/x/text/language"
 	"gopkg.in/yaml.v3"
@@ -100,6 +101,10 @@ type EventConfig struct {
 	OnChainEvent struct {
 		MinAmount uint64 `yaml:"min_amount"`
 	} `yaml:"on_chain_event"`
+	ChainLostEvent struct {
+		Threshold       time.Duration `yaml:"threshold"`
+		WarningInterval time.Duration `yaml:"warning_interval"`
+	} `yaml:"chain_lost_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -207,5 +212,11 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.RebalancingSucceeded == "" {
 		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}\nFee: {{.Fee}} sats ({{.FeeRate}} ppm)\nRoute: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
+	}
+	if c.EventConfig.ChainLostEvent.Threshold == 0 {
+		c.EventConfig.ChainLostEvent.Threshold = 5 * time.Minute
+	}
+	if c.EventConfig.ChainLostEvent.WarningInterval == 0 {
+		c.EventConfig.ChainLostEvent.WarningInterval = 15 * time.Minute
 	}
 }

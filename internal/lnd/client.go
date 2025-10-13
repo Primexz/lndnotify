@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/credentials"
 
 	channelmanager "github.com/Primexz/lndnotify/internal/channel_manager"
+	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
@@ -27,7 +28,7 @@ type ClientConfig struct {
 
 // Client represents an LND node client
 type Client struct {
-	cfg             *ClientConfig
+	cfg             *config.Config
 	conn            *grpc.ClientConn
 	client          lnrpc.LightningClient
 	router          routerrpc.RouterClient
@@ -42,7 +43,7 @@ type Client struct {
 }
 
 // NewClient creates a new LND client
-func NewClient(cfg *ClientConfig) *Client {
+func NewClient(cfg *config.Config) *Client {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Client{
 		cfg:             cfg,
@@ -63,20 +64,20 @@ func (c *Client) Connect() error {
 	}
 
 	// Read TLS certificate
-	tlsCert, err := credentials.NewClientTLSFromFile(c.cfg.TLSCertPath, "")
+	tlsCert, err := credentials.NewClientTLSFromFile(c.cfg.LND.TLSCertPath, "")
 	if err != nil {
 		return fmt.Errorf("reading TLS cert: %w", err)
 	}
 
 	// Read macaroon
-	macBytes, err := os.ReadFile(c.cfg.MacaroonPath)
+	macBytes, err := os.ReadFile(c.cfg.LND.MacaroonPath)
 	if err != nil {
 		return fmt.Errorf("reading macaroon: %w", err)
 	}
 
 	// Create gRPC connection
 	conn, err := grpc.NewClient(
-		fmt.Sprintf("%s:%d", c.cfg.Host, c.cfg.Port),
+		fmt.Sprintf("%s:%d", c.cfg.LND.Host, c.cfg.LND.Port),
 		grpc.WithTransportCredentials(tlsCert),
 		grpc.WithPerRPCCredentials(&MacaroonCredential{
 			MacaroonHex: hex.EncodeToString(macBytes),

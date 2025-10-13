@@ -60,3 +60,6 @@ event_config:
     min_amount: 0  # Minimum amount in sats to notify about rebalancing
   on_chain_event:
     min_amount: 0  # Minimum amount in sats to notify about on-chain transaction
+  chain_lost_event:
+    threshold: 5m  # Duration of being out of sync before sending a notification
+    warning_interval: 15m  # Interval between repeated warnings while still out of sync
