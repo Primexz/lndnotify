@@ -144,16 +144,21 @@ func (m *Manager) Send(message string) {
 
 	for name, p := range m.providers {
 		logger := log.WithField("provider", name).WithField("message", message)
-		logger.Info("sending notification")
 
-		errs := p.Sender.Send(message, &types.Params{})
-		for _, err := range errs {
-			if err == nil {
-				continue
-			}
+		m.sendRouter(message, p.Sender, logger)
+	}
+}
 
-			logger.WithError(err).Error("error sending notification")
+// sendRouter sends a notification using a specific router
+func (m *Manager) sendRouter(message string, router *router.ServiceRouter, logger *log.Entry) {
+	logger.Info("sending notification")
+
+	errs := router.Send(message, &types.Params{})
+	for _, err := range errs {
+		if err == nil {
+			continue
 		}
+		logger.WithError(err).Error("error sending notification")
 	}
 }
 
@@ -184,20 +189,35 @@ func (m *Manager) UploadFile(message string, file *uploader.File) {
 	}
 
 	for name, p := range m.providers {
-		if p.Uploader == nil {
-			continue
-		}
 		logger := log.WithFields(log.Fields{
 			"provider": name,
 			"filename": file.Filename,
 			"message":  message,
 			"size":     len(file.Data),
 		})
+
+		// fallback sends the message without attachment via shoutrrr
+		fallback := func(err error) {
+			msg := message
+			msg += "\n\n⚠️ Attachment removed"
+			if err != nil {
+				msg += fmt.Sprintf("\n🚨 Upload error: %v", err)
+			} else {
+				msg += " (file upload not supported for this provider)"
+			}
+			m.sendRouter(msg, p.Sender, logger)
+		}
+
+		if p.Uploader == nil {
+			fallback(nil)
+			continue
+		}
 		logger.Info("uploading file")
 
 		err := p.Uploader.Upload(message, file)
 		if err != nil {
-			logger.WithError(err).Error("error uploading file")
+			logger.WithError(err).Error("error uploading file, trying fallback")
+			fallback(err)
 		}
 	}
 }
