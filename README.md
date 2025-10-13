@@ -77,7 +77,7 @@ go build .
 > [!TIP] 
 > The full configuration options can be found in the [example config file](config.example.yaml).
 
-Create a configuration file `config.yaml`:
+Create a basic configuration file `config.yaml`:
 
 ```yaml
 # LND connection settings
