@@ -9,6 +9,7 @@ import (
 
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/Primexz/lndnotify/internal/uploader"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
@@ -32,10 +33,16 @@ type NotificationTemplates struct {
 	Forward string
 }
 
+type provider struct {
+	Sender   *router.ServiceRouter
+	Uploader uploader.Uploader
+}
+
 // Manager handles notification delivery
 type Manager struct {
-	cfg       *ManagerConfig
-	providers map[string]*router.ServiceRouter
+	cfg *ManagerConfig
+	//providers  map[string]*router.ServiceRouter
+	providers map[string]provider
 	templates map[string]*template.Template
 	mu        sync.Mutex
 	sent      int
@@ -46,7 +53,7 @@ type Manager struct {
 func NewManager(cfg *ManagerConfig) *Manager {
 	m := &Manager{
 		cfg:       cfg,
-		providers: make(map[string]*router.ServiceRouter),
+		providers: make(map[string]provider),
 		templates: make(map[string]*template.Template),
 		lastReset: time.Now(),
 	}
@@ -58,7 +65,15 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			log.WithField("provider", p.Name).WithError(err).Error("error creating sender")
 			continue
 		}
-		m.providers[p.Name] = sender
+
+		name, url, err := sender.ExtractServiceName(p.URL)
+		if err != nil {
+			log.WithField("provider", p.Name).WithError(err).Error("cannot initialize uploader, invalid URL")
+			m.providers[p.Name] = provider{Sender: sender, Uploader: nil}
+			continue
+		}
+		upl := uploader.NewUploader(name, url)
+		m.providers[p.Name] = provider{Sender: sender, Uploader: upl}
 	}
 
 	// Initialize templates
@@ -127,11 +142,11 @@ func (m *Manager) Send(message string) {
 		return
 	}
 
-	for name, provider := range m.providers {
+	for name, p := range m.providers {
 		logger := log.WithField("provider", name).WithField("message", message)
 		logger.Info("sending notification")
 
-		errs := provider.Send(message, &types.Params{})
+		errs := p.Sender.Send(message, &types.Params{})
 		for _, err := range errs {
 			if err == nil {
 				continue
@@ -161,4 +176,28 @@ func (m *Manager) SendBatch(messages []string) {
 	}
 
 	m.Send(message)
+}
+
+func (m *Manager) UploadFile(message string, file *uploader.File) {
+	if file == nil {
+		return
+	}
+
+	for name, p := range m.providers {
+		if p.Uploader == nil {
+			continue
+		}
+		logger := log.WithFields(log.Fields{
+			"provider": name,
+			"filename": file.Filename,
+			"message":  message,
+			"size":     len(file.Data),
+		})
+		logger.Info("uploading file")
+
+		err := p.Uploader.Upload(message, file)
+		if err != nil {
+			logger.WithError(err).Error("error uploading file")
+		}
+	}
 }
