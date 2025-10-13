@@ -27,6 +27,8 @@ notifications:
     rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
     on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
     on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
+    chain_sync_lost_event: "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
+    chain_sync_restored_event: "✅ Chain is back in sync!\nDuration: {{.Duration}}"
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
@@ -42,6 +44,7 @@ events:
   rebalancing_events: true # Enable rebalancing succeeded notifications
   status_events: true # Enable status change notifications (startup/shutdown)
   on_chain_events: true # Enable on-chain transaction notifications
+  chain_sync_events: true # Enable chain sync status notifications (lost sync/restored)
 
 # Event configuration (specific settings for each event type)
 event_config:
