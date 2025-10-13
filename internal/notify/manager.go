@@ -9,7 +9,7 @@ import (
 
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/internal/events"
-	"github.com/Primexz/lndnotify/internal/uploader"
+	"github.com/Primexz/lndnotify/pkg/uploader"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
@@ -33,7 +33,7 @@ type NotificationTemplates struct {
 	Forward string
 }
 
-type provider struct {
+type Provider struct {
 	Sender   *router.ServiceRouter
 	Uploader uploader.Uploader
 }
@@ -41,7 +41,7 @@ type provider struct {
 // Manager handles notification delivery
 type Manager struct {
 	cfg       *ManagerConfig
-	providers map[string]provider
+	providers map[string]Provider
 	templates map[string]*template.Template
 	mu        sync.Mutex
 	sent      int
@@ -52,7 +52,7 @@ type Manager struct {
 func NewManager(cfg *ManagerConfig) *Manager {
 	m := &Manager{
 		cfg:       cfg,
-		providers: make(map[string]provider),
+		providers: make(map[string]Provider),
 		templates: make(map[string]*template.Template),
 		lastReset: time.Now(),
 	}
@@ -68,11 +68,11 @@ func NewManager(cfg *ManagerConfig) *Manager {
 		name, url, err := sender.ExtractServiceName(p.URL)
 		if err != nil {
 			log.WithField("provider", p.Name).WithError(err).Error("cannot initialize uploader, invalid URL")
-			m.providers[p.Name] = provider{Sender: sender, Uploader: nil}
+			m.providers[p.Name] = Provider{Sender: sender, Uploader: nil}
 			continue
 		}
 		upl := uploader.NewUploader(name, url)
-		m.providers[p.Name] = provider{Sender: sender, Uploader: upl}
+		m.providers[p.Name] = Provider{Sender: sender, Uploader: upl}
 	}
 
 	// Initialize templates

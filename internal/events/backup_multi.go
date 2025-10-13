@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
-	"github.com/Primexz/lndnotify/internal/uploader"
+	"github.com/Primexz/lndnotify/pkg/uploader"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"golang.org/x/text/language"
 )

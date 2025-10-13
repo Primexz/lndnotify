@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-type httpUploader struct {
+type HttpUploader struct {
 	Url *url.URL
 }
 
-func (h *httpUploader) Upload(message string, file *File) error {
+func (h *HttpUploader) Upload(message string, file *File) error {
 	if file == nil || len(file.Data) == 0 {
 		return fmt.Errorf("no file data to upload")
 	}

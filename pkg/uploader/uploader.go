@@ -15,7 +15,7 @@ func NewUploader(provider string, shoutrrrUrl *url.URL) Uploader {
 
 	switch provider {
 	case "ntfy":
-		uploader, err := newNtfyUploader(shoutrrrUrl)
+		uploader, err := NewNtfyUploader(shoutrrrUrl)
 		if err != nil {
 			log.WithError(err).Error("error creating ntfy uploader")
 			return nil
@@ -27,7 +27,7 @@ func NewUploader(provider string, shoutrrrUrl *url.URL) Uploader {
 	}
 }
 
-func newNtfyUploader(shoutrrrUrl *url.URL) (*httpUploader, error) {
+func NewNtfyUploader(shoutrrrUrl *url.URL) (*HttpUploader, error) {
 	service := ntfy.Service{}
 	err := service.Initialize(shoutrrrUrl, nil)
 	if err != nil {
@@ -38,5 +38,5 @@ func newNtfyUploader(shoutrrrUrl *url.URL) (*httpUploader, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &httpUploader{Url: ntfyUrl}, nil
+	return &HttpUploader{Url: ntfyUrl}, nil
 }
