@@ -186,6 +186,21 @@ Each output in the transaction contains:
 | `{{.OutputType}}` | The type of output |
 | `{{.IsOurAddress}}` | Boolean indicating if this address belongs to your wallet |
 
+## Chain Sync Lost Event
+Triggered when your node loses chain synchronization with the Bitcoin network.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.Duration}}` | The duration for which the chain sync was lost |
+
+## Chain Sync Restored Event
+Triggered when your node regains chain synchronization with the Bitcoin network after being out of sync.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.Duration}}` | The duration for which the chain sync was lost before being restored |
+
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:
