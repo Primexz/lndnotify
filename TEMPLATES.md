@@ -200,6 +200,15 @@ Triggered when your node regains chain synchronization with the Bitcoin network 
 |----------|-------------|
 | `{{.Duration}}` | The duration for which the chain sync was lost before being restored |
 
+## Channel Backup (Multi) Event
+Triggered when a new multi-channel backup is created. This event includes a file attachment.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.ChanPoints}}` | A list of channel points included in the backup. |
+| `{{.NumChanPoints}}` | The total number of channel points in the backup. |
+| `{{.Filename}}` | The filename of the backup file. |
+| `{{.Sha256Sum}}` | The SHA256 checksum of the backup file. |
 
 ## Example Usage
 

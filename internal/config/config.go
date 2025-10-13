@@ -46,6 +46,7 @@ type ProviderConfig struct {
 // NotificationTemplate holds customizable message templates
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type NotificationTemplate struct {
+	BackupMulti          string `yaml:"backup_multi_event"`
 	ChainSyncLost        string `yaml:"chain_sync_lost_event"`
 	ChainSyncRestored    string `yaml:"chain_sync_restored_event"`
 	ChannelClose         string `yaml:"channel_close_event"`
@@ -67,6 +68,7 @@ type NotificationTemplate struct {
 // EventFlags controls which events to monitor (feature flags)
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventFlags struct {
+	BackupEvents      bool `yaml:"backup_events"`
 	ChainSyncEvents   bool `yaml:"chain_sync_events"`
 	ChannelEvents     bool `yaml:"channel_events"`
 	FailedHtlc        bool `yaml:"failed_htlc_events"`
@@ -165,6 +167,9 @@ func (c *Config) setDefaults() {
 	}
 
 	// Set default templates in alphabetical order to prevent merge conflicts
+	if c.Notifications.Templates.BackupMulti == "" {
+		c.Notifications.Templates.BackupMulti = "❗️Channel backup received for {{.NumChanPoints}} channels\n\nChannel Points:\n{{range .ChanPoints}}- {{.}}\n{{end}}\nFilename: {{.Filename}}\n SHA256: {{.Sha256Sum}}"
+	}
 	if c.Notifications.Templates.ChannelClose == "" {
 		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, capacity {{.Capacity}} sats, settled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
 	}

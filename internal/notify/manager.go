@@ -40,8 +40,7 @@ type provider struct {
 
 // Manager handles notification delivery
 type Manager struct {
-	cfg *ManagerConfig
-	//providers  map[string]*router.ServiceRouter
+	cfg       *ManagerConfig
 	providers map[string]provider
 	templates map[string]*template.Template
 	mu        sync.Mutex
@@ -85,6 +84,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
 	templates := map[events.EventType]string{
+		events.Event_BACKUP_MULTI:          m.cfg.Templates.BackupMulti,
 		events.Event_FORWARD:               m.cfg.Templates.Forward,
 		events.Event_PEER_OFFLINE:          m.cfg.Templates.PeerOffline,
 		events.Event_PEER_ONLINE:           m.cfg.Templates.PeerOnline,
@@ -180,7 +180,7 @@ func (m *Manager) SendBatch(messages []string) {
 
 func (m *Manager) UploadFile(message string, file *uploader.File) {
 	if file == nil {
-		return
+		m.Send(message)
 	}
 
 	for name, p := range m.providers {

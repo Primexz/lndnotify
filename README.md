@@ -17,6 +17,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Channel Open
   - Channel Closing (pending)
   - Channel Close
+  - Channel Backup (Multi) (File uploads only supported via ntfy at the moment)
   - Peer Online
   - Peer Offline
   - Settled Invoice
@@ -97,6 +98,7 @@ notifications:
 
 # Event settings
 events:
+  backup_events: true
   channel_events: true
   failed_htlc_events: true
   forward_events: true
@@ -136,8 +138,6 @@ The program uses [shoutrrr](https://github.com/nicholas-fedor/shoutrrr) for noti
 - Telegram: `telegram://token@telegram?channels=channel-1`
 - Slack: `slack://token@channel`
 - Generic Webhook: `generic://example.com/webhook`
-
-To see the full list of supported providers, check out the [official documentation](https://shoutrrr.nickfedor.com/v0.10.1/services/overview/).
 
 ## Usage
 

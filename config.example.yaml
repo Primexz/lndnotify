@@ -13,6 +13,7 @@ notifications:
     - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
   templates:
+    backup_multi: "❗️Channel backup received for {{.NumChanPoints}} channels\n\nChannel Points:\n{{range .ChanPoints}}- {{.}}\n{{end}}\nFilename: {{.Filename}}\n SHA256: {{.Sha256Sum}}"
     channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, capacity {{.Capacity}} sats, settled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
     channel_closing_event: "⏳ Closing channel with {{.PeerAlias}}, capacity {{.Capacity}} sats, limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
     channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
@@ -34,6 +35,7 @@ notifications:
 
 # Event settings (feature flags)
 events:
+  backup_events: true # Enable channel backup notifications (file attachment if supported for provider)
   channel_events: true # Enable channel events (open/close) notifications
   failed_htlc_events: true # Enable failed HTLC notifications
   forward_events: true # Enable payment forwarding notifications

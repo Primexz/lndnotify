@@ -461,6 +461,37 @@ func (c *Client) handleChainSyncState() {
 	}
 }
 
+func (c *Client) handleBackupEvents() {
+	log.Debug("starting backup event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "channel backup subscription", func() (string, error) {
+		ev, err := c.client.SubscribeChannelBackups(c.ctx, &lnrpc.ChannelBackupSubscription{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("channel backup subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			backup, err := ev.Recv()
+			if err != nil {
+				return "", err // Return error to trigger retry
+			}
+
+			if multiBackup := backup.GetMultiChanBackup(); multiBackup != nil {
+				c.eventSub <- events.NewBackupMultiEvent(multiBackup)
+			}
+		}
+	})
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {

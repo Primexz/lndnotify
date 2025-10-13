@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/Primexz/lndnotify/internal/config"
+	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/Primexz/lndnotify/internal/lnd"
 	"github.com/Primexz/lndnotify/internal/notify"
 	log "github.com/sirupsen/logrus"
@@ -79,6 +80,11 @@ func Run(configPath string) {
 			msg, err := notifier.RenderTemplate(event.Type().String(), event.GetTemplateData(cfg.Notifications.Formatting.Locale.Tag))
 			if err != nil {
 				log.WithError(err).Error("error rendering template")
+				continue
+			}
+
+			if source, ok := event.(events.FileSource); ok {
+				notifier.UploadFile(msg, source.GetFile())
 				continue
 			}
 			notifier.Send(msg)
