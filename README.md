@@ -157,6 +157,9 @@ go install ./cmd/lndnotify
 
 ## Contributing
 
+> [!NOTICE] 
+> This project uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. Please follow the guidelines when contributing.
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
