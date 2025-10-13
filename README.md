@@ -157,7 +157,7 @@ go install ./cmd/lndnotify
 
 ## Contributing
 
-> [!NOTICE] 
+> [!NOTE] 
 > This project uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. Please follow the guidelines when contributing.
 
 1. Fork the repository
