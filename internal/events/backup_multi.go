@@ -42,9 +42,9 @@ func (e *BackupMultiEvent) Timestamp() time.Time {
 func (e *BackupMultiEvent) GetTemplateData(lang language.Tag) interface{} {
 	var chanPoints []string
 	for _, cp := range e.Backup.ChanPoints {
-		txidHex := hex.EncodeToString(cp.GetFundingTxidBytes())
-		txidHex += ":" + fmt.Sprintf("%d", cp.OutputIndex)
-		chanPoints = append(chanPoints, txidHex)
+		txHex := hex.EncodeToString(cp.GetFundingTxidBytes())
+		chanPoint := fmt.Sprintf("%s:%d", txHex, cp.OutputIndex)
+		chanPoints = append(chanPoints, chanPoint)
 	}
 
 	hash := sha256.Sum256(e.Backup.MultiChanBackup)

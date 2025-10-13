@@ -14,8 +14,8 @@ type httpUploader struct {
 }
 
 func (h *httpUploader) Upload(message string, file *File) error {
-	if file == nil {
-		return fmt.Errorf("No file to upload")
+	if file == nil || len(file.Data) == 0 {
+		return fmt.Errorf("no file data to upload")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

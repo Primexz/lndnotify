@@ -186,6 +186,7 @@ func (m *Manager) SendBatch(messages []string) {
 func (m *Manager) UploadFile(message string, file *uploader.File) {
 	if file == nil {
 		m.Send(message)
+		return
 	}
 
 	for name, p := range m.providers {
