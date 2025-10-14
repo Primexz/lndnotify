@@ -18,6 +18,6 @@ func NewUploader(provider string, shoutrrrUrl *url.URL) (Uploader, error) {
 		}
 		return uploader, nil
 	default:
-		return nil, fmt.Errorf("file upload not supported for provider: %s", provider)
+		return nil, fmt.Errorf("file upload not supported for provider")
 	}
 }
