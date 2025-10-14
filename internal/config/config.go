@@ -111,7 +111,7 @@ type EventConfig struct {
 		WarningInterval time.Duration `yaml:"warning_interval"`
 	} `yaml:"chain_lost_event"`
 	ChannelStatusEvent struct {
-		MinDownTime time.Duration `yaml:"min_down_time"`
+		MinDowntime time.Duration `yaml:"min_downtime"`
 	} `yaml:"channel_status_event"`
 }
 
@@ -237,7 +237,7 @@ func (c *Config) setDefaults() {
 	if c.EventConfig.ChainLostEvent.WarningInterval == 0 {
 		c.EventConfig.ChainLostEvent.WarningInterval = 15 * time.Minute
 	}
-	if c.EventConfig.ChannelStatusEvent.MinDownTime == 0 {
-		c.EventConfig.ChannelStatusEvent.MinDownTime = 10 * time.Minute
+	if c.EventConfig.ChannelStatusEvent.MinDowntime == 0 {
+		c.EventConfig.ChannelStatusEvent.MinDowntime = 10 * time.Minute
 	}
 }

@@ -536,7 +536,7 @@ func (c *Client) handleChannelStatusEvents() {
 					}
 
 					// Check if downtime exceeds threshold
-					if downChannelMap[chanId] >= c.cfg.EventConfig.ChannelStatusEvent.MinDownTime {
+					if downChannelMap[chanId] >= c.cfg.EventConfig.ChannelStatusEvent.MinDowntime {
 						c.eventSub <- events.NewChannelStatusDownEvent(channel, c.getAlias)
 						// Reset the timer
 						downChannelMap[chanId] = 0
