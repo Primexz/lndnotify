@@ -18,8 +18,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Channel Closing (pending)
   - Channel Close
   - Channel Backup (Multi) (File uploads only supported via ntfy at the moment)
-  - Peer Online
-  - Peer Offline
+  - Channel Status Change (Up/Down)
   - Settled Invoice
   - Failed HTLCs
   - Payment Succeeded
