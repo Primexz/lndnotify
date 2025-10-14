@@ -30,6 +30,8 @@ notifications:
     on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
     chain_sync_lost_event: "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
     chain_sync_restored_event: "✅ Chain is back in sync!\nDuration: {{.Duration}}"
+    channel_status_up_event: "✅ Channel with {{.PeerAlias}} is back online\nCapacity {{.Capacity}} sats\nChannel Point: {{.ChannelPoint}}""
+    channel_status_down_event: "❌ Channel with {{.PeerAlias}} is down\nCapacity {{.Capacity}} sats\nChannel Point: {{.ChannelPoint}}"
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
