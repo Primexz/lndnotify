@@ -9,6 +9,7 @@ import (
 
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/internal/events"
+	"github.com/Primexz/lndnotify/pkg/uploader"
 	"github.com/nicholas-fedor/shoutrrr"
 	"github.com/nicholas-fedor/shoutrrr/pkg/router"
 	"github.com/nicholas-fedor/shoutrrr/pkg/types"
@@ -32,10 +33,15 @@ type NotificationTemplates struct {
 	Forward string
 }
 
+type Provider struct {
+	Sender   *router.ServiceRouter
+	Uploader uploader.Uploader
+}
+
 // Manager handles notification delivery
 type Manager struct {
 	cfg       *ManagerConfig
-	providers map[string]*router.ServiceRouter
+	providers map[string]Provider
 	templates map[string]*template.Template
 	mu        sync.Mutex
 	sent      int
@@ -46,7 +52,7 @@ type Manager struct {
 func NewManager(cfg *ManagerConfig) *Manager {
 	m := &Manager{
 		cfg:       cfg,
-		providers: make(map[string]*router.ServiceRouter),
+		providers: make(map[string]Provider),
 		templates: make(map[string]*template.Template),
 		lastReset: time.Now(),
 	}
@@ -58,7 +64,20 @@ func NewManager(cfg *ManagerConfig) *Manager {
 			log.WithField("provider", p.Name).WithError(err).Error("error creating sender")
 			continue
 		}
-		m.providers[p.Name] = sender
+
+		name, url, err := sender.ExtractServiceName(p.URL)
+		if err != nil {
+			log.WithField("provider", p.Name).WithError(err).Error("cannot initialize uploader, invalid URL")
+			m.providers[p.Name] = Provider{Sender: sender, Uploader: nil}
+			continue
+		}
+		upl, err := uploader.NewUploader(name, url)
+		if err != nil {
+			log.WithField("provider", p.Name).WithError(err).Error("error creating uploader")
+			m.providers[p.Name] = Provider{Sender: sender, Uploader: nil}
+			continue
+		}
+		m.providers[p.Name] = Provider{Sender: sender, Uploader: upl}
 	}
 
 	// Initialize templates
@@ -70,6 +89,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 // parseTemplates parses all notification templates
 func (m *Manager) parseTemplates() {
 	templates := map[events.EventType]string{
+		events.Event_BACKUP_MULTI:          m.cfg.Templates.BackupMulti,
 		events.Event_FORWARD:               m.cfg.Templates.Forward,
 		events.Event_PEER_OFFLINE:          m.cfg.Templates.PeerOffline,
 		events.Event_PEER_ONLINE:           m.cfg.Templates.PeerOnline,
@@ -127,16 +147,15 @@ func (m *Manager) Send(message string) {
 		return
 	}
 
-	for name, provider := range m.providers {
+	for name, p := range m.providers {
 		logger := log.WithField("provider", name).WithField("message", message)
-		logger.Info("sending notification")
 
-		errs := provider.Send(message, &types.Params{})
+		logger.Info("sending notification")
+		errs := p.Sender.Send(message, &types.Params{})
 		for _, err := range errs {
 			if err == nil {
 				continue
 			}
-
 			logger.WithError(err).Error("error sending notification")
 		}
 	}
@@ -161,4 +180,52 @@ func (m *Manager) SendBatch(messages []string) {
 	}
 
 	m.Send(message)
+}
+
+func (m *Manager) UploadFile(message string, file *uploader.File) {
+	if file == nil {
+		m.Send(message)
+		return
+	}
+
+	for name, p := range m.providers {
+		logger := log.WithFields(log.Fields{
+			"provider": name,
+			"filename": file.Filename,
+			"message":  message,
+			"size":     len(file.Data),
+		})
+
+		// fallback sends the message without attachment via shoutrrr
+		fallback := func(err error) {
+			msg := message
+			msg += "\n\n⚠️ Attachment removed"
+			if err != nil {
+				msg += fmt.Sprintf("\n🚨 Upload error: %v", err)
+			} else {
+				msg += " (file upload not supported for this provider)"
+			}
+			logger.Info("sending notification")
+
+			errs := p.Sender.Send(msg, &types.Params{})
+			for _, err := range errs {
+				if err == nil {
+					continue
+				}
+				logger.WithError(err).Error("error sending notification")
+			}
+		}
+
+		if p.Uploader == nil {
+			fallback(nil)
+			continue
+		}
+		logger.Info("uploading file")
+
+		err := p.Uploader.Upload(message, file)
+		if err != nil {
+			logger.WithError(err).Error("error uploading file, trying fallback")
+			fallback(err)
+		}
+	}
 }

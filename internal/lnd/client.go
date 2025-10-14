@@ -150,6 +150,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 	// Start subscription handlers
 	// NOTE: Keep handlers in alphabetical order to prevent merge conflicts when adding new handlers
 	handlers := []func(){
+		c.handleBackupEvents,
 		c.handleChannelEvents,
 		c.handleFailedHtlcEvents,
 		c.handleForwards,

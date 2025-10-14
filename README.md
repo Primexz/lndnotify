@@ -17,6 +17,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Channel Open
   - Channel Closing (pending)
   - Channel Close
+  - Channel Backup (Multi) (File uploads only supported via ntfy at the moment)
   - Peer Online
   - Peer Offline
   - Settled Invoice
@@ -97,6 +98,7 @@ notifications:
 
 # Event settings
 events:
+  backup_events: true
   channel_events: true
   failed_htlc_events: true
   forward_events: true

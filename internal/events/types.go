@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
+	"github.com/Primexz/lndnotify/pkg/uploader"
 	"golang.org/x/text/language"
 )
 
@@ -15,10 +16,16 @@ type Event interface {
 	ShouldProcess(cfg *config.Config) bool
 }
 
+// FileSource is an interface for types that can provide a file
+type FileSource interface {
+	GetFile() *uploader.File
+}
+
 type EventType string
 
 // NOTE: Keep constants in alphabetical order to prevent merge conflicts when adding new events
 const (
+	Event_BACKUP_MULTI          EventType = "backup_multi_event"
 	Event_CHAIN_SYNC_LOST       EventType = "chain_sync_lost_event"
 	Event_CHAIN_SYNC_RESTORED   EventType = "chain_sync_restored_event"
 	Event_CHANNEL_CLOSE         EventType = "channel_close_event"
