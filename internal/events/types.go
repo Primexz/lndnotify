@@ -32,6 +32,8 @@ const (
 	Event_CHANNEL_CLOSING       EventType = "channel_closing_event"
 	Event_CHANNEL_OPEN          EventType = "channel_open_event"
 	Event_CHANNEL_OPENING       EventType = "channel_opening_event"
+	Event_CHANNEL_STATUS_UP     EventType = "channel_status_up_event"
+	Event_CHANNEL_STATUS_DOWN   EventType = "channel_status_down_event"
 	Event_FAILED_HTLC           EventType = "failed_htlc_event"
 	Event_FORWARD               EventType = "forward_event"
 	Event_INVOICE_SETTLED       EventType = "invoice_settled_event"

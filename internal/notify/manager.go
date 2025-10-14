@@ -106,6 +106,8 @@ func (m *Manager) parseTemplates() {
 		events.Event_ONCHAIN_MEMPOOL:       m.cfg.Templates.OnChainMempool,
 		events.Event_PAYMENT_SUCCEEDED:     m.cfg.Templates.PaymentSucceeded,
 		events.Event_REBALANCING_SUCCEEDED: m.cfg.Templates.RebalancingSucceeded,
+		events.Event_CHANNEL_STATUS_DOWN:   m.cfg.Templates.ChannelStatusDown,
+		events.Event_CHANNEL_STATUS_UP:     m.cfg.Templates.ChannelStatusUp,
 	}
 
 	for name, text := range templates {

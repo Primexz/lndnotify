@@ -492,6 +492,60 @@ func (c *Client) handleBackupEvents() {
 	})
 }
 
+func (c *Client) handleChannelStatusEvents() {
+	downChannelMap := make(map[uint64]time.Duration)
+
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
+	log.Debug("starting channel status event handler")
+	defer c.wg.Done()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("checking channel status")
+
+			channels := c.channelManager.GetAllChannels()
+			now := time.Now()
+
+			for _, channel := range channels {
+				chanId := channel.ChanId
+				logger := log.WithField("channel_id", chanId)
+
+				if channel.GetActive() {
+					// Channel is active, remove from downChannelMap if present
+					if _, exists := downChannelMap[chanId]; exists {
+						logger.Debug("channel is back up, sending event")
+
+						delete(downChannelMap, chanId)
+						c.eventSub <- events.NewChannelStatusUpEvent(channel, c.getAlias)
+					}
+				} else {
+					// Channel is inactive, track downtime
+					if downDuration, exists := downChannelMap[channel.ChanId]; exists {
+						// Already tracking downtime, update duration
+						downChannelMap[chanId] = now.Sub(now.Add(-downDuration))
+					} else {
+						// First time seeing this channel as down, start tracking
+						downChannelMap[chanId] = 0
+						logger.Debug("channel is down, starting downtime tracking")
+					}
+
+					// Check if downtime exceeds threshold
+					if downChannelMap[chanId] >= c.cfg.EventConfig.ChannelStatusEvent.MinDownTime {
+						c.eventSub <- events.NewChannelStatusDownEvent(channel, c.getAlias)
+						// Reset the timer
+						downChannelMap[chanId] = 0
+					}
+				}
+			}
+		}
+	}
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {

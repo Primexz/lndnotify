@@ -105,11 +105,12 @@ events:
   invoice_events: true
   keysend_events: true
   payment_events: true
-  peer_events: true
+  peer_events: false
   rebalancing_events: true
   status_events: true
   on_chain_events: true
   chain_sync_events: true
+  channel_status_events: true
 
 # Event-specific configuration
 event_config:
