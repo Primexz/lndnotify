@@ -73,7 +73,7 @@ func NewManager(cfg *ManagerConfig) *Manager {
 		}
 		upl, err := uploader.NewUploader(name, url)
 		if err != nil {
-			log.WithField("provider", p.Name).WithError(err).Error("error creating uploader")
+			log.WithField("provider", p.Name).WithError(err).Warn("error creating uploader")
 			m.providers[p.Name] = Provider{Sender: sender, Uploader: nil}
 			continue
 		}
