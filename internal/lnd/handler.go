@@ -55,6 +55,7 @@ func (c *Client) handleForwards() {
 }
 
 // handlePeerEvents handles peer connection and disconnection events
+// Deprecated: Replace with channel_status
 func (c *Client) handlePeerEvents() {
 	log.Debug("starting peer event handler")
 	defer c.wg.Done()

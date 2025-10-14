@@ -21,6 +21,7 @@ type PeerOnlineTemplate struct {
 	PeerPubkeyShort string
 }
 
+// Deprecated: Replace with channel_status
 func NewPeerOnlineEvent(nodeInfo *lnrpc.NodeInfo, event *lnrpc.PeerEvent) *PeerOnlineEvent {
 	return &PeerOnlineEvent{
 		NodeInfo:  nodeInfo,
