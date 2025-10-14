@@ -5,12 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
-- New Event: Chain sync lost notification (@Primexz)
-- New event: multi-channel backup notification. Backup is uploaded as file if ntfy is used as provider (@Feelancer21)
-
 ### Fixed
 ### Changed
 ### Removed
+
+
+## [1.5.0] - 2025-10-14
+
+### Added
+- New Event: Chain sync lost notification (@Primexz)
+- New event: multi-channel backup notification. Backup is uploaded as file if ntfy is used as provider (@Feelancer21)
 
 
 ## [1.4.0] - 2025-10-12
