@@ -129,6 +129,9 @@ event_config:
   chain_lost_event:
     threshold: 5m 
     warning_interval: 15m 
+  channel_down_event:
+    min_downtime: 10m
+
 ```
 
 ### Notification Providers
