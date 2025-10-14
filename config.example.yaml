@@ -42,7 +42,7 @@ events:
   invoice_events: true # Enable invoice settled notifications
   keysend_events: true # Enable keysend notifications
   payment_events: true # Enable outgoing payment succeeded notifications
-  peer_events: true # Enable peer events (online/offline) notifications
+  peer_events: false # Enable peer events (online/offline) notifications
   rebalancing_events: true # Enable rebalancing succeeded notifications
   status_events: true # Enable status change notifications (startup/shutdown)
   on_chain_events: true # Enable on-chain transaction notifications
