@@ -68,5 +68,5 @@ event_config:
   chain_lost_event:
     threshold: 5m  # Duration of being out of sync before sending a notification
     warning_interval: 15m  # Interval between repeated warnings while still out of sync
-  channel_down_event:
+  channel_status_event:
     min_downtime: 10m  # Minimum downtime duration before sending a channel down notification

@@ -112,7 +112,7 @@ type EventConfig struct {
 	} `yaml:"chain_lost_event"`
 	ChannelStatusEvent struct {
 		MinDownTime time.Duration `yaml:"min_down_time"`
-	} `yaml:"channel_down_event"`
+	} `yaml:"channel_status_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
