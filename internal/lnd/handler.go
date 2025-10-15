@@ -55,6 +55,7 @@ func (c *Client) handleForwards() {
 }
 
 // handlePeerEvents handles peer connection and disconnection events
+// Deprecated: Replace with channel_status
 func (c *Client) handlePeerEvents() {
 	log.Debug("starting peer event handler")
 	defer c.wg.Done()
@@ -411,6 +412,7 @@ func (c *Client) handleChainSyncState() {
 
 	var lastUnsyncedTime *time.Time
 	var lastWarningTime *time.Time
+
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -424,8 +426,8 @@ func (c *Client) handleChainSyncState() {
 				continue
 			}
 
-			if info.SyncedToChain {
-				if lastUnsyncedTime != nil {
+			if info.GetSyncedToChain() {
+				if lastWarningTime != nil {
 					log.Debug("chain sync restored")
 					c.eventSub <- events.NewChainSyncRestoredEvent(time.Since(*lastUnsyncedTime))
 					lastUnsyncedTime = nil
@@ -490,6 +492,65 @@ func (c *Client) handleBackupEvents() {
 			}
 		}
 	})
+}
+
+func (c *Client) handleChannelStatusEvents() {
+	downChannelMap := make(map[uint64]time.Time)
+	notifiedChannels := make(map[uint64]bool)
+
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
+	log.Debug("starting channel status event handler")
+	defer c.wg.Done()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("checking channel status")
+
+			channels := c.channelManager.GetAllChannels()
+			now := time.Now()
+
+			for _, channel := range channels {
+				chanId := channel.ChanId
+				logger := log.WithField("channel_id", chanId)
+
+				if channel.GetActive() {
+					// Channel is active, remove from downChannelMap if present
+					if _, exists := downChannelMap[chanId]; exists {
+						downDuration := now.Sub(downChannelMap[chanId])
+
+						logger.Debug("channel is back up")
+
+						delete(downChannelMap, chanId)
+						delete(notifiedChannels, chanId) // Clear notification flag
+						c.eventSub <- events.NewChannelStatusUpEvent(channel, downDuration, c.getAlias)
+					}
+				} else {
+					// Channel is inactive, track downtime
+					if downStartTime, exists := downChannelMap[channel.ChanId]; exists {
+						downDuration := now.Sub(downStartTime)
+
+						logger.Debug("channel is still down, checking duration")
+
+						if downDuration >= c.cfg.EventConfig.ChannelStatusEvent.MinDowntime && !notifiedChannels[chanId] {
+							logger.Debug("channel has been down long enough, sending event")
+							c.eventSub <- events.NewChannelStatusDownEvent(channel, downDuration, c.getAlias)
+							notifiedChannels[chanId] = true
+						}
+					} else {
+						// First time seeing this channel as down, start tracking
+						downChannelMap[chanId] = now
+						notifiedChannels[chanId] = false
+						logger.Debug("channel is down, starting downtime tracking")
+					}
+				}
+			}
+		}
+	}
 }
 
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first

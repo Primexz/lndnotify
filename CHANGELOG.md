@@ -5,7 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+- Channel status event: Notifications for channel up/down events with configurable minimum downtime before notification. (@Primexz)
+
+### Deprecated
+- Peer events: Peer online/offline events are deprecated and will be removed in a future release. Please use channel status events instead. (@Primexz)
+
 ### Fixed
+- Fixed issue where chain sync lost event was getting triggered incorrectly. (@Primexz)
+
 ### Changed
 ### Removed
 

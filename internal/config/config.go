@@ -53,6 +53,8 @@ type NotificationTemplate struct {
 	ChannelClosing       string `yaml:"channel_closing_event"`
 	ChannelOpen          string `yaml:"channel_open_event"`
 	ChannelOpening       string `yaml:"channel_opening_event"`
+	ChannelStatusUp      string `yaml:"channel_status_up_event"`
+	ChannelStatusDown    string `yaml:"channel_status_down_event"`
 	FailedHtlc           string `yaml:"failed_htlc_event"`
 	Forward              string `yaml:"forward_event"`
 	InvoiceSettled       string `yaml:"invoice_settled_event"`
@@ -68,18 +70,19 @@ type NotificationTemplate struct {
 // EventFlags controls which events to monitor (feature flags)
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventFlags struct {
-	BackupEvents      bool `yaml:"backup_events"`
-	ChainSyncEvents   bool `yaml:"chain_sync_events"`
-	ChannelEvents     bool `yaml:"channel_events"`
-	FailedHtlc        bool `yaml:"failed_htlc_events"`
-	ForwardEvents     bool `yaml:"forward_events"`
-	InvoiceEvents     bool `yaml:"invoice_events"`
-	KeysendEvents     bool `yaml:"keysend_events"`
-	OnChainEvents     bool `yaml:"on_chain_events"`
-	PaymentEvents     bool `yaml:"payment_events"`
-	PeerEvents        bool `yaml:"peer_events"`
-	RebalancingEvents bool `yaml:"rebalancing_events"`
-	StatusEvents      bool `yaml:"status_events"`
+	BackupEvents        bool `yaml:"backup_events"`
+	ChainSyncEvents     bool `yaml:"chain_sync_events"`
+	ChannelEvents       bool `yaml:"channel_events"`
+	ChannelStatusEvents bool `yaml:"channel_status_events"`
+	FailedHtlc          bool `yaml:"failed_htlc_events"`
+	ForwardEvents       bool `yaml:"forward_events"`
+	InvoiceEvents       bool `yaml:"invoice_events"`
+	KeysendEvents       bool `yaml:"keysend_events"`
+	OnChainEvents       bool `yaml:"on_chain_events"`
+	PaymentEvents       bool `yaml:"payment_events"`
+	PeerEvents          bool `yaml:"peer_events"`
+	RebalancingEvents   bool `yaml:"rebalancing_events"`
+	StatusEvents        bool `yaml:"status_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -107,6 +110,9 @@ type EventConfig struct {
 		Threshold       time.Duration `yaml:"threshold"`
 		WarningInterval time.Duration `yaml:"warning_interval"`
 	} `yaml:"chain_lost_event"`
+	ChannelStatusEvent struct {
+		MinDowntime time.Duration `yaml:"min_downtime"`
+	} `yaml:"channel_status_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -195,10 +201,10 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
 	if c.Notifications.Templates.ChainSyncLost == "" {
-		c.Notifications.Templates.ChainSyncLost = "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
+		c.Notifications.Templates.ChainSyncLost = "⚠️ Chain is out of sync since {{.Duration}}"
 	}
 	if c.Notifications.Templates.ChainSyncRestored == "" {
-		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync!\nDuration: {{.Duration}}"
+		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync after {{.Duration}}"
 	}
 	if c.Notifications.Templates.OnChainMempool == "" {
 		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
@@ -218,10 +224,20 @@ func (c *Config) setDefaults() {
 	if c.Notifications.Templates.RebalancingSucceeded == "" {
 		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}\nFee: {{.Fee}} sats ({{.FeeRate}} ppm)\nRoute: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
 	}
+	if c.Notifications.Templates.ChannelStatusUp == "" {
+		c.Notifications.Templates.ChannelStatusUp = "✅ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}\nCapacity {{.Capacity}} sats"
+	}
+	if c.Notifications.Templates.ChannelStatusDown == "" {
+		c.Notifications.Templates.ChannelStatusDown = "❌ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}\nCapacity {{.Capacity}} sats"
+	}
+
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {
 		c.EventConfig.ChainLostEvent.Threshold = 5 * time.Minute
 	}
 	if c.EventConfig.ChainLostEvent.WarningInterval == 0 {
 		c.EventConfig.ChainLostEvent.WarningInterval = 15 * time.Minute
+	}
+	if c.EventConfig.ChannelStatusEvent.MinDowntime == 0 {
+		c.EventConfig.ChannelStatusEvent.MinDowntime = 10 * time.Minute
 	}
 }

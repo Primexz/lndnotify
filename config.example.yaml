@@ -28,8 +28,10 @@ notifications:
     rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
     on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
     on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
-    chain_sync_lost_event: "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
-    chain_sync_restored_event: "✅ Chain is back in sync!\nDuration: {{.Duration}}"
+    chain_sync_lost_event: "⚠️ Chain is out of sync since {{.Duration}}"
+    chain_sync_restored_event: "✅ Chain is back in sync after {{.Duration}}"
+    channel_status_up_event: "✅ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}\nCapacity {{.Capacity}} sats"
+    channel_status_down_event: "❌ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}\nCapacity {{.Capacity}} sats"
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
@@ -42,11 +44,12 @@ events:
   invoice_events: true # Enable invoice settled notifications
   keysend_events: true # Enable keysend notifications
   payment_events: true # Enable outgoing payment succeeded notifications
-  peer_events: true # Enable peer events (online/offline) notifications
   rebalancing_events: true # Enable rebalancing succeeded notifications
   status_events: true # Enable status change notifications (startup/shutdown)
   on_chain_events: true # Enable on-chain transaction notifications
   chain_sync_events: true # Enable chain sync status notifications (lost sync/restored)
+  channel_status_events: true # Enable channel status notifications (channel up/down)
+  peer_events: false # Enable peer events (online/offline) notifications
 
 # Event configuration (specific settings for each event type)
 event_config:
@@ -65,3 +68,5 @@ event_config:
   chain_lost_event:
     threshold: 5m  # Duration of being out of sync before sending a notification
     warning_interval: 15m  # Interval between repeated warnings while still out of sync
+  channel_status_event:
+    min_downtime: 10m  # Minimum downtime duration before sending a channel down notification

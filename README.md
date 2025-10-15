@@ -18,8 +18,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Channel Closing (pending)
   - Channel Close
   - Channel Backup (Multi) (File uploads only supported via ntfy at the moment)
-  - Peer Online
-  - Peer Offline
+  - Channel Status Change (Up/Down)
   - Settled Invoice
   - Failed HTLCs
   - Payment Succeeded
@@ -105,11 +104,12 @@ events:
   invoice_events: true
   keysend_events: true
   payment_events: true
-  peer_events: true
   rebalancing_events: true
   status_events: true
   on_chain_events: true
   chain_sync_events: true
+  channel_status_events: true
+  peer_events: false
 
 # Event-specific configuration
 event_config:
@@ -128,6 +128,9 @@ event_config:
   chain_lost_event:
     threshold: 5m 
     warning_interval: 15m 
+  channel_status_event:
+    min_downtime: 10m
+
 ```
 
 ### Notification Providers
