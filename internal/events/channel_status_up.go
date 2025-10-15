@@ -11,6 +11,7 @@ import (
 
 type ChannelStatusUpEvent struct {
 	Channel   *lnrpc.Channel
+	Duration  time.Duration
 	getAlias  func(pubKey string) string
 	timestamp time.Time
 }
@@ -21,11 +22,13 @@ type ChannelStatusUpTemplate struct {
 	PeerPubkeyShort string
 	ChannelPoint    string
 	Capacity        string
+	Duration        time.Duration
 }
 
-func NewChannelStatusUpEvent(channel *lnrpc.Channel, getAlias func(pubKey string) string) *ChannelStatusUpEvent {
+func NewChannelStatusUpEvent(channel *lnrpc.Channel, duration time.Duration, getAlias func(pubKey string) string) *ChannelStatusUpEvent {
 	return &ChannelStatusUpEvent{
 		Channel:   channel,
+		Duration:  duration,
 		getAlias:  getAlias,
 		timestamp: time.Now(),
 	}
@@ -42,12 +45,13 @@ func (e *ChannelStatusUpEvent) Timestamp() time.Time {
 func (e *ChannelStatusUpEvent) GetTemplateData(lang language.Tag) interface{} {
 	remotePubkey := e.Channel.RemotePubkey
 
-	return &ChannelClosingTemplate{
+	return &ChannelStatusUpTemplate{
 		PeerAlias:       e.getAlias(remotePubkey),
 		PeerPubKey:      remotePubkey,
 		PeerPubkeyShort: format.FormatPubKey(remotePubkey),
 		ChannelPoint:    e.Channel.ChannelPoint,
 		Capacity:        format.FormatBasic(float64(e.Channel.Capacity), lang),
+		Duration:        format.FormatDuration(e.Duration),
 	}
 }
 

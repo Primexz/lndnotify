@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
+	"github.com/Primexz/lndnotify/pkg/format"
 	"golang.org/x/text/language"
 )
 
@@ -33,7 +34,7 @@ func (e *ChainSyncLostEvent) Timestamp() time.Time {
 
 func (e *ChainSyncLostEvent) GetTemplateData(lang language.Tag) interface{} {
 	return &ChainSyncLostTemplate{
-		Duration: e.Duration,
+		Duration: format.FormatDuration(e.Duration),
 	}
 }
 

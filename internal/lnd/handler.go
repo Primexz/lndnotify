@@ -494,7 +494,8 @@ func (c *Client) handleBackupEvents() {
 }
 
 func (c *Client) handleChannelStatusEvents() {
-	downChannelMap := make(map[uint64]time.Duration)
+	downChannelMap := make(map[uint64]time.Time)
+	notifiedChannels := make(map[uint64]bool)
 
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
@@ -519,27 +520,31 @@ func (c *Client) handleChannelStatusEvents() {
 				if channel.GetActive() {
 					// Channel is active, remove from downChannelMap if present
 					if _, exists := downChannelMap[chanId]; exists {
-						logger.Debug("channel is back up, sending event")
+						downDuration := now.Sub(downChannelMap[chanId])
+
+						logger.Debug("channel is back up")
 
 						delete(downChannelMap, chanId)
-						c.eventSub <- events.NewChannelStatusUpEvent(channel, c.getAlias)
+						delete(notifiedChannels, chanId) // Clear notification flag
+						c.eventSub <- events.NewChannelStatusUpEvent(channel, downDuration, c.getAlias)
 					}
 				} else {
 					// Channel is inactive, track downtime
-					if downDuration, exists := downChannelMap[channel.ChanId]; exists {
-						// Already tracking downtime, update duration
-						downChannelMap[chanId] = now.Sub(now.Add(-downDuration))
+					if downStartTime, exists := downChannelMap[channel.ChanId]; exists {
+						downDuration := now.Sub(downStartTime)
+
+						logger.Debug("channel is still down, checking duration")
+
+						if downDuration >= c.cfg.EventConfig.ChannelStatusEvent.MinDowntime && !notifiedChannels[chanId] {
+							logger.Debug("channel has been down long enough, sending event")
+							c.eventSub <- events.NewChannelStatusDownEvent(channel, downDuration, c.getAlias)
+							notifiedChannels[chanId] = true
+						}
 					} else {
 						// First time seeing this channel as down, start tracking
-						downChannelMap[chanId] = 0
+						downChannelMap[chanId] = now
+						notifiedChannels[chanId] = false
 						logger.Debug("channel is down, starting downtime tracking")
-					}
-
-					// Check if downtime exceeds threshold
-					if downChannelMap[chanId] >= c.cfg.EventConfig.ChannelStatusEvent.MinDowntime {
-						c.eventSub <- events.NewChannelStatusDownEvent(channel, c.getAlias)
-						// Reset the timer
-						downChannelMap[chanId] = 0
 					}
 				}
 			}

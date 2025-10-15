@@ -225,10 +225,10 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}\nFee: {{.Fee}} sats ({{.FeeRate}} ppm)\nRoute: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
 	}
 	if c.Notifications.Templates.ChannelStatusUp == "" {
-		c.Notifications.Templates.ChannelStatusUp = "✅ Channel with {{.PeerAlias}} is back online\nCapacity {{.Capacity}} sats\nChannel Point: {{.ChannelPoint}}"
+		c.Notifications.Templates.ChannelStatusUp = "✅ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}\nCapacity {{.Capacity}} sats"
 	}
 	if c.Notifications.Templates.ChannelStatusDown == "" {
-		c.Notifications.Templates.ChannelStatusDown = "❌ Channel with {{.PeerAlias}} is down\nCapacity {{.Capacity}} sats\nChannel Point: {{.ChannelPoint}}"
+		c.Notifications.Templates.ChannelStatusDown = "❌ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}\nCapacity {{.Capacity}} sats"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {
