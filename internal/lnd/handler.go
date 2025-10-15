@@ -412,6 +412,7 @@ func (c *Client) handleChainSyncState() {
 
 	var lastUnsyncedTime *time.Time
 	var lastWarningTime *time.Time
+
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -425,8 +426,8 @@ func (c *Client) handleChainSyncState() {
 				continue
 			}
 
-			if info.SyncedToChain {
-				if lastUnsyncedTime != nil {
+			if info.GetSyncedToChain() {
+				if lastWarningTime != nil {
 					log.Debug("chain sync restored")
 					c.eventSub <- events.NewChainSyncRestoredEvent(time.Since(*lastUnsyncedTime))
 					lastUnsyncedTime = nil

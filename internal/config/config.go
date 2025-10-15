@@ -201,10 +201,10 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.Keysend = "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
 	}
 	if c.Notifications.Templates.ChainSyncLost == "" {
-		c.Notifications.Templates.ChainSyncLost = "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
+		c.Notifications.Templates.ChainSyncLost = "⚠️ Chain is out of sync since {{.Duration}}"
 	}
 	if c.Notifications.Templates.ChainSyncRestored == "" {
-		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync!\nDuration: {{.Duration}}"
+		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync after {{.Duration}}"
 	}
 	if c.Notifications.Templates.OnChainMempool == "" {
 		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"

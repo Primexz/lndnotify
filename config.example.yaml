@@ -28,8 +28,8 @@ notifications:
     rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
     on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
     on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
-    chain_sync_lost_event: "⚠️ Chain is out of sync!\nDuration: {{.Duration}}"
-    chain_sync_restored_event: "✅ Chain is back in sync!\nDuration: {{.Duration}}"
+    chain_sync_lost_event: "⚠️ Chain is out of sync since {{.Duration}}"
+    chain_sync_restored_event: "✅ Chain is back in sync after {{.Duration}}"
     channel_status_up_event: "✅ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}\nCapacity {{.Capacity}} sats"
     channel_status_down_event: "❌ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}\nCapacity {{.Capacity}} sats"
   formatting:
