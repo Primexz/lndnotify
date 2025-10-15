@@ -210,6 +210,30 @@ Triggered when a new multi-channel backup is created. This event includes a file
 | `{{.Filename}}` | The filename of the backup file. |
 | `{{.Sha256Sum}}` | The SHA256 checksum of the backup file. |
 
+## Channel Status Up Event
+Triggered when a channel that was previously down comes back online.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PeerAlias}}` | The alias of the peer whose channel is back online
+| `{{.PeerPubKey}}` | The full public key of the peer |
+| `{{.PeerPubkeyShort}}` | A shortened version of the peer's public
+| `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
+| `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
+| `{{.Duration}}` | The duration the channel was down |
+
+## Channel Status Down Event
+Triggered when a channel goes down.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PeerAlias}}` | The alias of the peer whose channel is down
+| `{{.PeerPubKey}}` | The full public key of the peer |
+| `{{.PeerPubkeyShort}}` | A shortened version of the peer's public
+| `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
+| `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
+| `{{.Duration}}` | The duration the channel was down |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:
