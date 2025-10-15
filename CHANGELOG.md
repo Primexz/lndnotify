@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+### Deprecated
+### Fixed
+### Changed
+### Removed
+
+
+## [1.6.0] - 2025-10-15
+
+### Added
 - Channel status event: Notifications for channel up/down events with configurable minimum downtime before notification. (@Primexz)
 
 ### Deprecated
@@ -12,9 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Fixed issue where chain sync lost event was getting triggered incorrectly. (@Primexz)
-
-### Changed
-### Removed
 
 
 ## [1.5.0] - 2025-10-14
