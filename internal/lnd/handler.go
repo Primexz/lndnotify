@@ -519,8 +519,8 @@ func (c *Client) handleChannelStatusEvents() {
 				logger := log.WithField("channel_id", chanId)
 
 				if channel.GetActive() {
-					// Channel is active, remove from downChannelMap if present
-					if _, exists := downChannelMap[chanId]; exists {
+					// Channel is active
+					if _, exists := notifiedChannels[chanId]; exists {
 						downDuration := now.Sub(downChannelMap[chanId])
 
 						logger.Debug("channel is back up")

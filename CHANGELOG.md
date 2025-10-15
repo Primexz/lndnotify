@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Removed
 
 
+## [1.6.1] - 2025-10-15
+
+### Fixed
+- Fixed issue where channel up events were incorrectly triggered without a corresponding channel down event being sent previously. (@Primexz)
+
+
 ## [1.6.0] - 2025-10-15
 
 ### Added
