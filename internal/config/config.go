@@ -222,7 +222,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.PeerOnline = `{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}`
 	}
 	if c.Notifications.Templates.RebalancingSucceeded == "" {
-		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}\nFee: {{.Fee}} sats ({{.FeeRate}} ppm)\nRoute: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
+		c.Notifications.Templates.RebalancingSucceeded = "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}\nFee: {{.Fee}} sats ({{.FeeRate}} ppm)\nRoute: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n\n{{end}}"
 	}
 	if c.Notifications.Templates.ChannelStatusUp == "" {
 		c.Notifications.Templates.ChannelStatusUp = "✅ Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}\nCapacity {{.Capacity}} sats"

@@ -25,7 +25,7 @@ notifications:
     payment_succeeded_event: "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}, {{.FeeRate}} ppm) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}{{end}}\nHash: {{.PaymentHash}}"
     peer_offline_event: "{{if .PeerAlias}}⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline{{else}}⚠️ Peer {{.PeerPubKey}} went offline{{end}}"
     peer_online_event: "{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}"
-    rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n{{end}}"
+    rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n\n{{end}}"
     on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
     on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
     chain_sync_lost_event: "⚠️ Chain is out of sync since {{.Duration}}"
