@@ -180,7 +180,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}\nCapacity {{.Capacity}} sats\nSettled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
 	}
 	if c.Notifications.Templates.ChannelClosing == "" {
-		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}\nCapacity {{.Capacity}} sats, Limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
+		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}\nCapacity {{.Capacity}} sats\nLimbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
 	}
 	if c.Notifications.Templates.ChannelOpen == "" {
 		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}\nCapacity {{.Capacity}} sats"
