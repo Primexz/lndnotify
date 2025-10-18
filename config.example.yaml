@@ -13,25 +13,81 @@ notifications:
     - url: "discord://token@channel?SplitLines=false"  # Discord webhook URL
       name: "main-discord"
   templates:
-    backup_multi_event: "❗️Channel backup received for {{.NumChanPoints}} channels\n\nChannel Points:\n{{range .ChanPoints}}- {{.}}\n{{end}}\nFilename: {{.Filename}}\n SHA256: {{.Sha256Sum}}"
-    channel_close_event: "🔒 Channel closed with {{.PeerAlias}}, capacity {{.Capacity}} sats, settled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
-    channel_closing_event: "⏳ Closing channel with {{.PeerAlias}}, capacity {{.Capacity}} sats, limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
-    channel_open_event: "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
+    backup_multi_event: |-
+      ❗️ Channel backup received for {{.NumChanPoints}} channels
+
+      Channel Points:
+      {{range .ChanPoints}}- {{.}}
+      {{end}}
+      Filename: {{.Filename}}
+      SHA256: {{.Sha256Sum}}
+    channel_close_event: |-
+      🔒 Channel closed with {{.PeerAlias}}
+      Capacity {{.Capacity}} sats
+      Settled balance {{.SettledBalance}} sats
+
+      Channel Point: {{.ChannelPoint}}
+      Close Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}
+    channel_closing_event: |-
+      ⏳ Closing channel with {{.PeerAlias}}
+      Capacity {{.Capacity}} sats
+      Limbo: {{.LimboBalance}} sats
+
+      Closing TxID: {{.ClosingTxid}}
+      Raw TX: {{.ClosingTxHex}}
+    channel_open_event: |-
+      🚀 Channel opened with {{.PeerAlias}}
+      Capacity {{.Capacity}} sats"
     channel_opening_event: "{{if .Initiator}}⏳ Opening new {{.Capacity}} sats channel to {{.PeerAlias}}{{else}}⏳ Accepting new {{.Capacity}} sats channel from {{.PeerAlias}}{{end}}"
-    failed_htlc_event: "❌ Failed HTLC of {{.Amount}} sats\\n{{.InChanAlias}} -> {{.OutChanAlias}}\\nReason: {{.WireFailure}} ({{.FailureDetail}})\\nActual Outbound: {{.OutChanLiquidity}} sats\\nMissed Fee: {{.MissedFee}} sats"
-    forward_event: "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
+    failed_htlc_event: |-
+      ❌ Failed HTLC of {{.Amount}} sats
+      {{.InChanAlias}} -> {{.OutChanAlias}}
+      Reason: {{.WireFailure}} ({{.FailureDetail}})
+      Actual Outbound: {{.OutChanLiquidity}} sats
+      Missed Fee: {{.MissedFee}} sats
+    forward_event: |-
+      💰 Forwarded {{.Amount}} sats
+      {{.PeerAliasIn}} -> {{.PeerAliasOut}}
+      Earned {{.Fee}} sats
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
-    keysend_event: "📨 Keysend received:\n\n{{.Msg}}\n\nChannel In: {{.InChanAlias}} ({{.InChanId}})"
-    payment_succeeded_event: "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}, {{.FeeRate}} ppm) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}{{end}}\nHash: {{.PaymentHash}}"
+    keysend_event: |-
+      📨 Keysend received:
+
+      {{.Msg}}
+
+      Channel In: {{.InChanAlias}} ({{.InChanId}})
+    payment_succeeded_event: |-
+      ⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}, {{.FeeRate}} ppm) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}
+      Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}{{end}}
+      Hash: {{.PaymentHash}}
     peer_offline_event: "{{if .PeerAlias}}⚠️ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) went offline{{else}}⚠️ Peer {{.PeerPubKey}} went offline{{end}}"
     peer_online_event: "{{if .PeerAlias}}✅ Peer {{.PeerAlias}} ({{.PeerPubkeyShort}}) is online{{else}}✅ Peer {{.PeerPubKey}} is online{{end}}"
-    rebalancing_succeeded_event: "{{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}\n\n{{end}}"
-    on_chain_mempool_event: "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
-    on_chain_confirmed_event: "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
+    rebalancing_succeeded_event: |-
+      {{range .HtlcInfo}}☯️ Rebalanced {{.Amount}} sats {{.FirstHop}} → {{.PenultHop}}. Fee: {{.Fee}} sats ({{.FeeRate}} ppm), Route: {{range $i, $hop := .HopInfo}}{{if $i}} -> {{end}}{{$hop.Alias}} ({{$hop.FeeRate}} ppm){{end}}
+
+      {{end}}
+    on_chain_mempool_event: |-
+      🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats
+      Fee: {{.TotalFees}} sats
+
+      Outputs:
+      {{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})
+      {{end}}
+      TxID: {{.TxHash}}
+      Raw TX: {{.RawTxHex}}
+    on_chain_confirmed_event: |-
+      🔗 Confirmed On-Chain transaction: {{.Amount}} sats
+      Fee: {{.TotalFees}} sats
+
+      TxID: {{.TxHash}}
     chain_sync_lost_event: "⚠️ Chain is out of sync since {{.Duration}}"
     chain_sync_restored_event: "✅ Chain is back in sync after {{.Duration}}"
-    channel_status_up_event: "🟢 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}\nCapacity {{.Capacity}} sats"
-    channel_status_down_event: "🔴 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}\nCapacity {{.Capacity}} sats"
+    channel_status_up_event: |-
+      🟢 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is back online after {{.Duration}}
+      Capacity {{.Capacity}} sats
+    channel_status_down_event: |-
+      🔴 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}
+      Capacity {{.Capacity}} sats
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 

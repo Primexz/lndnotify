@@ -174,16 +174,16 @@ func (c *Config) setDefaults() {
 
 	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.BackupMulti == "" {
-		c.Notifications.Templates.BackupMulti = "❗️Channel backup received for {{.NumChanPoints}} channels\n\nChannel Points:\n{{range .ChanPoints}}- {{.}}\n{{end}}\nFilename: {{.Filename}}\n SHA256: {{.Sha256Sum}}"
+		c.Notifications.Templates.BackupMulti = "❗️ Channel backup received for {{.NumChanPoints}} channels\n\nChannel Points:\n{{range .ChanPoints}}- {{.}}\n{{end}}\nFilename: {{.Filename}}\n SHA256: {{.Sha256Sum}}"
 	}
 	if c.Notifications.Templates.ChannelClose == "" {
-		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}, capacity {{.Capacity}} sats, settled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
+		c.Notifications.Templates.ChannelClose = "🔒 Channel closed with {{.PeerAlias}}\nCapacity {{.Capacity}} sats\nSettled balance {{.SettledBalance}} sats\n\nChannel Point: {{.ChannelPoint}}\nClose Type: {{if eq .CloseType 0}}🤝 Cooperatively {{if .CloseInitiator}}Local{{else}}Remote{{end}}{{else if eq .CloseType 1}}🔴 Force Local{{else if eq .CloseType 2}}🔴 Force Remote{{else if eq .CloseType 3}}🚨 Breach{{else}}💀 Other{{end}}"
 	}
 	if c.Notifications.Templates.ChannelClosing == "" {
-		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}, capacity {{.Capacity}} sats, limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
+		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}\nCapacity {{.Capacity}} sats, Limbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
 	}
 	if c.Notifications.Templates.ChannelOpen == "" {
-		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}, capacity {{.Capacity}} sats"
+		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}\nCapacity {{.Capacity}} sats"
 	}
 	if c.Notifications.Templates.ChannelOpening == "" {
 		c.Notifications.Templates.ChannelOpening = "{{if .Initiator}}⏳ Opening new {{.Capacity}} sats channel to {{.PeerAlias}}{{else}}⏳ Accepting new {{.Capacity}} sats channel from {{.PeerAlias}}{{end}}"
@@ -192,7 +192,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats\nLocal liquidity failure: {{if .IsLocalLiquidityFailure}}✅{{else}}❌{{end}}"
 	}
 	if c.Notifications.Templates.Forward == "" {
-		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats, {{.PeerAliasIn}} -> {{.PeerAliasOut}}, earned {{.Fee}} sats"
+		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats\n{{.PeerAliasIn}} -> {{.PeerAliasOut}}\nEarned {{.Fee}} sats"
 	}
 	if c.Notifications.Templates.InvoiceSettled == "" {
 		c.Notifications.Templates.InvoiceSettled = "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"

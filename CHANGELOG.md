@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Removed
 
 
+## [1.6.2] - 2025-10-18
+
+### Changed
+- Improved notification templates (@Primexz)
+- Fixed notification template for backup event (@Primexz)
+
+
 ## [1.6.1] - 2025-10-15
 
 ### Fixed
