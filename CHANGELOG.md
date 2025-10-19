@@ -7,11 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Deprecated
 ### Fixed
-- Prevented multiple notifications from being sent when lndClient.SubscribeEvents fails (e.g., during lnd startup when server is not active) and lndnotify is retried externally. (@Feelancer21)
-- Fixed issue where channel up events and chain sync lost events were incorrectly triggered. (@Primexz)
-
 ### Changed
 ### Removed
+
+
+## [1.6.3] - 2025-10-19
+
+### Fixed
+- Prevented multiple notifications from being sent when lndClient.SubscribeEvents fails (e.g., during lnd startup when server is not active) and lndnotify is retried externally. (@Feelancer21)
+- Fixed issue where channel up events and chain sync lost events were incorrectly triggered. (@Primexz)
 
 
 ## [1.6.2] - 2025-10-18
