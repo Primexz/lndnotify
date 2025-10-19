@@ -40,6 +40,7 @@ func Run(configPath string) {
 	notifier := notify.NewManager(&notify.ManagerConfig{
 		Providers: cfg.Notifications.Providers,
 		Templates: cfg.Notifications.Templates,
+		Batching:  cfg.Notifications.Batching,
 	})
 
 	// Subscribe to events
@@ -48,9 +49,16 @@ func Run(configPath string) {
 		log.Fatalf("Failed to subscribe to events: %v", err)
 	}
 
+	// TEST!!
+	notifier.SendNotification("🟢 lndnotify connected")
+	notifier.SendNotification("🟢 lndnotify connected")
+	notifier.SendNotification("🟢 lndnotify connected")
+	notifier.SendNotification("🟢 lndnotify connected")
+	notifier.SendNotification("🟢 lndnotify connected")
+
 	if cfg.Events.StatusEvents {
-		notifier.Send("🟢 lndnotify connected")
-		defer notifier.Send("🔴 lndnotify disconnected")
+		notifier.SendNotification("🟢 lndnotify connected")
+		defer notifier.SendNotification("🔴 lndnotify disconnected")
 	}
 
 	// Handle shutdown gracefully
@@ -75,13 +83,17 @@ func Run(configPath string) {
 			}
 
 			if source, ok := event.(events.FileSource); ok {
-				notifier.UploadFile(msg, source.GetFile())
+				notifier.SendNotificationWithFile(msg, source.GetFile())
 				continue
 			}
-			notifier.Send(msg)
+			notifier.SendNotification(msg)
 
 		case <-sigChan:
 			log.Info("received shutdown signal")
+
+			// Stop the notification manager first to flush any pending batches
+			notifier.Stop()
+
 			if err := lndClient.Disconnect(); err != nil {
 				log.WithError(err).Error("error disconnecting from LND")
 			}
