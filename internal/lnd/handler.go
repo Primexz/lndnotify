@@ -430,9 +430,9 @@ func (c *Client) handleChainSyncState() {
 				if lastWarningTime != nil {
 					log.Debug("chain sync restored")
 					c.eventSub <- events.NewChainSyncRestoredEvent(time.Since(*lastUnsyncedTime))
-					lastUnsyncedTime = nil
 					lastWarningTime = nil
 				}
+				lastUnsyncedTime = nil
 			} else {
 				now := time.Now()
 				if lastUnsyncedTime == nil {
@@ -524,11 +524,11 @@ func (c *Client) handleChannelStatusEvents() {
 						downDuration := now.Sub(downChannelMap[chanId])
 
 						logger.Debug("channel is back up")
-
-						delete(downChannelMap, chanId)
-						delete(notifiedChannels, chanId) // Clear notification flag
 						c.eventSub <- events.NewChannelStatusUpEvent(channel, downDuration, c.getAlias)
 					}
+
+					delete(notifiedChannels, chanId)
+					delete(downChannelMap, chanId)
 				} else {
 					// Channel is inactive, track downtime
 					if downStartTime, exists := downChannelMap[channel.ChanId]; exists {
