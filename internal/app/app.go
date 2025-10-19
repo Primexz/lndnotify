@@ -42,15 +42,15 @@ func Run(configPath string) {
 		Templates: cfg.Notifications.Templates,
 	})
 
-	if cfg.Events.StatusEvents {
-		notifier.Send("🟢 lndnotify connected")
-		defer notifier.Send("🔴 lndnotify disconnected")
-	}
-
 	// Subscribe to events
 	eventChan, err := lndClient.SubscribeEvents()
 	if err != nil {
 		log.Fatalf("Failed to subscribe to events: %v", err)
+	}
+
+	if cfg.Events.StatusEvents {
+		notifier.Send("🟢 lndnotify connected")
+		defer notifier.Send("🔴 lndnotify disconnected")
 	}
 
 	// Handle shutdown gracefully
