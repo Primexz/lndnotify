@@ -65,6 +65,7 @@ type NotificationTemplate struct {
 	PeerOffline          string `yaml:"peer_offline_event"`
 	PeerOnline           string `yaml:"peer_online_event"`
 	RebalancingSucceeded string `yaml:"rebalancing_succeeded_event"`
+	TLSCertExpiry        string `yaml:"tls_cert_expiry_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
@@ -83,6 +84,7 @@ type EventFlags struct {
 	PeerEvents          bool `yaml:"peer_events"`
 	RebalancingEvents   bool `yaml:"rebalancing_events"`
 	StatusEvents        bool `yaml:"status_events"`
+	TLSCertExpiryEvents bool `yaml:"tls_cert_expiry_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -113,6 +115,9 @@ type EventConfig struct {
 	ChannelStatusEvent struct {
 		MinDowntime time.Duration `yaml:"min_downtime"`
 	} `yaml:"channel_status_event"`
+	TLSCertExpiryEvent struct {
+		Threshold time.Duration `yaml:"threshold"`
+	} `yaml:"tls_cert_expiry_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -230,6 +235,9 @@ func (c *Config) setDefaults() {
 	if c.Notifications.Templates.ChannelStatusDown == "" {
 		c.Notifications.Templates.ChannelStatusDown = "🔴 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}\nCapacity {{.Capacity}} sats"
 	}
+	if c.Notifications.Templates.TLSCertExpiry == "" {
+		c.Notifications.Templates.TLSCertExpiry = "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
+	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {
 		c.EventConfig.ChainLostEvent.Threshold = 5 * time.Minute
@@ -239,5 +247,8 @@ func (c *Config) setDefaults() {
 	}
 	if c.EventConfig.ChannelStatusEvent.MinDowntime == 0 {
 		c.EventConfig.ChannelStatusEvent.MinDowntime = 10 * time.Minute
+	}
+	if c.EventConfig.TLSCertExpiryEvent.Threshold == 0 {
+		c.EventConfig.TLSCertExpiryEvent.Threshold = 7 * 24 * time.Hour
 	}
 }

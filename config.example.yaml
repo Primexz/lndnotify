@@ -88,6 +88,7 @@ notifications:
     channel_status_down_event: |-
       🔴 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}
       Capacity {{.Capacity}} sats
+    tls_cert_expiry_event: "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
 
@@ -105,6 +106,7 @@ events:
   on_chain_events: true # Enable on-chain transaction notifications
   chain_sync_events: true # Enable chain sync status notifications (lost sync/restored)
   channel_status_events: true # Enable channel status notifications (channel up/down)
+  tls_cert_expiry_events: true # Enable TLS certificate expiry notifications
   peer_events: false # Enable peer events (online/offline) notifications
 
 # Event configuration (specific settings for each event type)

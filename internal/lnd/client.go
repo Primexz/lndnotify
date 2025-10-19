@@ -162,6 +162,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		c.handlePendingChannels,
 		c.handleChainSyncState,
 		c.handleChannelStatusEvents,
+		c.handleTLSCertExpiry,
 	}
 	c.wg.Add(len(handlers))
 	for _, h := range handlers {

@@ -109,6 +109,7 @@ events:
   on_chain_events: true
   chain_sync_events: true
   channel_status_events: true
+  tls_cert_expiry_events: true
   peer_events: false
 
 # Event-specific configuration

@@ -2,6 +2,9 @@ package lnd
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
+	"os"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
@@ -548,6 +551,54 @@ func (c *Client) handleChannelStatusEvents() {
 						logger.Debug("channel is down, starting downtime tracking")
 					}
 				}
+			}
+		}
+	}
+}
+
+// TODO: https://github.com/Primexz/lndnotify/issues/35
+func (c *Client) handleTLSCertExpiry() {
+	log.Debug("starting tls cert expiry handler")
+	defer c.wg.Done()
+
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			certPath := c.cfg.LND.TLSCertPath
+			logger := log.WithField("cert_path", certPath)
+
+			log.Debug("checking tls cert expiry")
+
+			certData, err := os.ReadFile(certPath)
+			if err != nil {
+				logger.WithError(err).Error("error reading tls cert")
+				continue
+
+			}
+
+			block, _ := pem.Decode(certData)
+			if block.Type != "CERTIFICATE" {
+				logger.Error("invalid tls cert format")
+				continue
+			}
+
+			cert, err := x509.ParseCertificate(block.Bytes)
+			if err != nil {
+				logger.WithError(err).Error("error parsing tls cert")
+				continue
+			}
+
+			timeUntilExpiry := cert.NotAfter.Sub(time.Now())
+			if timeUntilExpiry <= c.cfg.EventConfig.TLSCertExpiryEvent.Threshold {
+				logger.WithField("expires_at", cert.NotAfter).Info("tls certificate is expiring soon")
+				c.eventSub <- events.NewTLSCertExpiryEvent(cert.NotAfter)
+			} else {
+				logger.WithField("expires_at", cert.NotAfter).Debug("tls certificate is valid")
 			}
 		}
 	}
