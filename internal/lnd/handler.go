@@ -574,11 +574,11 @@ func (c *Client) handleTLSCertExpiry() {
 
 			log.Debug("checking tls cert expiry")
 
+			// #nosec G304
 			certData, err := os.ReadFile(certPath)
 			if err != nil {
 				logger.WithError(err).Error("error reading tls cert")
 				continue
-
 			}
 
 			block, _ := pem.Decode(certData)
