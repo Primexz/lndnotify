@@ -31,6 +31,14 @@ type NotificationConfig struct {
 	Providers  []ProviderConfig     `yaml:"providers" validate:"required,min=1"`
 	Templates  NotificationTemplate `yaml:"templates"`
 	Formatting Formatting           `yaml:"formatting"`
+	Batching   BatchingConfig       `yaml:"batching"`
+}
+
+// BatchingConfig holds batching configuration
+type BatchingConfig struct {
+	Enabled       bool          `yaml:"enabled"`
+	FlushInterval time.Duration `yaml:"flush_interval"`
+	MaxSize       int           `yaml:"max_size"`
 }
 
 type Formatting struct {
@@ -250,5 +258,13 @@ func (c *Config) setDefaults() {
 	}
 	if c.EventConfig.TLSCertExpiryEvent.Threshold == 0 {
 		c.EventConfig.TLSCertExpiryEvent.Threshold = 7 * 24 * time.Hour
+	}
+
+	// Set default batching configuration
+	if c.Notifications.Batching.FlushInterval == 0 {
+		c.Notifications.Batching.FlushInterval = 5 * time.Second
+	}
+	if c.Notifications.Batching.MaxSize == 0 {
+		c.Notifications.Batching.MaxSize = 10
 	}
 }

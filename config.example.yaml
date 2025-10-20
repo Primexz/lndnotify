@@ -91,6 +91,10 @@ notifications:
     tls_cert_expiry_event: "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
+  batching:
+    enabled: false  # Enable batching of notifications
+    flush_interval: "5s"  # How often to flush batched notifications (e.g., "5s", "1m", "30s")
+    max_size: 10  # Maximum number of notifications to batch before flushing immediately
 
 # Event settings (feature flags)
 events:

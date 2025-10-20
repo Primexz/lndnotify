@@ -28,6 +28,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Customizable notification formatting (e.g., number formatting based on locale)
+- Notification batching with configurable intervals
 - Event filtering
 
 ## Prerequisites
@@ -132,6 +133,24 @@ event_config:
   channel_status_event:
     min_downtime: 10m
 
+```
+
+### Notification Batching
+
+LND Notify supports batching notifications to reduce the frequency of messages while ensuring important events are still delivered promptly. This is particularly useful for high-traffic nodes that might generate many notifications.
+
+When batching is enabled, notifications are collected and sent together based on two criteria:
+- **Time-based flushing**: Notifications are sent after a configurable interval (default: 5 seconds)
+- **Size-based flushing**: Notifications are sent immediately when the batch reaches a maximum size (default: 10 notifications)
+
+#### Configuration
+
+```yaml
+notifications:
+  batching:
+    enabled: true  # Enable notification batching
+    flush_interval: "5s"  # Send batched notifications every 5 seconds
+    max_size: 10  # Send immediately when 10 notifications are queued
 ```
 
 ### Notification Providers
