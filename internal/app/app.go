@@ -49,13 +49,6 @@ func Run(configPath string) {
 		log.Fatalf("Failed to subscribe to events: %v", err)
 	}
 
-	// TEST!!
-	notifier.SendNotification("🟢 lndnotify connected")
-	notifier.SendNotification("🟢 lndnotify connected")
-	notifier.SendNotification("🟢 lndnotify connected")
-	notifier.SendNotification("🟢 lndnotify connected")
-	notifier.SendNotification("🟢 lndnotify connected")
-
 	if cfg.Events.StatusEvents {
 		notifier.SendNotification("🟢 lndnotify connected")
 		defer notifier.SendNotification("🔴 lndnotify disconnected")
