@@ -28,7 +28,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Customizable notification formatting (e.g., number formatting based on locale)
-- Optional notification batching with configurable intervals
+- Notification batching with configurable intervals
 - Event filtering
 
 ## Prerequisites
