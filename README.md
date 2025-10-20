@@ -149,8 +149,8 @@ When batching is enabled, notifications are collected and sent together based on
 notifications:
   batching:
     enabled: true  # Enable notification batching
-    flush_interval: "10s"  # Send batched notifications every 10 seconds
-    max_size: 15  # Send immediately when 15 notifications are queued
+    flush_interval: "5s"  # Send batched notifications every 5 seconds
+    max_size: 10  # Send immediately when 10 notifications are queued
 ```
 
 ### Notification Providers
