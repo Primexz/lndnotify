@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added TLS certificate expiry event: Notifications for upcoming LND TLS certificate expiration with configurable threshold before notification. (@Primexz)
 - Notification batching: Support for batching notifications to reduce frequency while ensuring important events are delivered promptly. Configurable flush interval and maximum batch size. (@Primexz)
+- Added fee rate (ppm) to forward event template. (@Primexz)
 
 ### Deprecated
 ### Fixed

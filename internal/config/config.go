@@ -205,7 +205,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.FailedHtlc = "❌ Failed HTLC of {{.Amount}} sats\n{{.InChanAlias}} -> {{.OutChanAlias}}\nReason: {{.WireFailure}} ({{.FailureDetail}})\nActual Outbound: {{.OutChanLiquidity}} sats\nMissed Fee: {{.MissedFee}} sats\nLocal liquidity failure: {{if .IsLocalLiquidityFailure}}✅{{else}}❌{{end}}"
 	}
 	if c.Notifications.Templates.Forward == "" {
-		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats\n{{.PeerAliasIn}} -> {{.PeerAliasOut}}\nEarned {{.Fee}} sats"
+		c.Notifications.Templates.Forward = "💰 Forwarded {{.Amount}} sats\n{{.PeerAliasIn}} -> {{.PeerAliasOut}}\nEarned {{.Fee}} sats ({{.FeeRate}} ppm)"
 	}
 	if c.Notifications.Templates.InvoiceSettled == "" {
 		c.Notifications.Templates.InvoiceSettled = "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"

@@ -48,7 +48,7 @@ notifications:
     forward_event: |-
       💰 Forwarded {{.Amount}} sats
       {{.PeerAliasIn}} -> {{.PeerAliasOut}}
-      Earned {{.Fee}} sats
+      Earned {{.Fee}} sats ({{.FeeRate}} ppm)
     invoice_settled_event: "💵 Invoice settled: {{or .Memo \"No Memo\"}} for {{.Value}} sats"
     keysend_event: |-
       📨 Keysend received:
