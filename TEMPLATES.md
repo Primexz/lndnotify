@@ -234,6 +234,13 @@ Triggered when a channel goes down.
 | `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
 | `{{.Duration}}` | The duration the channel was down |
 
+## Wallet State Change Event
+Triggered when the wallet state changes (e.g., from non-existing to active).
+| Variable | Description |
+|----------|-------------|
+| `{{.OldState}}` | The previous wallet state (e.g., NON_EXISTING, SERVER_ACTIVE) |
+| `{{.NewState}}` | The new wallet state (e.g., SERVER_ACTIVE, LOCKED) |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:

@@ -604,17 +604,18 @@ func (c *Client) handleTLSCertExpiry() {
 	}
 }
 
+// handleLndWalletState handles wallet state change events
 func (c *Client) handleLndWalletState() {
-	log.Debug("starting lnd wallet state event handler")
+	log.Debug("starting wallet state event handler")
 	defer c.wg.Done()
 
-	retry(c.ctx, "lnd wallet state subscription", func() (string, error) {
+	retry(c.ctx, "wallet state subscription", func() (string, error) {
 		ev, err := c.state.SubscribeState(c.ctx, &lnrpc.SubscribeStateRequest{})
 		if err != nil {
 			return "", err
 		}
 
-		log.Debug("lnd wallet state subscription established")
+		log.Debug("wallet state subscription established")
 
 		var lastState lnrpc.WalletState
 		var initialEvent bool = true
@@ -639,7 +640,6 @@ func (c *Client) handleLndWalletState() {
 			}
 
 			newState := peerEvent.GetState()
-
 			c.eventSub <- events.NewWalletStateEvent(lastState, newState)
 			lastState = newState
 		}

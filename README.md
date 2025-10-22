@@ -25,6 +25,8 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Rebalancing Succeeded 
   - On-Chain Transactions
   - On-Chain Sync Lost
+  - TLS Certificate Expiry
+  - Wallet State Change
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Customizable notification formatting (e.g., number formatting based on locale)
@@ -112,6 +114,7 @@ events:
   channel_status_events: true
   tls_cert_expiry_events: true
   peer_events: false
+  wallet_state_events: true
 
 # Event-specific configuration
 event_config:

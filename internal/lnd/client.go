@@ -141,7 +141,8 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		}
 	}
 
-	// wallet state is a seperate service, we can subscribe it before starting others
+	// wallet state is a separate service. we can subscribe to it before starting the other subscriptions
+	c.wg.Add(1)
 	go c.handleLndWalletState()
 
 	return retry(c.ctx, "main client", func() (chan events.Event, error) {
