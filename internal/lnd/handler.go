@@ -604,6 +604,48 @@ func (c *Client) handleTLSCertExpiry() {
 	}
 }
 
+func (c *Client) handleLndWalletState() {
+	log.Debug("starting lnd wallet state event handler")
+	defer c.wg.Done()
+
+	retry(c.ctx, "lnd wallet state subscription", func() (string, error) {
+		ev, err := c.state.SubscribeState(c.ctx, &lnrpc.SubscribeStateRequest{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("lnd wallet state subscription established")
+
+		var lastState lnrpc.WalletState
+		var initialEvent bool = true
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			peerEvent, err := ev.Recv()
+			if err != nil {
+				return "", err
+			}
+
+			log.WithField("wallet_state", peerEvent).Trace("received wallet state event")
+
+			if initialEvent {
+				initialEvent = false
+				continue
+			}
+
+			newState := peerEvent.GetState()
+
+			c.eventSub <- events.NewWalletStateEvent(lastState, newState)
+			lastState = newState
+		}
+	})
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {
@@ -615,13 +657,13 @@ func (c *Client) getAlias(pubkey string) string {
 	return format.FormatPubKey(pubkey)
 }
 
-func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
+func retry[T any](ctx context.Context, name string, operation backoff.Operation[T]) (T, error) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {
 		logger.WithError(err).WithField("next_retry_in", duration).Warn("operation failed, retrying")
 	}
 
-	_, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))
+	ret, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))
 	if err != nil {
 		if ctx.Err() != nil {
 			logger.Debug("context cancelled, stopping retry")
@@ -629,4 +671,6 @@ func retry(ctx context.Context, name string, operation backoff.Operation[string]
 			logger.WithError(err).Error("operation failed permanently")
 		}
 	}
+
+	return ret, err
 }

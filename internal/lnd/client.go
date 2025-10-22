@@ -31,6 +31,7 @@ type Client struct {
 	cfg             *config.Config
 	conn            *grpc.ClientConn
 	client          lnrpc.LightningClient
+	state           lnrpc.StateClient
 	router          routerrpc.RouterClient
 	channelManager  *channelmanager.ChannelManager
 	pendChanManager *channelmanager.PendingChannelManager
@@ -89,6 +90,7 @@ func (c *Client) Connect() error {
 
 	c.conn = conn
 	c.client = lnrpc.NewLightningClient(conn)
+	c.state = lnrpc.NewStateClient(conn)
 	c.router = routerrpc.NewRouterClient(conn)
 	c.channelManager = channelmanager.NewChannelManager(c.client)
 	c.pendChanManager = channelmanager.NewPendingChannelManager(c.client, c.pendChanUpdates)
@@ -139,35 +141,40 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		}
 	}
 
-	if err := c.channelManager.Start(); err != nil {
-		return nil, fmt.Errorf("starting channel manager: %w", err)
-	}
+	// wallet state is a seperate service, we can subscribe it before starting others
+	go c.handleLndWalletState()
 
-	if err := c.pendChanManager.Start(); err != nil {
-		return nil, fmt.Errorf("starting pending channel manager: %w", err)
-	}
+	return retry(c.ctx, "main client", func() (chan events.Event, error) {
+		if err := c.channelManager.Start(); err != nil {
+			return nil, fmt.Errorf("starting channel manager: %w", err)
+		}
 
-	// Start subscription handlers
-	// NOTE: Keep handlers in alphabetical order to prevent merge conflicts when adding new handlers
-	handlers := []func(){
-		c.handleBackupEvents,
-		c.handleChannelEvents,
-		c.handleFailedHtlcEvents,
-		c.handleForwards,
-		c.handleInvoiceEvents,
-		c.handleKeysendEvents,
-		c.handleOnChainEvents,
-		c.handlePaymentEvents,
-		c.handlePeerEvents,
-		c.handlePendingChannels,
-		c.handleChainSyncState,
-		c.handleChannelStatusEvents,
-		c.handleTLSCertExpiry,
-	}
-	c.wg.Add(len(handlers))
-	for _, h := range handlers {
-		go h()
-	}
+		if err := c.pendChanManager.Start(); err != nil {
+			return nil, fmt.Errorf("starting pending channel manager: %w", err)
+		}
 
-	return c.eventSub, nil
+		// Start subscription handlers
+		// NOTE: Keep handlers in alphabetical order to prevent merge conflicts when adding new handlers
+		handlers := []func(){
+			c.handleBackupEvents,
+			c.handleChannelEvents,
+			c.handleFailedHtlcEvents,
+			c.handleForwards,
+			c.handleInvoiceEvents,
+			c.handleKeysendEvents,
+			c.handleOnChainEvents,
+			c.handlePaymentEvents,
+			c.handlePeerEvents,
+			c.handlePendingChannels,
+			c.handleChainSyncState,
+			c.handleChannelStatusEvents,
+			c.handleTLSCertExpiry,
+		}
+		c.wg.Add(len(handlers))
+		for _, h := range handlers {
+			go h()
+		}
+
+		return c.eventSub, nil
+	})
 }
