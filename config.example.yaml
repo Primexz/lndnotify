@@ -89,7 +89,7 @@ notifications:
       🔴 Channel with {{.PeerAlias}} ({{.PeerPubkeyShort}}) is down since {{.Duration}}
       Capacity {{.Capacity}} sats
     tls_cert_expiry_event: "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
-    wallet_state_event: "🔔 Wallet state changed: {{.OldState}} -> {{.NewState}}"
+    wallet_state_event: "👛 Wallet state changed: {{.OldState}} -> {{.NewState}}"
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
   batching:

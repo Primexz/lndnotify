@@ -249,7 +249,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.TLSCertExpiry = "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
 	}
 	if c.Notifications.Templates.WalletState == "" {
-		c.Notifications.Templates.WalletState = "🔔 Wallet state changed: {{.OldState}} -> {{.NewState}}"
+		c.Notifications.Templates.WalletState = "👛 Wallet state changed: {{.OldState}} -> {{.NewState}}"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {
