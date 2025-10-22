@@ -63,6 +63,7 @@ func (c *Client) handlePeerEvents() {
 	log.Debug("starting peer event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "peer event subscription", func() (string, error) {
 		ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
 		if err != nil {
@@ -105,6 +106,7 @@ func (c *Client) handleChannelEvents() {
 	log.Debug("starting channel event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "channel event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeChannelEvents(c.ctx, &lnrpc.ChannelEventSubscription{})
 		if err != nil {
@@ -161,6 +163,7 @@ func (c *Client) handleInvoiceEvents() {
 	log.Debug("starting invoice event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "invoice event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
@@ -212,6 +215,7 @@ func (c *Client) handleFailedHtlcEvents() {
 	log.Debug("starting failed htlc event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "htlc event subscription", func() (string, error) {
 		ev, err := c.router.SubscribeHtlcEvents(c.ctx, &routerrpc.SubscribeHtlcEventsRequest{})
 		if err != nil {
@@ -250,6 +254,7 @@ func (c *Client) handleKeysendEvents() {
 	log.Debug("keysend event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "keysend event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
@@ -295,6 +300,7 @@ func (c *Client) handlePaymentEvents() {
 	log.Debug("starting payment event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "payment event subscription", func() (string, error) {
 		// Pubkey of the local node to distinguish between rebalancing and external payment
 		var localPubkey string
@@ -353,6 +359,7 @@ func (c *Client) handleOnChainEvents() {
 	log.Debug("starting on chain event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "on chain event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeTransactions(c.ctx, &lnrpc.GetTransactionsRequest{})
 		if err != nil {
@@ -470,6 +477,7 @@ func (c *Client) handleBackupEvents() {
 	log.Debug("starting backup event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "channel backup subscription", func() (string, error) {
 		ev, err := c.client.SubscribeChannelBackups(c.ctx, &lnrpc.ChannelBackupSubscription{})
 		if err != nil {
@@ -609,6 +617,7 @@ func (c *Client) handleLndWalletState() {
 	log.Debug("starting wallet state event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "wallet state subscription", func() (string, error) {
 		ev, err := c.state.SubscribeState(c.ctx, &lnrpc.SubscribeStateRequest{})
 		if err != nil {
