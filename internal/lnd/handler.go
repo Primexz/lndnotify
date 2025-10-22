@@ -617,6 +617,9 @@ func (c *Client) handleLndWalletState() {
 	log.Debug("starting wallet state event handler")
 	defer c.wg.Done()
 
+	var lastState lnrpc.WalletState
+	var initialEvent bool = true
+
 	// #nosec G104
 	retry(c.ctx, "wallet state subscription", func() (string, error) {
 		ev, err := c.state.SubscribeState(c.ctx, &lnrpc.SubscribeStateRequest{})
@@ -625,9 +628,6 @@ func (c *Client) handleLndWalletState() {
 		}
 
 		log.Debug("wallet state subscription established")
-
-		var lastState lnrpc.WalletState
-		var initialEvent bool = true
 
 		for {
 			select {
