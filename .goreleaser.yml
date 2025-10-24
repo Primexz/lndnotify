@@ -12,6 +12,14 @@ builds:
       - amd64
       - arm64
 
+upx:
+  -
+    enabled: true
+    goos:
+      - linux
+    compress: best
+    lzma: true
+
 dockers:
   - image_templates:
     - "ghcr.io/primexz/lndnotify:{{ .Version }}-amd64"

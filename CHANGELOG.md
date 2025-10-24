@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Deprecated
 ### Fixed
 ### Changed
+- Reduced binary size with [UPX compression](https://github.com/upx/upx) for Linux builds. (@Primexz)
+
 ### Removed
 
 
