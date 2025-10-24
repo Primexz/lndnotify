@@ -45,6 +45,7 @@ const (
 	Event_PEER_ONLINE           EventType = "peer_online_event"
 	Event_REBALANCING_SUCCEEDED EventType = "rebalancing_succeeded_event"
 	Event_TLS_CERT_EXPIRY       EventType = "tls_cert_expiry_event"
+	Event_WALLET_STATE          EventType = "wallet_state_event"
 )
 
 func (et EventType) String() string {

@@ -74,6 +74,7 @@ type NotificationTemplate struct {
 	PeerOnline           string `yaml:"peer_online_event"`
 	RebalancingSucceeded string `yaml:"rebalancing_succeeded_event"`
 	TLSCertExpiry        string `yaml:"tls_cert_expiry_event"`
+	WalletState          string `yaml:"wallet_state_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
@@ -93,6 +94,7 @@ type EventFlags struct {
 	RebalancingEvents   bool `yaml:"rebalancing_events"`
 	StatusEvents        bool `yaml:"status_events"`
 	TLSCertExpiryEvents bool `yaml:"tls_cert_expiry_events"`
+	WalletStateEvents   bool `yaml:"wallet_state_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -245,6 +247,9 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.TLSCertExpiry == "" {
 		c.Notifications.Templates.TLSCertExpiry = "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
+	}
+	if c.Notifications.Templates.WalletState == "" {
+		c.Notifications.Templates.WalletState = "👛 Wallet state changed: {{.OldState}} -> {{.NewState}}"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {

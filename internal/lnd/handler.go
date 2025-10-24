@@ -63,6 +63,7 @@ func (c *Client) handlePeerEvents() {
 	log.Debug("starting peer event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "peer event subscription", func() (string, error) {
 		ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
 		if err != nil {
@@ -105,6 +106,7 @@ func (c *Client) handleChannelEvents() {
 	log.Debug("starting channel event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "channel event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeChannelEvents(c.ctx, &lnrpc.ChannelEventSubscription{})
 		if err != nil {
@@ -161,6 +163,7 @@ func (c *Client) handleInvoiceEvents() {
 	log.Debug("starting invoice event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "invoice event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
@@ -212,6 +215,7 @@ func (c *Client) handleFailedHtlcEvents() {
 	log.Debug("starting failed htlc event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "htlc event subscription", func() (string, error) {
 		ev, err := c.router.SubscribeHtlcEvents(c.ctx, &routerrpc.SubscribeHtlcEventsRequest{})
 		if err != nil {
@@ -250,6 +254,7 @@ func (c *Client) handleKeysendEvents() {
 	log.Debug("keysend event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "keysend event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
@@ -295,6 +300,7 @@ func (c *Client) handlePaymentEvents() {
 	log.Debug("starting payment event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "payment event subscription", func() (string, error) {
 		// Pubkey of the local node to distinguish between rebalancing and external payment
 		var localPubkey string
@@ -353,6 +359,7 @@ func (c *Client) handleOnChainEvents() {
 	log.Debug("starting on chain event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "on chain event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeTransactions(c.ctx, &lnrpc.GetTransactionsRequest{})
 		if err != nil {
@@ -470,6 +477,7 @@ func (c *Client) handleBackupEvents() {
 	log.Debug("starting backup event handler")
 	defer c.wg.Done()
 
+	// #nosec G104
 	retry(c.ctx, "channel backup subscription", func() (string, error) {
 		ev, err := c.client.SubscribeChannelBackups(c.ctx, &lnrpc.ChannelBackupSubscription{})
 		if err != nil {
@@ -604,6 +612,49 @@ func (c *Client) handleTLSCertExpiry() {
 	}
 }
 
+// handleLndWalletState handles wallet state change events
+func (c *Client) handleLndWalletState() {
+	log.Debug("starting wallet state event handler")
+	defer c.wg.Done()
+
+	var lastState lnrpc.WalletState
+	var initialEvent bool = true
+
+	// #nosec G104
+	retry(c.ctx, "wallet state subscription", func() (string, error) {
+		ev, err := c.state.SubscribeState(c.ctx, &lnrpc.SubscribeStateRequest{})
+		if err != nil {
+			return "", err
+		}
+
+		log.Debug("wallet state subscription established")
+
+		for {
+			select {
+			case <-c.ctx.Done():
+				return "", nil
+			default:
+			}
+
+			peerEvent, err := ev.Recv()
+			if err != nil {
+				return "", err
+			}
+
+			log.WithField("wallet_state", peerEvent).Trace("received wallet state event")
+
+			if initialEvent {
+				initialEvent = false
+				continue
+			}
+
+			newState := peerEvent.GetState()
+			c.eventSub <- events.NewWalletStateEvent(lastState, newState)
+			lastState = newState
+		}
+	})
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {
@@ -615,13 +666,13 @@ func (c *Client) getAlias(pubkey string) string {
 	return format.FormatPubKey(pubkey)
 }
 
-func retry(ctx context.Context, name string, operation backoff.Operation[string]) {
+func retry[T any](ctx context.Context, name string, operation backoff.Operation[T]) (T, error) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {
 		logger.WithError(err).WithField("next_retry_in", duration).Warn("operation failed, retrying")
 	}
 
-	_, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))
+	ret, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))
 	if err != nil {
 		if ctx.Err() != nil {
 			logger.Debug("context cancelled, stopping retry")
@@ -629,4 +680,6 @@ func retry(ctx context.Context, name string, operation backoff.Operation[string]
 			logger.WithError(err).Error("operation failed permanently")
 		}
 	}
+
+	return ret, err
 }

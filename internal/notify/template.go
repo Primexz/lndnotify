@@ -32,6 +32,7 @@ func (m *Manager) parseTemplates() {
 		events.Event_CHANNEL_STATUS_DOWN:   m.cfg.Templates.ChannelStatusDown,
 		events.Event_CHANNEL_STATUS_UP:     m.cfg.Templates.ChannelStatusUp,
 		events.Event_TLS_CERT_EXPIRY:       m.cfg.Templates.TLSCertExpiry,
+		events.Event_WALLET_STATE:          m.cfg.Templates.WalletState,
 	}
 
 	for name, text := range templates {
