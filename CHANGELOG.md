@@ -5,14 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
-- Added wallet state event. (@Primexz)
-
 ### Deprecated
 ### Fixed
 ### Changed
-- Reduced binary size with [UPX compression](https://github.com/upx/upx) for Linux builds. (@Primexz)
-
 ### Removed
+
+
+## [1.8.0] - 2025-10-24
+
+### Added
+- Added wallet state event. (@Primexz)
+
+### Changed
+- Reduced binary size with [UPX compression](https://github.com/upx/upx) for Linux builds. (@Primexz)
 
 
 ## [1.7.0] - 2025-10-21
