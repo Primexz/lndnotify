@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Deprecated
 ### Fixed
 ### Changed
+- Skip keysend invoices by default in invoice settled event. This can be configured via `event_config.invoice_event.skip_keysend` option. (@Primexz)
+
 ### Removed
 
 

@@ -46,8 +46,13 @@ func (e *InvoiceSettledEvent) GetTemplateData(lang language.Tag) interface{} {
 }
 
 func (e *InvoiceSettledEvent) ShouldProcess(cfg *config.Config) bool {
+	skipKeysend := cfg.EventConfig.InvoiceEvent.SkipKeysend
 	if !cfg.Events.InvoiceEvents {
 		return false
 	}
+	if skipKeysend != nil && *skipKeysend && e.Invoice.IsKeysend {
+		return false
+	}
+
 	return uint64(e.Invoice.Value) >= cfg.EventConfig.InvoiceEvent.MinAmount // #nosec G115
 }

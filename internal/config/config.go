@@ -107,7 +107,8 @@ type EventConfig struct {
 		MinAmount uint64 `yaml:"min_amount"`
 	} `yaml:"forward_event"`
 	InvoiceEvent struct {
-		MinAmount uint64 `yaml:"min_amount"`
+		MinAmount   uint64 `yaml:"min_amount"`
+		SkipKeysend *bool  `yaml:"skip_keysend"`
 	} `yaml:"invoice_event"`
 	PaymentEvent struct {
 		MinAmount uint64 `yaml:"min_amount"`
@@ -263,6 +264,10 @@ func (c *Config) setDefaults() {
 	}
 	if c.EventConfig.TLSCertExpiryEvent.Threshold == 0 {
 		c.EventConfig.TLSCertExpiryEvent.Threshold = 7 * 24 * time.Hour
+	}
+	if c.EventConfig.InvoiceEvent.SkipKeysend == nil {
+		defaultSkip := true
+		c.EventConfig.InvoiceEvent.SkipKeysend = &defaultSkip
 	}
 
 	// Set default batching configuration
