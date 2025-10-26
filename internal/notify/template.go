@@ -24,6 +24,8 @@ func (m *Manager) parseTemplates() {
 		events.Event_CHANNEL_CLOSING:       m.cfg.Templates.ChannelClosing,
 		events.Event_INVOICE_SETTLED:       m.cfg.Templates.InvoiceSettled,
 		events.Event_FAILED_HTLC:           m.cfg.Templates.FailedHtlc,
+		events.Event_HEALTHY:               m.cfg.Templates.Healthy,
+		events.Event_UNHEALTHY:             m.cfg.Templates.Unhealthy,
 		events.Event_KEYSEND:               m.cfg.Templates.Keysend,
 		events.Event_ONCHAIN_CONFIRMED:     m.cfg.Templates.OnChainConfirmed,
 		events.Event_ONCHAIN_MEMPOOL:       m.cfg.Templates.OnChainMempool,

@@ -27,6 +27,7 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - On-Chain Sync Lost
   - TLS Certificate Expiry
   - Wallet State Change
+  - LND Health Status
 - Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Customizable notification formatting (e.g., number formatting based on locale)
@@ -115,6 +116,7 @@ events:
   tls_cert_expiry_events: true
   peer_events: false
   wallet_state_events: true
+  health_event: true
 
 # Event-specific configuration
 event_config:

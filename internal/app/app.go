@@ -23,7 +23,7 @@ func Run(configPath string) {
 
 	level, err := log.ParseLevel(cfg.LogLevel)
 	if err != nil {
-		log.WithError(err).Fatal("Invalid log level")
+		log.WithError(err).Fatal("invalid log level")
 	}
 	log.SetLevel(level)
 
@@ -32,7 +32,7 @@ func Run(configPath string) {
 
 	// Connect to LND
 	if err := lndClient.Connect(); err != nil {
-		log.Fatalf("Failed to connect to LND: %v", err)
+		log.Fatalf("failed to connect to LND: %v", err)
 	}
 	defer lndClient.Disconnect()
 
@@ -46,7 +46,7 @@ func Run(configPath string) {
 	// Subscribe to events
 	eventChan, err := lndClient.SubscribeEvents()
 	if err != nil {
-		log.Fatalf("Failed to subscribe to events: %v", err)
+		log.Fatalf("failed to subscribe to events: %v", err)
 	}
 
 	if cfg.Events.StatusEvents {
@@ -64,14 +64,18 @@ func Run(configPath string) {
 	for {
 		select {
 		case event := <-eventChan:
+			logger := log.WithField("event", event.Type())
+
+			logger.Info("received event")
+
 			if !event.ShouldProcess(cfg) {
-				log.WithField("event_type", event.Type()).Debug("event filtered, skipping")
+				logger.Debug("event filtered, skipping")
 				continue
 			}
 
 			msg, err := notifier.RenderTemplate(event.Type().String(), event.GetTemplateData(cfg.Notifications.Formatting.Locale.Tag))
 			if err != nil {
-				log.WithError(err).Error("error rendering template")
+				logger.WithError(err).Error("error rendering template")
 				continue
 			}
 

@@ -655,6 +655,39 @@ func (c *Client) handleLndWalletState() {
 	})
 }
 
+func (c *Client) handleLndHealth() {
+	log.Debug("starting lnd health event handler")
+	defer c.wg.Done()
+
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
+	lastHealthyState := true
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("checking lnd health")
+
+			_, err := c.client.GetInfo(c.ctx, &lnrpc.GetInfoRequest{})
+			healthy := err == nil
+
+			if healthy != lastHealthyState {
+				if healthy {
+					log.Info("lnd is healthy again")
+					c.eventSub <- events.NewLndHealthyEvent()
+				} else {
+					log.WithError(err).Warn("lnd is unhealthy")
+					c.eventSub <- events.NewLndUnhealthyEvent(err)
+				}
+				lastHealthyState = healthy
+			}
+		}
+	}
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {
@@ -669,7 +702,7 @@ func (c *Client) getAlias(pubkey string) string {
 func retry[T any](ctx context.Context, name string, operation backoff.Operation[T]) (T, error) {
 	logger := log.WithField("name", name)
 	notify := func(err error, duration time.Duration) {
-		logger.WithError(err).WithField("next_retry_in", duration).Warn("operation failed, retrying")
+		logger.WithError(err).WithField("next_retry_in", duration).Error("operation failed, retrying")
 	}
 
 	ret, err := backoff.Retry(ctx, operation, backoff.WithNotify(notify), backoff.WithMaxElapsedTime(0))

@@ -8,9 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Deprecated
 ### Fixed
 ### Changed
-- Skip keysend invoices by default in invoice settled event. This can be configured via `event_config.invoice_event.skip_keysend` option. (@Primexz)
-
 ### Removed
+
+
+## [1.9.0] - 2025-10-26
+
+### Added
+- Added LND health event. (@Primexz)
+
+### Fixed
+- Fixed issue where events were not being sent correctly. (@Primexz)
+
+### Changed
+- Skip keysend invoices by default in invoice settled event. This can be configured via `event_config.invoice_event.skip_keysend` option. (@Primexz)
+- Added VSCode code format settings. (@Primexz)
 
 
 ## [1.8.0] - 2025-10-24

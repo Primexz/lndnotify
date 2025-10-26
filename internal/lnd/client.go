@@ -141,17 +141,23 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		}
 	}
 
-	// wallet state is a separate service. we can subscribe to it before starting the other subscriptions
-	c.wg.Add(1)
-	go c.handleLndWalletState()
+	// standalone handlers that can be started right away
+	initHandlers := []func(){
+		c.handleLndWalletState,
+		c.handleLndHealth,
+	}
+	c.wg.Add(len(initHandlers))
+	for _, h := range initHandlers {
+		go h()
+	}
 
-	return retry(c.ctx, "main client", func() (chan events.Event, error) {
+	go retry(c.ctx, "main client", func() (string, error) {
 		if err := c.channelManager.Start(); err != nil {
-			return nil, fmt.Errorf("starting channel manager: %w", err)
+			return "", fmt.Errorf("starting channel manager: %w", err)
 		}
 
 		if err := c.pendChanManager.Start(); err != nil {
-			return nil, fmt.Errorf("starting pending channel manager: %w", err)
+			return "", fmt.Errorf("starting pending channel manager: %w", err)
 		}
 
 		// Start subscription handlers
@@ -176,6 +182,8 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 			go h()
 		}
 
-		return c.eventSub, nil
+		return "", nil
 	})
+
+	return c.eventSub, nil
 }

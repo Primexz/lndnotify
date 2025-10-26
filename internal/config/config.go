@@ -65,6 +65,8 @@ type NotificationTemplate struct {
 	ChannelStatusDown    string `yaml:"channel_status_down_event"`
 	FailedHtlc           string `yaml:"failed_htlc_event"`
 	Forward              string `yaml:"forward_event"`
+	Healthy              string `yaml:"healthy_event"`
+	Unhealthy            string `yaml:"unhealthy_event"`
 	InvoiceSettled       string `yaml:"invoice_settled_event"`
 	Keysend              string `yaml:"keysend_event"`
 	OnChainConfirmed     string `yaml:"on_chain_confirmed_event"`
@@ -86,6 +88,7 @@ type EventFlags struct {
 	ChannelStatusEvents bool `yaml:"channel_status_events"`
 	FailedHtlc          bool `yaml:"failed_htlc_events"`
 	ForwardEvents       bool `yaml:"forward_events"`
+	HealthEvents        bool `yaml:"health_events"`
 	InvoiceEvents       bool `yaml:"invoice_events"`
 	KeysendEvents       bool `yaml:"keysend_events"`
 	OnChainEvents       bool `yaml:"on_chain_events"`
@@ -251,6 +254,12 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.WalletState == "" {
 		c.Notifications.Templates.WalletState = "👛 Wallet state changed: {{.OldState}} -> {{.NewState}}"
+	}
+	if c.Notifications.Templates.Healthy == "" {
+		c.Notifications.Templates.Healthy = "✅ LND node is healthy again"
+	}
+	if c.Notifications.Templates.Unhealthy == "" {
+		c.Notifications.Templates.Unhealthy = "❌ LND node is unhealthy\nError: {{.Err}}"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {

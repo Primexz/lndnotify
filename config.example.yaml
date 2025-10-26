@@ -90,6 +90,10 @@ notifications:
       Capacity {{.Capacity}} sats
     tls_cert_expiry_event: "⚠️ LND TLS certificate is expiring soon on {{.ExpiryDate}} (in {{.TimeUntilExpiry}})"
     wallet_state_event: "👛 Wallet state changed: {{.OldState}} -> {{.NewState}}"
+    healthy_event: ✅ LND node is healthy again
+    unhealthy_event: |-
+      ❌ LND node is unhealthy
+      Error: {{.Err}}
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
   batching:
@@ -114,6 +118,7 @@ events:
   tls_cert_expiry_events: true # Enable TLS certificate expiry notifications
   peer_events: false # Enable peer events (online/offline) notifications
   wallet_state_events: true # Enable wallet state change notifications
+  health_events: true # Enable LND health status notifications
 
 # Event configuration (specific settings for each event type)
 event_config:

@@ -36,6 +36,8 @@ const (
 	Event_CHANNEL_STATUS_DOWN   EventType = "channel_status_down_event"
 	Event_FAILED_HTLC           EventType = "failed_htlc_event"
 	Event_FORWARD               EventType = "forward_event"
+	Event_HEALTHY               EventType = "healthy_event"
+	Event_UNHEALTHY             EventType = "unhealthy_event"
 	Event_INVOICE_SETTLED       EventType = "invoice_settled_event"
 	Event_KEYSEND               EventType = "keysend_event"
 	Event_ONCHAIN_MEMPOOL       EventType = "on_chain_event"
