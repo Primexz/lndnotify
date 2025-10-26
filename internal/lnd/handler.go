@@ -718,13 +718,18 @@ func (c *Client) handeLndVersion() {
 				continue
 			}
 
+			logger := log.WithFields(log.Fields{
+				"local_version":  localVersion,
+				"latest_version": latestVersion,
+			})
+
 			if !outdated {
-				log.Debug("lnd is up to date")
+				logger.Debug("lnd is up to date")
 				continue
 			}
 
 			if lastInformedVersion == latestVersion.String() {
-				log.Debug("already informed about this lnd version")
+				logger.Debug("already informed about this lnd version")
 				continue
 			}
 			lastInformedVersion = latestVersion.String()
