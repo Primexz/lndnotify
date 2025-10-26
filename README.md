@@ -1,3 +1,9 @@
+<div align="center">
+
+<a href="https://github.com/Primexz/lndnotify">
+    <img src="./assets/gopher.png" width="250" />
+</a>
+
 # ⚡️ LND Notify
 
 A notification system for Lightning Network nodes that monitors and notifies about important events.
@@ -7,6 +13,19 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
 ![CI](https://img.shields.io/github/actions/workflow/status/primexz/lndnotify/ci.yml)
 ![License](https://img.shields.io/github/license/primexz/lndnotify)
 
+</div>
+
+## Table of Contents
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Notification Batching](#notification-batching)
+  - [Notification Providers](#notification-providers)
+- [Usage](#usage)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
