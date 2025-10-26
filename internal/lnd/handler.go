@@ -4,11 +4,13 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"os"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/Primexz/lndnotify/pkg/format"
+	"github.com/Primexz/lndnotify/pkg/lndversion"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
@@ -684,6 +686,40 @@ func (c *Client) handleLndHealth() {
 				}
 				lastHealthyState = healthy
 			}
+		}
+	}
+}
+
+func (c *Client) handeLndVersion() {
+	log.Debug("starting lnd version event handler")
+	defer c.wg.Done()
+
+	// ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("checking lnd version")
+
+			info, err := c.client.GetInfo(c.ctx, &lnrpc.GetInfoRequest{})
+			if err != nil {
+				log.WithError(err).Error("error fetching lnd info")
+				continue
+			}
+
+			outdated, localVersion, latestVersion, err := lndversion.CheckVersion(info.Version)
+			if err != nil {
+				log.WithError(err).Error("error checking lnd version")
+				continue
+			}
+
+			fmt.Printf("local lnd version: %s\n", localVersion)
+			fmt.Printf("latest lnd version: %s\n", latestVersion)
+			fmt.Printf("is lnd outdated: %t\n", outdated)
 		}
 	}
 }
