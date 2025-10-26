@@ -117,6 +117,7 @@ events:
   peer_events: false
   wallet_state_events: true
   health_event: true
+  lnd_update_events: true
 
 # Event-specific configuration
 event_config:

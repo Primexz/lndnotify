@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 	"os"
 	"time"
 
@@ -698,6 +697,8 @@ func (c *Client) handeLndVersion() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
+	lastInformedVersion := ""
+
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -717,9 +718,18 @@ func (c *Client) handeLndVersion() {
 				continue
 			}
 
-			fmt.Printf("local lnd version: %s\n", localVersion)
-			fmt.Printf("latest lnd version: %s\n", latestVersion)
-			fmt.Printf("is lnd outdated: %t\n", outdated)
+			if !outdated {
+				log.Debug("lnd is up to date")
+				continue
+			}
+
+			if lastInformedVersion == latestVersion.String() {
+				log.Debug("already informed about this lnd version")
+				continue
+			}
+			lastInformedVersion = latestVersion.String()
+
+			c.eventSub <- events.NewLndUpdateAvailableEvent(latestVersion, localVersion)
 		}
 	}
 }

@@ -77,6 +77,7 @@ type NotificationTemplate struct {
 	RebalancingSucceeded string `yaml:"rebalancing_succeeded_event"`
 	TLSCertExpiry        string `yaml:"tls_cert_expiry_event"`
 	WalletState          string `yaml:"wallet_state_event"`
+	LndUpdateAvailable   string `yaml:"lnd_update_available_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
@@ -98,6 +99,7 @@ type EventFlags struct {
 	StatusEvents        bool `yaml:"status_events"`
 	TLSCertExpiryEvents bool `yaml:"tls_cert_expiry_events"`
 	WalletStateEvents   bool `yaml:"wallet_state_events"`
+	LndUpdateEvents     bool `yaml:"lnd_update_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -260,6 +262,9 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.Unhealthy == "" {
 		c.Notifications.Templates.Unhealthy = "❌ LND node is unhealthy\nError: {{.Err}}"
+	}
+	if c.Notifications.Templates.LndUpdateAvailable == "" {
+		c.Notifications.Templates.LndUpdateAvailable = "⬆️ New LND version available: {{.LatestVersion}}\nYou are currently running version: {{.CurrentVersion}}"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {
