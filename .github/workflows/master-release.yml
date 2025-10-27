@@ -36,10 +36,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run GoReleaser (Snapshot)
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --snapshot --clean --config .goreleaser.master.yml
+          args: release --clean --skip=validate --config .goreleaser.master.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
