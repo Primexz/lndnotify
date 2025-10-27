@@ -693,8 +693,7 @@ func (c *Client) handeLndVersion() {
 	log.Debug("starting lnd version event handler")
 	defer c.wg.Done()
 
-	// ticker := time.NewTicker(24 * time.Hour)
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(24 * time.Hour)
 	defer ticker.Stop()
 
 	lastInformedVersion := ""
