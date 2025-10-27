@@ -9,6 +9,7 @@ import (
 
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/Primexz/lndnotify/pkg/format"
+	"github.com/Primexz/lndnotify/pkg/lndversion"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
@@ -684,6 +685,55 @@ func (c *Client) handleLndHealth() {
 				}
 				lastHealthyState = healthy
 			}
+		}
+	}
+}
+
+func (c *Client) handeLndVersion() {
+	log.Debug("starting lnd version event handler")
+	defer c.wg.Done()
+
+	ticker := time.NewTicker(24 * time.Hour)
+	defer ticker.Stop()
+
+	lastInformedVersion := ""
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("checking lnd version")
+
+			info, err := c.client.GetInfo(c.ctx, &lnrpc.GetInfoRequest{})
+			if err != nil {
+				log.WithError(err).Error("error fetching lnd info")
+				continue
+			}
+
+			outdated, localVersion, latestVersion, err := lndversion.CheckVersion(info.Version)
+			if err != nil {
+				log.WithError(err).Error("error checking lnd version")
+				continue
+			}
+
+			logger := log.WithFields(log.Fields{
+				"local_version":  localVersion,
+				"latest_version": latestVersion,
+			})
+
+			if !outdated {
+				logger.Debug("lnd is up to date")
+				continue
+			}
+
+			if lastInformedVersion == latestVersion.String() {
+				logger.Debug("already informed about this lnd version")
+				continue
+			}
+			lastInformedVersion = latestVersion.String()
+
+			c.eventSub <- events.NewLndUpdateAvailableEvent(latestVersion, localVersion)
 		}
 	}
 }

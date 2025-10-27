@@ -94,6 +94,10 @@ notifications:
     unhealthy_event: |-
       ❌ LND node is unhealthy
       Error: {{.Err}}
+    lnd_update_available_event: |-
+      ⬆️ New LND version available: {{.LatestVersion}}
+      You are currently running version: {{.CurrentVersion}}
+
   formatting:
     locale: "en-US"  # Language for number formatting (e.g. "en-US" for English, "de-DE" for German)
   batching:
@@ -119,6 +123,7 @@ events:
   peer_events: false # Enable peer events (online/offline) notifications
   wallet_state_events: true # Enable wallet state change notifications
   health_events: true # Enable LND health status notifications
+  lnd_update_events: true # Enable LND update available notifications
 
 # Event configuration (specific settings for each event type)
 event_config:

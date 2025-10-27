@@ -241,6 +241,19 @@ Triggered when the wallet state changes (e.g., from non-existing to active).
 | `{{.OldState}}` | The previous wallet state (e.g., NON_EXISTING, SERVER_ACTIVE) |
 | `{{.NewState}}` | The new wallet state (e.g., SERVER_ACTIVE, LOCKED) |
 
+## Unhealthy Node Event
+Triggered when the LND node becomes unhealthy.
+| Variable | Description |
+|----------|-------------|
+| `{{.Err}}` | The error message indicating why the node is unhealthy |
+
+## LND Update Available Event
+Triggered when a new version of LND is available.
+| Variable | Description |
+|----------|-------------|
+| `{{.LatestVersion}}` | The latest available version of LND |
+| `{{.CurrentVersion}}` | The currently running version of LND |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:
