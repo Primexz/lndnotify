@@ -5,7 +5,7 @@ go 1.25.3
 require (
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/lightningnetwork/lnd v0.19.0-beta
-	github.com/nicholas-fedor/shoutrrr v0.10.3
+	github.com/nicholas-fedor/shoutrrr v0.11.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/text v0.30.0
@@ -53,7 +53,6 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/fatih/color v1.18.0 // indirect
 	github.com/fergusstrange/embedded-postgres v1.25.0 // indirect
 	github.com/go-errors/errors v1.0.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
