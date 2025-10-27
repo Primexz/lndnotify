@@ -1,4 +1,4 @@
-name: Master Release
+name: Dev Release
 
 on:
   push:
@@ -40,6 +40,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --clean --skip=validate --config .goreleaser.master.yml
+          args: release --clean --skip=validate --config .goreleaser.dev.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
