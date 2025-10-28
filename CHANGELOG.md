@@ -5,14 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
-- Added LND update available event. (@Primexz)
-
-### Deprecated
 ### Fixed
 ### Changed
-- Added **dev** docker image. (@Primexz)
-
 ### Removed
+### Deprecated
+
+
+## [1.10.0] - 2025-10-28
+
+### Added
+- Added LND update available event. (@Primexz)
+
+### Changed
+- Added **dev** docker image. (@Primexz)
 
 
 ## [1.9.0] - 2025-10-26
