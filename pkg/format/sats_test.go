@@ -120,6 +120,7 @@ func TestFormatDetailedWithDifferentLanguages(t *testing.T) {
 		{1234567.89, language.German, "1.234.567,89"},
 		{1000000, language.German, "1.000.000"},
 		{1234567.123, language.German, "1.234.567,123"},
+		{1.001, language.German, "1,001"},
 	}
 
 	for _, tt := range tests {

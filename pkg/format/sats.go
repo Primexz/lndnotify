@@ -17,16 +17,17 @@ func FormatDetailed(value float64, lang language.Tag) string {
 		return p.Sprintf("%.0f", value)
 	}
 
-	// Truncate to 3 decimal places
-	truncated := math.Floor(math.Abs(value)*1000) / 1000
+	multiplied := math.Abs(value) * 1000
+	truncated := math.Floor(multiplied+1e-9) / 1000
 	if value < 0 {
 		truncated = -truncated
 	}
 
 	formatted := p.Sprintf("%.3f", truncated)
-	// Remove trailing zeros and decimal point if necessary
 	formatted = strings.TrimRight(formatted, "0")
-	formatted = strings.TrimRight(formatted, ".")
+	if strings.HasSuffix(formatted, ".") || strings.HasSuffix(formatted, ",") {
+		formatted = strings.TrimRight(formatted, ".,")
+	}
 
 	return formatted
 }
