@@ -29,7 +29,6 @@ type PendingChannelManager struct {
 }
 
 func NewPendingChannelManager(client lnrpc.LightningClient, pendingUpdates chan proto.Message) *PendingChannelManager {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	return &PendingChannelManager{
 		client:            client,

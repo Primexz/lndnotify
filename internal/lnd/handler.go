@@ -160,6 +160,21 @@ func (c *Client) handleChannelEvents() {
 	})
 }
 
+func (c *Client) handleChannelFeeChanges() {
+	log.Debug("starting channel fee change handler")
+	defer c.wg.Done()
+
+	// Listen for fee change events from the channel manager
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case feeChange := <-c.channelManager.GetFeeChangeChannel():
+			c.eventSub <- events.NewChannelFeeChangeEvent(feeChange, c.getAlias)
+		}
+	}
+}
+
 func (c *Client) handleInvoiceEvents() {
 	log.Debug("starting invoice event handler")
 	defer c.wg.Done()

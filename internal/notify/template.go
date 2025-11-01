@@ -22,6 +22,7 @@ func (m *Manager) parseTemplates() {
 		events.Event_CHANNEL_OPENING:       m.cfg.Templates.ChannelOpening,
 		events.Event_CHANNEL_CLOSE:         m.cfg.Templates.ChannelClose,
 		events.Event_CHANNEL_CLOSING:       m.cfg.Templates.ChannelClosing,
+		events.Event_CHANNEL_FEE_CHANGE:    m.cfg.Templates.ChannelFeeChange,
 		events.Event_INVOICE_SETTLED:       m.cfg.Templates.InvoiceSettled,
 		events.Event_FAILED_HTLC:           m.cfg.Templates.FailedHtlc,
 		events.Event_HEALTHY:               m.cfg.Templates.Healthy,

@@ -59,6 +59,7 @@ type NotificationTemplate struct {
 	ChainSyncRestored    string `yaml:"chain_sync_restored_event"`
 	ChannelClose         string `yaml:"channel_close_event"`
 	ChannelClosing       string `yaml:"channel_closing_event"`
+	ChannelFeeChange     string `yaml:"channel_fee_change_event"`
 	ChannelOpen          string `yaml:"channel_open_event"`
 	ChannelOpening       string `yaml:"channel_opening_event"`
 	ChannelStatusUp      string `yaml:"channel_status_up_event"`
@@ -86,6 +87,7 @@ type EventFlags struct {
 	BackupEvents        bool `yaml:"backup_events"`
 	ChainSyncEvents     bool `yaml:"chain_sync_events"`
 	ChannelEvents       bool `yaml:"channel_events"`
+	ChannelFeeEvents    bool `yaml:"channel_fee_events"`
 	ChannelStatusEvents bool `yaml:"channel_status_events"`
 	FailedHtlc          bool `yaml:"failed_htlc_events"`
 	ForwardEvents       bool `yaml:"forward_events"`
@@ -202,6 +204,9 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.ChannelClosing == "" {
 		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}\nCapacity {{.Capacity}} sats\nLimbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
+	}
+	if c.Notifications.Templates.ChannelFeeChange == "" {
+		c.Notifications.Templates.ChannelFeeChange = "✏️ Fee change detected on channel with {{.PeerAlias}} ({{.PeerPubkeyShort}})\nCapacity: {{.Capacity}} sats\n\nFee Rate: {{.OldFeeRate}} -> {{.NewFeeRate}} ppm ({{.FeeRateChange}})\nBase Fee: {{.OldBaseFee}} -> {{.NewBaseFee}} sats ({{.BaseFeeChange}})"
 	}
 	if c.Notifications.Templates.ChannelOpen == "" {
 		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}\nCapacity {{.Capacity}} sats"
