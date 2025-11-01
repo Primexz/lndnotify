@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+- Added channel fee change event: Notifications for changes in channel fee policies including inbound fee rates and base fees. (@Primexz)
+
 ### Fixed
 ### Changed
 ### Removed

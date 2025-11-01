@@ -39,8 +39,10 @@ notifications:
       ✏️ Fee change detected on channel with {{.PeerAlias}} ({{.PeerPubkeyShort}})
       Capacity: {{.Capacity}} sats
 
-      Fee Rate: {{.OldFeeRate}} -> {{.NewFeeRate}} ppm ({{.FeeRateChange}})
-      Base Fee: {{.OldBaseFee}} -> {{.NewBaseFee}} sats ({{.BaseFeeChange}})
+      Fee Rate: {{if ne .OldFeeRate .NewFeeRate}}{{.OldFeeRate}} -> {{.NewFeeRate}}{{else}}{{.OldFeeRate}}{{end}} ppm
+      Base Fee: {{if ne .OldBaseFee .NewBaseFee}}{{.OldBaseFee}} -> {{.NewBaseFee}}{{else}}{{.OldBaseFee}}{{end}} sats
+      Inbound Fee Rate: {{if ne .OldInboundFeeRate .NewInboundFeeRate}}{{.OldInboundFeeRate}} -> {{.NewInboundFeeRate}}{{else}}{{.OldInboundFeeRate}}{{end}} ppm
+      Inbound Base Fee: {{if ne .OldInboundBaseFee .NewInboundBaseFee}}{{.OldInboundBaseFee}} -> {{.NewInboundBaseFee}}{{else}}{{.OldInboundBaseFee}}{{end}} sats
     channel_open_event: |-
       🚀 Channel opened with {{.PeerAlias}}
       Capacity {{.Capacity}} sats"

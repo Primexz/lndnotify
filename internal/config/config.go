@@ -206,7 +206,7 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.ChannelClosing = "⏳ Closing channel with {{.PeerAlias}}\nCapacity {{.Capacity}} sats\nLimbo: {{.LimboBalance}} sats\n\nClosing TxID: {{.ClosingTxid}}\nRaw TX: {{.ClosingTxHex}}"
 	}
 	if c.Notifications.Templates.ChannelFeeChange == "" {
-		c.Notifications.Templates.ChannelFeeChange = "✏️ Fee change detected on channel with {{.PeerAlias}} ({{.PeerPubkeyShort}})\nCapacity: {{.Capacity}} sats\n\nFee Rate: {{.OldFeeRate}} -> {{.NewFeeRate}} ppm ({{.FeeRateChange}})\nBase Fee: {{.OldBaseFee}} -> {{.NewBaseFee}} sats ({{.BaseFeeChange}})"
+		c.Notifications.Templates.ChannelFeeChange = "✏️ Fee change detected on channel with {{.PeerAlias}} ({{.PeerPubkeyShort}})\nCapacity: {{.Capacity}} sats\n\nFee Rate: {{if ne .OldFeeRate .NewFeeRate}}{{.OldFeeRate}} -> {{.NewFeeRate}}{{else}}{{.OldFeeRate}}{{end}} ppm\nBase Fee: {{if ne .OldBaseFee .NewBaseFee}}{{.OldBaseFee}} -> {{.NewBaseFee}}{{else}}{{.OldBaseFee}}{{end}} sats\nInbound Fee Rate: {{if ne .OldInboundFeeRate .NewInboundFeeRate}}{{.OldInboundFeeRate}} -> {{.NewInboundFeeRate}}{{else}}{{.OldInboundFeeRate}}{{end}} ppm\nInbound Base Fee: {{if ne .OldInboundBaseFee .NewInboundBaseFee}}{{.OldInboundBaseFee}} -> {{.NewInboundBaseFee}}{{else}}{{.OldInboundBaseFee}}{{end}} sats"
 	}
 	if c.Notifications.Templates.ChannelOpen == "" {
 		c.Notifications.Templates.ChannelOpen = "🚀 Channel opened with {{.PeerAlias}}\nCapacity {{.Capacity}} sats"

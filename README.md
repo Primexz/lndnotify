@@ -8,7 +8,7 @@
 
 A notification system for Lightning Network nodes that monitors and notifies about important events.
 
-This project is heavily inspired by [balanceofsatoshis](https://github.com/alexbosworth/balanceofsatoshis), but with the aim of offering much greater customisation and a wider range of notification destinations.
+This project is heavily inspired by <a href="https://github.com/alexbosworth/balanceofsatoshis" target="_blank">balanceofsatoshis</a>, but with the aim of offering much greater customisation and a wider range of notification destinations.
 
 ![CI](https://img.shields.io/github/actions/workflow/status/primexz/lndnotify/ci.yml)
 ![License](https://img.shields.io/github/license/primexz/lndnotify)
@@ -48,7 +48,8 @@ This project is heavily inspired by [balanceofsatoshis](https://github.com/alexb
   - Wallet State Change
   - LND Health Status
   - LND Update Available
-- Multiple notification providers support via [shoutrrr](https://github.com/nicholas-fedor/shoutrrr)
+  - Channel Fee Change
+- Multiple notification providers support via <a href="https://github.com/nicholas-fedor/shoutrrr" target="_blank">shoutrrr</a>
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Customizable notification formatting (e.g., number formatting based on locale)
 - Notification batching with configurable intervals
@@ -181,14 +182,14 @@ notifications:
 
 ### Notification Providers
 
-The program uses [shoutrrr](https://github.com/nicholas-fedor/shoutrrr) for notifications, which supports various services:
+The program uses <a href="https://github.com/nicholas-fedor/shoutrrr" target="_blank">shoutrrr</a> for notifications, which supports various services:
 
 - Discord: `discord://token@channel`
 - Telegram: `telegram://token@telegram?channels=channel-1`
 - Slack: `slack://token@channel`
 - Generic Webhook: `generic://example.com/webhook`
 
-To see the full list of supported providers, check out the [official documentation](https://shoutrrr.nickfedor.com/v0.10.1/services/overview/).
+To see the full list of supported providers, check out the <a href="https://shoutrrr.nickfedor.com/v0.10.1/services/overview/" target="_blank">official documentation</a>.
 
 ## Usage
 
@@ -209,7 +210,7 @@ go install ./cmd/lndnotify
 ## Contributing
 
 > [!NOTE] 
-> This project uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. Please follow the guidelines when contributing.
+> This project uses <a href="https://www.conventionalcommits.org/en/v1.0.0/" target="_blank">Conventional Commits</a> for commit messages. Please follow the guidelines when contributing.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)

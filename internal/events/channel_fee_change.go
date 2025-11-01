@@ -22,12 +22,18 @@ type ChannelFeeChangeTemplate struct {
 	ChannelPoint    string
 	Capacity        string
 	ChanId          uint64
-	OldFeeRate      string
-	NewFeeRate      string
-	OldBaseFee      string
-	NewBaseFee      string
-	FeeRateChange   string // "increased" or "decreased"
-	BaseFeeChange   string // "increased" or "decreased"
+
+	OldFeeRate string
+	NewFeeRate string
+
+	OldBaseFee string
+	NewBaseFee string
+
+	OldInboundFeeRate string
+	NewInboundFeeRate string
+
+	OldInboundBaseFee string
+	NewInboundBaseFee string
 }
 
 func NewChannelFeeChangeEvent(feeChange channelmanager.FeeChangeEvent, getAlias func(pubKey string) string) *ChannelFeeChangeEvent {
@@ -49,33 +55,21 @@ func (e *ChannelFeeChangeEvent) Timestamp() time.Time {
 func (e *ChannelFeeChangeEvent) GetTemplateData(lang language.Tag) interface{} {
 	ch := e.FeeChange.Channel
 
-	feeRateChange := "unchanged"
-	if e.FeeChange.NewFeeRate > e.FeeChange.OldFeeRate {
-		feeRateChange = "increased"
-	} else if e.FeeChange.NewFeeRate < e.FeeChange.OldFeeRate {
-		feeRateChange = "decreased"
-	}
-
-	baseFeeChange := "unchanged"
-	if e.FeeChange.NewBaseFee > e.FeeChange.OldBaseFee {
-		baseFeeChange = "increased"
-	} else if e.FeeChange.NewBaseFee < e.FeeChange.OldBaseFee {
-		baseFeeChange = "decreased"
-	}
-
 	return &ChannelFeeChangeTemplate{
-		PeerAlias:       e.getAlias(ch.RemotePubkey),
-		PeerPubKey:      ch.RemotePubkey,
-		PeerPubkeyShort: format.FormatPubKey(ch.RemotePubkey),
-		ChannelPoint:    ch.ChannelPoint,
-		Capacity:        format.FormatBasic(float64(ch.Capacity), lang),
-		ChanId:          ch.ChanId,
-		OldFeeRate:      format.FormatBasic(float64(e.FeeChange.OldFeeRate)/1000, lang),
-		NewFeeRate:      format.FormatBasic(float64(e.FeeChange.NewFeeRate)/1000, lang),
-		OldBaseFee:      format.FormatBasic(float64(e.FeeChange.OldBaseFee)/1000, lang),
-		NewBaseFee:      format.FormatBasic(float64(e.FeeChange.NewBaseFee)/1000, lang),
-		FeeRateChange:   feeRateChange,
-		BaseFeeChange:   baseFeeChange,
+		PeerAlias:         e.getAlias(ch.RemotePubkey),
+		PeerPubKey:        ch.RemotePubkey,
+		PeerPubkeyShort:   format.FormatPubKey(ch.RemotePubkey),
+		ChannelPoint:      ch.ChannelPoint,
+		Capacity:          format.FormatBasic(float64(ch.Capacity), lang),
+		ChanId:            ch.ChanId,
+		OldFeeRate:        format.FormatBasic(float64(e.FeeChange.OldFeeRate), lang),
+		NewFeeRate:        format.FormatBasic(float64(e.FeeChange.NewFeeRate), lang),
+		OldBaseFee:        format.FormatBasic(float64(e.FeeChange.OldBaseFee)/1000, lang),
+		NewBaseFee:        format.FormatBasic(float64(e.FeeChange.NewBaseFee)/1000, lang),
+		OldInboundFeeRate: format.FormatBasic(float64(e.FeeChange.OldInboundFeeRate), lang),
+		NewInboundFeeRate: format.FormatBasic(float64(e.FeeChange.NewInboundFeeRate), lang),
+		OldInboundBaseFee: format.FormatBasic(float64(e.FeeChange.OldInboundBaseFee)/1000, lang),
+		NewInboundBaseFee: format.FormatBasic(float64(e.FeeChange.NewInboundBaseFee)/1000, lang),
 	}
 }
 

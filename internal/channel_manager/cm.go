@@ -13,11 +13,19 @@ import (
 type FeeChangeEvent struct {
 	Channel     *lnrpc.Channel
 	ChannelEdge *lnrpc.ChannelEdge
-	OldFeeRate  int64
-	NewFeeRate  int64
-	OldBaseFee  int64
-	NewBaseFee  int64
 	Timestamp   time.Time
+
+	OldFeeRate int64
+	NewFeeRate int64
+
+	OldBaseFee int64
+	NewBaseFee int64
+
+	OldInboundFeeRate int32
+	NewInboundFeeRate int32
+
+	OldInboundBaseFee int32
+	NewInboundBaseFee int32
 }
 
 type ChannelManager struct {
@@ -47,6 +55,7 @@ func NewChannelManager(client lnrpc.LightningClient) *ChannelManager {
 	}
 }
 
+// Start initializes the channel manager and begins periodic refreshes
 func (cm *ChannelManager) Start() error {
 	log.Debug("starting channel manager")
 
@@ -60,6 +69,7 @@ func (cm *ChannelManager) Start() error {
 	return nil
 }
 
+// Stop stops the channel manager
 func (cm *ChannelManager) Stop() {
 	log.Debug("stopping channel manager")
 	cm.cancel()
@@ -67,6 +77,7 @@ func (cm *ChannelManager) Stop() {
 	close(cm.feeChangeCh)
 }
 
+// GetChannelById retrieves a channel by its ID
 func (cm *ChannelManager) GetChannelById(chanId uint64) *lnrpc.Channel {
 	cm.mu.RLock()
 	defer cm.mu.RUnlock()
@@ -78,6 +89,7 @@ func (cm *ChannelManager) GetChannelById(chanId uint64) *lnrpc.Channel {
 	return ch
 }
 
+// GetAllChannels returns a slice of all managed channels
 func (cm *ChannelManager) GetAllChannels() []*lnrpc.Channel {
 	cm.mu.RLock()
 	defer cm.mu.RUnlock()
@@ -89,8 +101,19 @@ func (cm *ChannelManager) GetAllChannels() []*lnrpc.Channel {
 	return channels
 }
 
+// RefreshNow triggers an immediate refresh of channel states
 func (cm *ChannelManager) RefreshNow() error {
 	return cm.refreshChannels()
+}
+
+// SetRefreshInterval sets the interval for periodic channel state refreshes
+func (cm *ChannelManager) SetRefreshInterval(interval time.Duration) {
+	cm.refreshInterval = interval
+}
+
+// GetFeeChangeChannel returns the channel for receiving fee change events
+func (cm *ChannelManager) GetFeeChangeChannel() <-chan FeeChangeEvent {
+	return cm.feeChangeCh
 }
 
 func (cm *ChannelManager) refreshLoop() {
@@ -126,53 +149,46 @@ func (cm *ChannelManager) refreshChannels() error {
 
 	cm.channels = make(map[uint64]*lnrpc.Channel)
 	for _, ch := range resp.Channels {
+		logger := log.WithFields(log.Fields{
+			"channel_id": ch.ChanId,
+			"peer":       ch.RemotePubkey,
+		})
+		chanEdge, err := cm.client.GetChanInfo(cm.ctx, &lnrpc.ChanInfoRequest{
+			ChanId: ch.ChanId,
+		})
+		if err != nil {
+			logger.WithError(err).Warn("failed to get channel info for fee change detection")
+			continue
+		}
+
+		oldEdge := cm.channelEdges[ch.ChanId]
+		cm.channelEdges[ch.ChanId] = chanEdge
 		cm.channels[ch.ChanId] = ch
-		cm.checkFeeChanges(ch)
+
+		cm.checkFeeChanges(ch, chanEdge, oldEdge)
 	}
 
 	log.WithField("channel_count", len(cm.channels)).Debug("channel state refreshed")
 	return nil
 }
 
-func (cm *ChannelManager) SetRefreshInterval(interval time.Duration) {
-	cm.refreshInterval = interval
-}
-
-// GetFeeChangeChannel returns the channel for receiving fee change events
-func (cm *ChannelManager) GetFeeChangeChannel() <-chan FeeChangeEvent {
-	return cm.feeChangeCh
-}
-
 // checkFeeChanges compares old and new channel states to detect fee changes
-func (cm *ChannelManager) checkFeeChanges(ch *lnrpc.Channel) {
+func (cm *ChannelManager) checkFeeChanges(ch *lnrpc.Channel, newEdge *lnrpc.ChannelEdge, oldEdge *lnrpc.ChannelEdge) {
+	if oldEdge == nil || newEdge == nil {
+		return
+	}
+
 	logger := log.WithFields(log.Fields{
 		"channel_id": ch.ChanId,
 		"peer":       ch.RemotePubkey,
 	})
 
-	// Get current channel edge information to check fee policies
-	chanInfo, err := cm.client.GetChanInfo(cm.ctx, &lnrpc.ChanInfoRequest{
-		ChanId: ch.ChanId,
-	})
-	if err != nil {
-		logger.WithError(err).Warn("failed to get channel info for fee change detection")
-		return
-	}
-
-	oldEdge := cm.channelEdges[ch.ChanId]
-	cm.channelEdges[ch.ChanId] = chanInfo
-
-	// If we don't have previous edge info, this is the first time we see this channel
-	if oldEdge == nil {
-		return
-	}
-
 	var oldRemotePolicy, newRemotePolicy *lnrpc.RoutingPolicy
-	if chanInfo.Node1Pub == ch.RemotePubkey {
-		newRemotePolicy = chanInfo.Node1Policy
+	if newEdge.Node1Pub == ch.RemotePubkey {
+		newRemotePolicy = newEdge.Node1Policy
 		oldRemotePolicy = oldEdge.Node1Policy
-	} else if chanInfo.Node2Pub == ch.RemotePubkey {
-		newRemotePolicy = chanInfo.Node2Policy
+	} else if newEdge.Node2Pub == ch.RemotePubkey {
+		newRemotePolicy = newEdge.Node2Policy
 		oldRemotePolicy = oldEdge.Node2Policy
 	} else {
 		logger.Warn("could not identify remote peer in channel edge")
@@ -185,7 +201,9 @@ func (cm *ChannelManager) checkFeeChanges(ch *lnrpc.Channel) {
 	}
 
 	if oldRemotePolicy.FeeRateMilliMsat == newRemotePolicy.FeeRateMilliMsat &&
-		oldRemotePolicy.FeeBaseMsat == newRemotePolicy.FeeBaseMsat {
+		oldRemotePolicy.FeeBaseMsat == newRemotePolicy.FeeBaseMsat &&
+		oldRemotePolicy.InboundFeeRateMilliMsat == newRemotePolicy.InboundFeeRateMilliMsat &&
+		oldRemotePolicy.InboundFeeBaseMsat == newRemotePolicy.InboundFeeBaseMsat {
 		logger.WithFields(log.Fields{
 			"rate": oldRemotePolicy.FeeRateMilliMsat,
 			"base": oldRemotePolicy.FeeBaseMsat,
@@ -201,12 +219,16 @@ func (cm *ChannelManager) checkFeeChanges(ch *lnrpc.Channel) {
 	}).Debug("detected remote peer fee change")
 
 	cm.feeChangeCh <- FeeChangeEvent{
-		Channel:     ch,
-		ChannelEdge: chanInfo,
-		OldFeeRate:  oldRemotePolicy.FeeRateMilliMsat,
-		NewFeeRate:  newRemotePolicy.FeeRateMilliMsat,
-		OldBaseFee:  oldRemotePolicy.FeeBaseMsat,
-		NewBaseFee:  newRemotePolicy.FeeBaseMsat,
-		Timestamp:   time.Now(),
+		Channel:           ch,
+		ChannelEdge:       newEdge,
+		OldFeeRate:        oldRemotePolicy.FeeRateMilliMsat,
+		NewFeeRate:        newRemotePolicy.FeeRateMilliMsat,
+		OldBaseFee:        oldRemotePolicy.FeeBaseMsat,
+		NewBaseFee:        newRemotePolicy.FeeBaseMsat,
+		OldInboundFeeRate: oldRemotePolicy.InboundFeeRateMilliMsat,
+		NewInboundFeeRate: newRemotePolicy.InboundFeeRateMilliMsat,
+		OldInboundBaseFee: oldRemotePolicy.InboundFeeBaseMsat,
+		NewInboundBaseFee: newRemotePolicy.InboundFeeBaseMsat,
+		Timestamp:         time.Now(),
 	}
 }

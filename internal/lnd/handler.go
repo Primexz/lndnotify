@@ -164,7 +164,6 @@ func (c *Client) handleChannelFeeChanges() {
 	log.Debug("starting channel fee change handler")
 	defer c.wg.Done()
 
-	// Listen for fee change events from the channel manager
 	for {
 		select {
 		case <-c.ctx.Done():
