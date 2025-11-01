@@ -30,6 +30,7 @@ const (
 	Event_CHAIN_SYNC_RESTORED   EventType = "chain_sync_restored_event"
 	Event_CHANNEL_CLOSE         EventType = "channel_close_event"
 	Event_CHANNEL_CLOSING       EventType = "channel_closing_event"
+	Event_CHANNEL_FEE_CHANGE    EventType = "channel_fee_change_event"
 	Event_CHANNEL_OPEN          EventType = "channel_open_event"
 	Event_CHANNEL_OPENING       EventType = "channel_opening_event"
 	Event_CHANNEL_STATUS_UP     EventType = "channel_status_up_event"

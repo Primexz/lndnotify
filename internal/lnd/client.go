@@ -165,6 +165,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		handlers := []func(){
 			c.handleBackupEvents,
 			c.handleChannelEvents,
+			c.handleChannelFeeChanges,
 			c.handleFailedHtlcEvents,
 			c.handleForwards,
 			c.handleInvoiceEvents,

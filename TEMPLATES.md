@@ -254,6 +254,34 @@ Triggered when a new version of LND is available.
 | `{{.LatestVersion}}` | The latest available version of LND |
 | `{{.CurrentVersion}}` | The currently running version of LND |
 
+## Channel Fee Change Event
+Triggered when a fee policy change is detected on a channel.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PeerAlias}}` | The alias of the peer whose channel fees changed |
+| `{{.PeerPubKey}}` | The full public key of the peer |
+| `{{.PeerPubkeyShort}}` | A shortened version of the peer's public key |
+| `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
+| `{{.Capacity}}` | The total capacity of the channel in satoshis (formatted) |
+| `{{.ChanId}}` | The numeric channel ID |
+| `{{.OldFeeRate}}` | The previous fee rate in ppm (formatted) |
+| `{{.NewFeeRate}}` | The new fee rate in ppm (formatted) |
+| `{{.FeeRateChange}}` | The absolute change in fee rate (+/-X ppm) |
+| `{{.FeeRateChangePercent}}` | The percentage change in fee rate (+/-X.X%) |
+| `{{.OldBaseFee}}` | The previous base fee in satoshis (formatted) |
+| `{{.NewBaseFee}}` | The new base fee in satoshis (formatted) |
+| `{{.BaseFeeChange}}` | The absolute change in base fee (+/-X sats) |
+| `{{.BaseFeeChangePercent}}` | The percentage change in base fee (+/-X.X%) |
+| `{{.OldInboundFeeRate}}` | The previous inbound fee rate in ppm (formatted) |
+| `{{.NewInboundFeeRate}}` | The new inbound fee rate in ppm (formatted) |
+| `{{.InboundFeeRateChange}}` | The absolute change in inbound fee rate (+/-X ppm) |
+| `{{.InboundFeeRateChangePercent}}` | The percentage change in inbound fee rate (+/-X.X%) |
+| `{{.OldInboundBaseFee}}` | The previous inbound base fee in satoshis (formatted) |
+| `{{.NewInboundBaseFee}}` | The new inbound base fee in satoshis (formatted) |
+| `{{.InboundBaseFeeChange}}` | The absolute change in inbound base fee (+/-X sats) |
+| `{{.InboundBaseFeeChangePercent}}` | The percentage change in inbound base fee (+/-X.X%) |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:
