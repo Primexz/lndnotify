@@ -219,16 +219,20 @@ func (cm *ChannelManager) checkFeeChanges(ch *lnrpc.Channel, newEdge *lnrpc.Chan
 	}).Debug("detected remote peer fee change")
 
 	cm.feeChangeCh <- FeeChangeEvent{
-		Channel:           ch,
-		ChannelEdge:       newEdge,
-		OldFeeRate:        oldRemotePolicy.FeeRateMilliMsat,
-		NewFeeRate:        newRemotePolicy.FeeRateMilliMsat,
-		OldBaseFee:        oldRemotePolicy.FeeBaseMsat,
-		NewBaseFee:        newRemotePolicy.FeeBaseMsat,
+		Channel:     ch,
+		ChannelEdge: newEdge,
+		Timestamp:   time.Now(),
+
+		OldFeeRate: oldRemotePolicy.FeeRateMilliMsat,
+		NewFeeRate: newRemotePolicy.FeeRateMilliMsat,
+
+		OldBaseFee: oldRemotePolicy.FeeBaseMsat,
+		NewBaseFee: newRemotePolicy.FeeBaseMsat,
+
 		OldInboundFeeRate: oldRemotePolicy.InboundFeeRateMilliMsat,
 		NewInboundFeeRate: newRemotePolicy.InboundFeeRateMilliMsat,
+
 		OldInboundBaseFee: oldRemotePolicy.InboundFeeBaseMsat,
 		NewInboundBaseFee: newRemotePolicy.InboundFeeBaseMsat,
-		Timestamp:         time.Now(),
 	}
 }

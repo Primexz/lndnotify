@@ -139,6 +139,7 @@ events:
   wallet_state_events: true
   health_event: true
   lnd_update_events: true
+  channel_fee_events: true
 
 # Event-specific configuration
 event_config:

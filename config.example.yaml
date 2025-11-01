@@ -39,10 +39,10 @@ notifications:
       ✏️ Fee change detected on channel with {{.PeerAlias}} ({{.PeerPubkeyShort}})
       Capacity: {{.Capacity}} sats
 
-      Fee Rate: {{if ne .OldFeeRate .NewFeeRate}}{{.OldFeeRate}} -> {{.NewFeeRate}}{{else}}{{.OldFeeRate}}{{end}} ppm
-      Base Fee: {{if ne .OldBaseFee .NewBaseFee}}{{.OldBaseFee}} -> {{.NewBaseFee}}{{else}}{{.OldBaseFee}}{{end}} sats
-      Inbound Fee Rate: {{if ne .OldInboundFeeRate .NewInboundFeeRate}}{{.OldInboundFeeRate}} -> {{.NewInboundFeeRate}}{{else}}{{.OldInboundFeeRate}}{{end}} ppm
-      Inbound Base Fee: {{if ne .OldInboundBaseFee .NewInboundBaseFee}}{{.OldInboundBaseFee}} -> {{.NewInboundBaseFee}}{{else}}{{.OldInboundBaseFee}}{{end}} sats
+      Fee Rate: {{if ne .OldFeeRate .NewFeeRate}}{{.OldFeeRate}} -> {{.NewFeeRate}} ({{.FeeRateChange}} ppm, {{.FeeRateChangePercent}}){{else}}{{.OldFeeRate}}{{end}} ppm
+      Base Fee: {{if ne .OldBaseFee .NewBaseFee}}{{.OldBaseFee}} -> {{.NewBaseFee}} ({{.BaseFeeChange}} sats, {{.BaseFeeChangePercent}}){{else}}{{.OldBaseFee}}{{end}} sats
+      Inbound Fee Rate: {{if ne .OldInboundFeeRate .NewInboundFeeRate}}{{.OldInboundFeeRate}} -> {{.NewInboundFeeRate}} ({{.InboundFeeRateChange}} ppm, {{.InboundFeeRateChangePercent}}){{else}}{{.OldInboundFeeRate}}{{end}} ppm
+      Inbound Base Fee: {{if ne .OldInboundBaseFee .NewInboundBaseFee}}{{.OldInboundBaseFee}} -> {{.NewInboundBaseFee}} ({{.InboundBaseFeeChange}} sats, {{.InboundBaseFeeChangePercent}}){{else}}{{.OldInboundBaseFee}}{{end}} sats
     channel_open_event: |-
       🚀 Channel opened with {{.PeerAlias}}
       Capacity {{.Capacity}} sats"
@@ -132,6 +132,7 @@ events:
   wallet_state_events: true # Enable wallet state change notifications
   health_events: true # Enable LND health status notifications
   lnd_update_events: true # Enable LND update available notifications
+  channel_fee_events: true # Enable channel fee change notifications
 
 # Event configuration (specific settings for each event type)
 event_config:
