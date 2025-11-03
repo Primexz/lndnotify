@@ -5,15 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
-- Added channel fee change event: Notifications for changes in channel fee policies including inbound fee rates and base fees. (@Primexz)
-- Added block explorer URL in on-chain transaction events. (@Primexz)
-
 ### Fixed
 ### Changed
-- Updated [shoutrrr](https://github.com/nicholas-fedor/shoutrrr/releases/tag/v0.11.1)
-
 ### Removed
 ### Deprecated
+
+
+## [1.11.0] - 2025-11-03
+
+### Added
+- Added channel fee change event: Notifications for changes in channel fee policies including inbound fee rates and base fees. (@Primexz)
+- Added block explorer URL in on-chain transaction events. (@Primexz)
+### Changed
+- Updated [shoutrrr](https://github.com/nicholas-fedor/shoutrrr/releases/tag/v0.11.1)
 
 
 ## [1.10.1] - 2025-10-29
