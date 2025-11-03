@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 ### Changed
+- Updated [shoutrrr](https://github.com/nicholas-fedor/shoutrrr/releases/tag/v0.11.1)
+
+
 ### Removed
 ### Deprecated
 
