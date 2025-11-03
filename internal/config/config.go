@@ -124,7 +124,8 @@ type EventConfig struct {
 		MinAmount uint64 `yaml:"min_amount"`
 	} `yaml:"rebalancing_event"`
 	OnChainEvent struct {
-		MinAmount uint64 `yaml:"min_amount"`
+		MinAmount              uint64 `yaml:"min_amount"`
+		TransactionUrlTemplate string `yaml:"transaction_url_template"`
 	} `yaml:"on_chain_event"`
 	ChainLostEvent struct {
 		Threshold       time.Duration `yaml:"threshold"`
@@ -194,6 +195,9 @@ func (c *Config) setDefaults() {
 	if c.Notifications.Formatting.Locale.Tag == language.Und {
 		c.Notifications.Formatting.Locale.Tag = language.English
 	}
+	if c.EventConfig.OnChainEvent.TransactionUrlTemplate == "" {
+		c.EventConfig.OnChainEvent.TransactionUrlTemplate = "https://mempool.space/tx/{{.TxHash}}"
+	}
 
 	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.BackupMulti == "" {
@@ -233,10 +237,10 @@ func (c *Config) setDefaults() {
 		c.Notifications.Templates.ChainSyncRestored = "✅ Chain is back in sync after {{.Duration}}"
 	}
 	if c.Notifications.Templates.OnChainMempool == "" {
-		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nTxID: {{.TxHash}}\nRaw TX: {{.RawTxHex}}"
+		c.Notifications.Templates.OnChainMempool = "🔗 Discovered On-Chain transaction in mempool: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nOutputs:\n{{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})\n{{end}}\nView on explorer: {{.TransactionURL}}\nTxID: {{.TxHash}}"
 	}
 	if c.Notifications.Templates.OnChainConfirmed == "" {
-		c.Notifications.Templates.OnChainConfirmed = "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nTxID: {{.TxHash}}"
+		c.Notifications.Templates.OnChainConfirmed = "🔗 Confirmed On-Chain transaction: {{.Amount}} sats\nFee: {{.TotalFees}} sats\n\nView on explorer: {{.TransactionURL}}\nTxID: {{.TxHash}}"
 	}
 	if c.Notifications.Templates.PaymentSucceeded == "" {
 		c.Notifications.Templates.PaymentSucceeded = "⚡️ Payment: {{.Amount}} sats (fee: {{.Fee}}) to {{.Receiver}}{{if .Memo}} - {{.Memo}}{{end}}{{range .HtlcInfo}}\n  HTLC: {{.Amount}} via {{.FirstHop}} (fee: {{.Fee}}){{end}}\nHash: {{.PaymentHash}}"

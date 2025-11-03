@@ -1,26 +1,32 @@
 package events
 
 import (
+	"bytes"
+	"text/template"
 	"time"
 
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/pkg/format"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"golang.org/x/text/language"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type OnChainTransactionEvent struct {
 	Event     *lnrpc.Transaction
+	cfg       *config.Config
 	timestamp time.Time
 }
 
 type OnChainTransactionTemplate struct {
-	TxHash    string
-	RawTxHex  string
-	Amount    string
-	TotalFees string
-	Confirmed bool
-	Outputs   []OnChainOutput
+	TxHash         string
+	RawTxHex       string
+	Amount         string
+	TotalFees      string
+	Confirmed      bool
+	Outputs        []OnChainOutput
+	TransactionURL string
 }
 
 type OnChainOutput struct {
@@ -30,9 +36,10 @@ type OnChainOutput struct {
 	IsOurAddress bool
 }
 
-func NewOnChainTransactionEvent(event *lnrpc.Transaction) *OnChainTransactionEvent {
+func NewOnChainTransactionEvent(event *lnrpc.Transaction, cfg *config.Config) *OnChainTransactionEvent {
 	return &OnChainTransactionEvent{
 		Event:     event,
+		cfg:       cfg,
 		timestamp: time.Now(),
 	}
 }
@@ -60,13 +67,20 @@ func (e *OnChainTransactionEvent) GetTemplateData(lang language.Tag) interface{}
 		})
 	}
 
+	transactionURL, err := e.generateTransactionURL(e.Event.TxHash)
+	if err != nil {
+		log.WithError(err).WithField("tx_hash", e.Event.TxHash).Error("failed to generate transaction URL")
+		transactionURL = "error generating URL (see logs)"
+	}
+
 	return &OnChainTransactionTemplate{
-		TxHash:    e.Event.TxHash,
-		RawTxHex:  e.Event.RawTxHex,
-		Outputs:   outputs,
-		Amount:    format.FormatBasic(float64(e.Event.Amount), lang),
-		TotalFees: format.FormatDetailed(float64(e.Event.TotalFees), lang),
-		Confirmed: e.Event.NumConfirmations > 0,
+		TxHash:         e.Event.TxHash,
+		RawTxHex:       e.Event.RawTxHex,
+		Outputs:        outputs,
+		Amount:         format.FormatBasic(float64(e.Event.Amount), lang),
+		TotalFees:      format.FormatDetailed(float64(e.Event.TotalFees), lang),
+		Confirmed:      e.Event.NumConfirmations > 0,
+		TransactionURL: transactionURL,
 	}
 }
 
@@ -76,4 +90,19 @@ func (e *OnChainTransactionEvent) ShouldProcess(cfg *config.Config) bool {
 	}
 
 	return uint64(e.Event.Amount) >= cfg.EventConfig.OnChainEvent.MinAmount // #nosec G115
+}
+
+func (e *OnChainTransactionEvent) generateTransactionURL(txHash string) (string, error) {
+	tmpl, err := template.New("transaction_url").Parse(e.cfg.EventConfig.OnChainEvent.TransactionUrlTemplate)
+	if err != nil {
+		return "", err
+	}
+
+	data := map[string]string{"TxHash": txHash}
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }

@@ -81,12 +81,14 @@ notifications:
       Outputs:
       {{range .Outputs}}- {{.Amount}} sats to {{.Address}} ({{.OutputType}}{{if .IsOurAddress}}, ours{{end}})
       {{end}}
+
+      View on explorer: {{.TransactionURL}}
       TxID: {{.TxHash}}
-      Raw TX: {{.RawTxHex}}
     on_chain_confirmed_event: |-
       🔗 Confirmed On-Chain transaction: {{.Amount}} sats
       Fee: {{.TotalFees}} sats
 
+      View on explorer: {{.TransactionURL}}
       TxID: {{.TxHash}}
     chain_sync_lost_event: "⚠️ Chain is out of sync since {{.Duration}}"
     chain_sync_restored_event: "✅ Chain is back in sync after {{.Duration}}"
@@ -149,6 +151,7 @@ event_config:
     min_amount: 0  # Minimum amount in sats to notify about rebalancing
   on_chain_event:
     min_amount: 0  # Minimum amount in sats to notify about on-chain transaction
+    transaction_url_template: "https://mempool.space/tx/{{.TxHash}}"  # URL template for linking to transaction details on a block explorer
   chain_lost_event:
     threshold: 5m  # Duration of being out of sync before sending a notification
     warning_interval: 15m  # Interval between repeated warnings while still out of sync

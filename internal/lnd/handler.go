@@ -397,7 +397,7 @@ func (c *Client) handleOnChainEvents() {
 
 			confirmCnt := event.GetNumConfirmations()
 			if confirmCnt == 0 || confirmCnt == 1 {
-				c.eventSub <- events.NewOnChainTransactionEvent(event)
+				c.eventSub <- events.NewOnChainTransactionEvent(event, c.cfg)
 				c.pendChanManager.RefreshDelayed()
 			}
 		}

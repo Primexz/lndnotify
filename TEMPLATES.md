@@ -174,6 +174,7 @@ Triggered when an on-chain transaction is detected involving your node's wallet.
 | `{{.RawTxHex}}` | The raw transaction data in hexadecimal format |
 | `{{.Amount}}` | The net amount of the transaction in satoshis (formatted) |
 | `{{.TotalFees}}` | The total fees paid for the transaction in satoshis (formatted) |
+| `{{.TransactionURL}}` | A URL to view the transaction on a block explorer (generated from `transaction_url_template`) |
 | `{{.Outputs}}` | List of transaction outputs (see below) |
 
 ### Transaction Output Information ({{.Outputs}})
