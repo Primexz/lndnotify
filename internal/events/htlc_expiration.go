@@ -61,6 +61,5 @@ func (e *HTLCExpirationEvent) ShouldProcess(cfg *config.Config) bool {
 		return false
 	}
 
-	return true
-	// return e.remainingBlocks <= cfg.EventConfig.HTLCExpirationEvent.RemainingBlocks
+	return e.remainingBlocks <= cfg.EventConfig.HTLCExpirationEvent.RemainingBlocks
 }
