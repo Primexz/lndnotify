@@ -59,7 +59,7 @@ func (e *FailedHtlcLinkEvent) GetTemplateData(lang language.Tag) interface{} {
 
 	if outChan := e.channelManager.GetChannelById(outChanId); outChan != nil {
 		outChanAlias = outChan.PeerAlias
-		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat()
+		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat() // nolint:staticcheck
 	} else {
 		log.WithField("chan_id", outChanId).Warn("could not find outgoing channel")
 	}

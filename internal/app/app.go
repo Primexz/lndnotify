@@ -34,7 +34,11 @@ func Run(configPath string) {
 	if err := lndClient.Connect(); err != nil {
 		log.Fatalf("failed to connect to LND: %v", err)
 	}
-	defer lndClient.Disconnect()
+	defer func() {
+		if err := lndClient.Disconnect(); err != nil {
+			log.WithError(err).Error("error disconnecting from LND")
+		}
+	}()
 
 	// Create notification manager
 	notifier := notify.NewManager(&notify.ManagerConfig{

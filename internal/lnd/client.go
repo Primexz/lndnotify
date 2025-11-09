@@ -151,6 +151,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		go h()
 	}
 
+	// nolint:errcheck
 	go retry(c.ctx, "main client", func() (string, error) {
 		if err := c.channelManager.Start(); err != nil {
 			return "", fmt.Errorf("starting channel manager: %w", err)

@@ -64,7 +64,6 @@ func (e *ChannelFeeChangeEvent) GetTemplateData(lang language.Tag) interface{} {
 	ch := e.FeeChange.Channel
 	feeChange := e.FeeChange
 
-	const millisatsToSats = 1000
 	oldBaseFeeInSats := float64(feeChange.OldBaseFee) / 1000
 	newBaseFeeInSats := float64(feeChange.NewBaseFee) / 1000
 	oldInboundBaseFeeInSats := float64(feeChange.OldInboundBaseFee) / 1000

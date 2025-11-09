@@ -275,14 +275,17 @@ func TestCheckVersion(t *testing.T) {
 
 	if !isOutdated {
 		t.Error("expected version 0.1.0-beta to be outdated")
+		return
 	}
 
 	if localVer == nil {
 		t.Error("expected local version but got nil")
+		return
 	}
 
 	if latestVer == nil {
 		t.Error("expected latest version but got nil")
+		return
 	}
 
 	t.Logf("Local: %s, Latest: %s, Outdated: %v", localVer.String(), latestVer.String(), isOutdated)

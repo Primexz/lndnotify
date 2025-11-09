@@ -1,4 +1,6 @@
 {
     "editor.defaultFormatter": "golang.go",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "go.lintTool": "golangci-lint-v2",
+    "go.formatTool": "gofmt",
 }

@@ -35,7 +35,7 @@ func (e *TLSCertExpiryEvent) Timestamp() time.Time {
 func (e *TLSCertExpiryEvent) GetTemplateData(lang language.Tag) interface{} {
 	return &TLSEventTemplate{
 		ExpiryDate:      e.ExpiryDate,
-		TimeUntilExpiry: e.ExpiryDate.Sub(time.Now()),
+		TimeUntilExpiry: time.Until(e.ExpiryDate),
 	}
 }
 

@@ -64,7 +64,7 @@ func (c *Client) handlePeerEvents() {
 	log.Debug("starting peer event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "peer event subscription", func() (string, error) {
 		ev, err := c.client.SubscribePeerEvents(c.ctx, &lnrpc.PeerEventSubscription{})
 		if err != nil {
@@ -94,8 +94,10 @@ func (c *Client) handlePeerEvents() {
 
 			switch peerEvent.GetType() {
 			case lnrpc.PeerEvent_PEER_ONLINE:
+				// nolint:staticcheck
 				c.eventSub <- events.NewPeerOnlineEvent(nodeInfo, peerEvent)
 			case lnrpc.PeerEvent_PEER_OFFLINE:
+				// nolint:staticcheck
 				c.eventSub <- events.NewPeerOfflineEvent(nodeInfo, peerEvent)
 			}
 		}
@@ -107,7 +109,7 @@ func (c *Client) handleChannelEvents() {
 	log.Debug("starting channel event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "channel event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeChannelEvents(c.ctx, &lnrpc.ChannelEventSubscription{})
 		if err != nil {
@@ -178,7 +180,7 @@ func (c *Client) handleInvoiceEvents() {
 	log.Debug("starting invoice event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "invoice event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
@@ -230,7 +232,7 @@ func (c *Client) handleFailedHtlcEvents() {
 	log.Debug("starting failed htlc event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "htlc event subscription", func() (string, error) {
 		ev, err := c.router.SubscribeHtlcEvents(c.ctx, &routerrpc.SubscribeHtlcEventsRequest{})
 		if err != nil {
@@ -269,7 +271,7 @@ func (c *Client) handleKeysendEvents() {
 	log.Debug("keysend event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "keysend event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeInvoices(c.ctx, &lnrpc.InvoiceSubscription{})
 		if err != nil {
@@ -315,7 +317,7 @@ func (c *Client) handlePaymentEvents() {
 	log.Debug("starting payment event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "payment event subscription", func() (string, error) {
 		// Pubkey of the local node to distinguish between rebalancing and external payment
 		var localPubkey string
@@ -374,7 +376,7 @@ func (c *Client) handleOnChainEvents() {
 	log.Debug("starting on chain event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "on chain event subscription", func() (string, error) {
 		ev, err := c.client.SubscribeTransactions(c.ctx, &lnrpc.GetTransactionsRequest{})
 		if err != nil {
@@ -492,7 +494,7 @@ func (c *Client) handleBackupEvents() {
 	log.Debug("starting backup event handler")
 	defer c.wg.Done()
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "channel backup subscription", func() (string, error) {
 		ev, err := c.client.SubscribeChannelBackups(c.ctx, &lnrpc.ChannelBackupSubscription{})
 		if err != nil {
@@ -616,7 +618,7 @@ func (c *Client) handleTLSCertExpiry() {
 				continue
 			}
 
-			timeUntilExpiry := cert.NotAfter.Sub(time.Now())
+			timeUntilExpiry := time.Until(cert.NotAfter)
 			if timeUntilExpiry <= c.cfg.EventConfig.TLSCertExpiryEvent.Threshold {
 				logger.WithField("expires_at", cert.NotAfter).Info("tls certificate is expiring soon")
 				c.eventSub <- events.NewTLSCertExpiryEvent(cert.NotAfter)
@@ -633,9 +635,9 @@ func (c *Client) handleLndWalletState() {
 	defer c.wg.Done()
 
 	var lastState lnrpc.WalletState
-	var initialEvent bool = true
+	var initialEvent = true
 
-	// #nosec G104
+	// nolint:errcheck
 	retry(c.ctx, "wallet state subscription", func() (string, error) {
 		ev, err := c.state.SubscribeState(c.ctx, &lnrpc.SubscribeStateRequest{})
 		if err != nil {
