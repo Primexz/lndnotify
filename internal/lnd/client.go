@@ -14,6 +14,7 @@ import (
 	"github.com/Primexz/lndnotify/internal/config"
 	"github.com/Primexz/lndnotify/internal/events"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"github.com/lightningnetwork/lnd/lnrpc/chainrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	"google.golang.org/protobuf/proto"
 )
@@ -33,6 +34,7 @@ type Client struct {
 	client          lnrpc.LightningClient
 	state           lnrpc.StateClient
 	router          routerrpc.RouterClient
+	chain           chainrpc.ChainKitClient
 	channelManager  *channelmanager.ChannelManager
 	pendChanManager *channelmanager.PendingChannelManager
 	pendChanUpdates chan proto.Message
@@ -92,6 +94,7 @@ func (c *Client) Connect() error {
 	c.client = lnrpc.NewLightningClient(conn)
 	c.state = lnrpc.NewStateClient(conn)
 	c.router = routerrpc.NewRouterClient(conn)
+	c.chain = chainrpc.NewChainKitClient(conn)
 	c.channelManager = channelmanager.NewChannelManager(c.client)
 	c.pendChanManager = channelmanager.NewPendingChannelManager(c.client, c.pendChanUpdates)
 
@@ -178,6 +181,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 			c.handleChannelStatusEvents,
 			c.handleTLSCertExpiry,
 			c.handeLndVersion,
+			c.handlePendingHTLCs,
 		}
 		c.wg.Add(len(handlers))
 		for _, h := range handlers {

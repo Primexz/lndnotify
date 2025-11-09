@@ -101,6 +101,23 @@ func (cm *ChannelManager) GetAllChannels() []*lnrpc.Channel {
 	return channels
 }
 
+func (cm *ChannelManager) GetPendingHTLCs() map[*lnrpc.Channel][]*lnrpc.HTLC {
+	pendingHTLCs := make(map[*lnrpc.Channel][]*lnrpc.HTLC)
+
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+
+	for _, ch := range cm.channels {
+		if len(ch.PendingHtlcs) == 0 {
+			continue
+		}
+
+		pendingHTLCs[ch] = ch.PendingHtlcs
+	}
+
+	return pendingHTLCs
+}
+
 // RefreshNow triggers an immediate refresh of channel states
 func (cm *ChannelManager) RefreshNow() error {
 	return cm.refreshChannels()
