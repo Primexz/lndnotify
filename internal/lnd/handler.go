@@ -779,7 +779,7 @@ func (c *Client) handlePendingHTLCs() {
 			for ch, htlcs := range pendingHtlcs {
 				for _, htlc := range htlcs {
 					remainingBlocks := int32(htlc.ExpirationHeight) - currentHeight
-					fmt.Printf("HTLC %x on channel %d has %d blocks remaining\n", htlc.HashLock, ch, remainingBlocks)
+					fmt.Printf("HTLC %x on channel %s has %d blocks remaining\n", htlc.HashLock, ch.PeerAlias, remainingBlocks)
 				}
 			}
 		}
