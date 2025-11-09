@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 	"os"
 	"time"
 
@@ -758,14 +757,11 @@ func (c *Client) handlePendingHTLCs() {
 	log.Debug("starting pending htlc event handler")
 	defer c.wg.Done()
 
-	ticker := time.NewTicker(1 * time.Minute)
-	defer ticker.Stop()
-
 	for {
 		select {
 		case <-c.ctx.Done():
 			return
-		case <-ticker.C:
+		case <-c.channelManager.GetRefreshChannel():
 			log.Debug("checking for pending htlcs")
 
 			blockResp, err := c.chain.GetBestBlock(c.ctx, &chainrpc.GetBestBlockRequest{})
@@ -779,7 +775,7 @@ func (c *Client) handlePendingHTLCs() {
 			for ch, htlcs := range pendingHtlcs {
 				for _, htlc := range htlcs {
 					remainingBlocks := int32(htlc.ExpirationHeight) - currentHeight // #nosec G115
-					fmt.Printf("HTLC %x on channel %s has %d blocks remaining\n", htlc.HashLock, ch.PeerAlias, remainingBlocks)
+					c.eventSub <- events.NewHTLCExpirationEvent(htlc, ch, remainingBlocks)
 				}
 			}
 		}

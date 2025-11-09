@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+- Added HTLC expiration monitoring: Notifications for HTLCs nearing expiration with configurable threshold before notification. (@Primexz)
+
 ### Fixed
 ### Changed
 ### Removed

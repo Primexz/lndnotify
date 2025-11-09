@@ -8,7 +8,7 @@ import (
 func TestBlockCountToDuration(t *testing.T) {
 	tests := []struct {
 		name  string
-		input int
+		input int32
 		want  time.Duration
 	}{
 		{name: "144 blocks => 24h", input: 144, want: 144 * 10 * time.Minute},

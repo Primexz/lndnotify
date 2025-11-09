@@ -40,6 +40,7 @@ type ChannelManager struct {
 	refreshInterval time.Duration
 
 	feeChangeCh chan FeeChangeEvent
+	refreshCh   chan struct{}
 }
 
 func NewChannelManager(client lnrpc.LightningClient) *ChannelManager {
@@ -51,7 +52,8 @@ func NewChannelManager(client lnrpc.LightningClient) *ChannelManager {
 		ctx:             ctx,
 		cancel:          cancel,
 		refreshInterval: 5 * time.Minute,
-		feeChangeCh:     make(chan FeeChangeEvent, 100), // Buffered channel for fee changes
+		feeChangeCh:     make(chan FeeChangeEvent, 100),
+		refreshCh:       make(chan struct{}, 100),
 	}
 }
 
@@ -133,6 +135,11 @@ func (cm *ChannelManager) GetFeeChangeChannel() <-chan FeeChangeEvent {
 	return cm.feeChangeCh
 }
 
+// GetRefreshChannel returns the channel that signals when a refresh has occurred
+func (cm *ChannelManager) GetRefreshChannel() <-chan struct{} {
+	return cm.refreshCh
+}
+
 func (cm *ChannelManager) refreshLoop() {
 	defer cm.wg.Done()
 
@@ -184,6 +191,8 @@ func (cm *ChannelManager) refreshChannels() error {
 
 		cm.checkFeeChanges(ch, chanEdge, oldEdge)
 	}
+
+	cm.refreshCh <- struct{}{}
 
 	log.WithField("channel_count", len(cm.channels)).Debug("channel state refreshed")
 	return nil
