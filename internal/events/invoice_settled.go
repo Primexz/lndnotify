@@ -54,5 +54,5 @@ func (e *InvoiceSettledEvent) ShouldProcess(cfg *config.Config) bool {
 		return false
 	}
 
-	return uint64(e.Invoice.Value) >= cfg.EventConfig.InvoiceEvent.MinAmount // #nosec G115
+	return uint64(e.Invoice.Value) >= cfg.EventConfig.InvoiceEvent.MinAmount
 }

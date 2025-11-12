@@ -50,7 +50,7 @@ func (h *HttpUploader) Upload(message string, file *File) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint:errcheck
 
 	if resp.StatusCode >= 300 {
 		return fmt.Errorf("http error: status %d", resp.StatusCode)

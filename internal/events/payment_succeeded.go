@@ -146,13 +146,13 @@ func (e *PaymentSucceededEvent) ShouldProcess(cfg *config.Config) bool {
 		if !cfg.Events.RebalancingEvents {
 			return false
 		}
-		return uint64(e.Payment.ValueSat) >= cfg.EventConfig.RebalancingEvent.MinAmount // #nosec G115
+		return uint64(e.Payment.ValueSat) >= cfg.EventConfig.RebalancingEvent.MinAmount
 
 	case Event_PAYMENT_SUCCEEDED:
 		if !cfg.Events.PaymentEvents {
 			return false
 		}
-		return uint64(e.Payment.ValueSat) >= cfg.EventConfig.PaymentEvent.MinAmount // #nosec G115
+		return uint64(e.Payment.ValueSat) >= cfg.EventConfig.PaymentEvent.MinAmount
 
 	default:
 		return false

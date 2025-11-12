@@ -95,8 +95,8 @@ func (m *Manager) uploadFile(message string, file *uploader.File) {
 }
 
 // SendNotification sends a notification, either immediately or adds to batch
-func (m *Manager) SendNotification(message string) {
-	if m.cfg.Batching.Enabled {
+func (m *Manager) SendNotification(message string, instant bool) {
+	if m.cfg.Batching.Enabled && !instant {
 		m.addToBatch(message, nil)
 	} else {
 		m.send(message)

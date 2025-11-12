@@ -6,9 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Added
 - Added HTLC expiration monitoring: Notifications for HTLCs nearing expiration with configurable threshold before notification. (@Primexz)
+- Added version information to startup and shutdown notifications. (@Primexz)
 
 ### Fixed
+- Fixed issue where status notifications were sent late when batching was enabled. (@Primexz)
+
 ### Changed
+- Changed log-level of "received event" from Info to Debug. (@Primexz)
+- Reduced batch separator length for better readability on smaller screens. (@Primexz)
+- Migrated code linting to ``golangci-lint``. (@Primexz)
+
 ### Removed
 ### Deprecated
 

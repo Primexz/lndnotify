@@ -59,7 +59,7 @@ func (e *FailedHtlcLinkEvent) GetTemplateData(lang language.Tag) interface{} {
 
 	if outChan := e.channelManager.GetChannelById(outChanId); outChan != nil {
 		outChanAlias = outChan.PeerAlias
-		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat()
+		outChanLiquidity = outChan.GetLocalBalance() - outChan.GetLocalChanReserveSat() // nolint:staticcheck
 	} else {
 		log.WithField("chan_id", outChanId).Warn("could not find outgoing channel")
 	}
@@ -90,6 +90,6 @@ func (e *FailedHtlcLinkEvent) ShouldProcess(cfg *config.Config) bool {
 		return false
 	}
 	failInfo := e.FailEvent.GetInfo()
-	amountSats := uint64(failInfo.GetOutgoingAmtMsat() / 1000) // #nosec G115
+	amountSats := uint64(failInfo.GetOutgoingAmtMsat() / 1000)
 	return amountSats >= cfg.EventConfig.FailedHtlcEvent.MinAmount
 }

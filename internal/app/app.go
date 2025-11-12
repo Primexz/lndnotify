@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Run(configPath string) {
+func Run(configPath string, version string) {
 	log.SetLevel(log.DebugLevel)
 
 	// Load configuration
@@ -34,7 +35,11 @@ func Run(configPath string) {
 	if err := lndClient.Connect(); err != nil {
 		log.Fatalf("failed to connect to LND: %v", err)
 	}
-	defer lndClient.Disconnect()
+	defer func() {
+		if err := lndClient.Disconnect(); err != nil {
+			log.WithError(err).Error("error disconnecting from LND")
+		}
+	}()
 
 	// Create notification manager
 	notifier := notify.NewManager(&notify.ManagerConfig{
@@ -50,8 +55,8 @@ func Run(configPath string) {
 	}
 
 	if cfg.Events.StatusEvents {
-		notifier.SendNotification("🟢 lndnotify connected")
-		defer notifier.SendNotification("🔴 lndnotify disconnected")
+		notifier.SendNotification(fmt.Sprintf("🟢 lndnotify v%s connected", version), true)
+		defer notifier.SendNotification(fmt.Sprintf("🔴 lndnotify v%s disconnected", version), true)
 	}
 
 	// Handle shutdown gracefully
@@ -66,7 +71,7 @@ func Run(configPath string) {
 		case event := <-eventChan:
 			logger := log.WithField("event", event.Type())
 
-			logger.Info("received event")
+			logger.Debug("received event")
 
 			if !event.ShouldProcess(cfg) {
 				logger.Debug("event filtered, skipping")
@@ -83,7 +88,7 @@ func Run(configPath string) {
 				notifier.SendNotificationWithFile(msg, source.GetFile())
 				continue
 			}
-			notifier.SendNotification(msg)
+			notifier.SendNotification(msg, false)
 
 		case <-sigChan:
 			log.Info("received shutdown signal")

@@ -45,8 +45,6 @@ type Manager struct {
 	cfg       *ManagerConfig
 	providers map[string]Provider
 	templates map[string]*template.Template
-	mu        sync.Mutex
-	sent      int
 	lastReset time.Time
 
 	// Batching fields

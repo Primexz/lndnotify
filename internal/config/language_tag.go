@@ -30,5 +30,5 @@ func (lt *LanguageTag) UnmarshalYAML(value *yaml.Node) error {
 
 // MarshalYAML implements custom marshaling for language tags
 func (lt LanguageTag) MarshalYAML() (interface{}, error) {
-	return lt.Tag.String(), nil
+	return lt.String(), nil
 }

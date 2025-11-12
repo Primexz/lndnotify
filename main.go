@@ -39,5 +39,5 @@ func main() {
 		return
 	}
 
-	app.Run(*configPath)
+	app.Run(*configPath, version)
 }
