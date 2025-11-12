@@ -86,7 +86,7 @@ func (m *Manager) sendBatch(messages []string) {
 	var batchMessage string
 	if count > 1 {
 		batchMessage = fmt.Sprintf("📢 %d Notifications\n", count)
-		batchMessage += strings.Repeat("═", 30) + "\n"
+		batchMessage += strings.Repeat("═", 10) + "\n"
 	}
 
 	for i, msg := range messages {
@@ -101,7 +101,7 @@ func (m *Manager) sendBatch(messages []string) {
 		}
 
 		if i < count-1 {
-			batchMessage += "\n" + strings.Repeat("─", 10) + "\n"
+			batchMessage += "\n" + strings.Repeat("─", 5) + "\n"
 		}
 	}
 
