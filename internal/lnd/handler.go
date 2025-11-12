@@ -12,6 +12,7 @@ import (
 	"github.com/Primexz/lndnotify/pkg/lndversion"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/lightningnetwork/lnd/lnrpc"
+	"github.com/lightningnetwork/lnd/lnrpc/chainrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	log "github.com/sirupsen/logrus"
 )
@@ -750,6 +751,35 @@ func (c *Client) handeLndVersion() {
 			lastInformedVersion = latestVersion.String()
 
 			c.eventSub <- events.NewLndUpdateAvailableEvent(latestVersion, localVersion)
+		}
+	}
+}
+
+func (c *Client) handlePendingHTLCs() {
+	log.Debug("starting pending htlc event handler")
+	defer c.wg.Done()
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-c.channelManager.GetRefreshChannel():
+			log.Debug("checking for pending htlcs")
+
+			blockResp, err := c.chain.GetBestBlock(c.ctx, &chainrpc.GetBestBlockRequest{})
+			if err != nil {
+				log.WithError(err).Error("error fetching best block")
+				continue
+			}
+			currentHeight := blockResp.GetBlockHeight()
+
+			pendingHtlcs := c.channelManager.GetPendingHTLCs()
+			for ch, htlcs := range pendingHtlcs {
+				for _, htlc := range htlcs {
+					remainingBlocks := int32(htlc.ExpirationHeight) - currentHeight // #nosec G115
+					c.eventSub <- events.NewHTLCExpirationEvent(htlc, ch, remainingBlocks)
+				}
+			}
 		}
 	}
 }

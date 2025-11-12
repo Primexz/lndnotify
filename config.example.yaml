@@ -135,6 +135,7 @@ events:
   health_events: true # Enable LND health status notifications
   lnd_update_events: true # Enable LND update available notifications
   channel_fee_events: true # Enable channel fee change notifications
+  htlc_expiration_events: true # Enable HTLC expiration notifications
 
 # Event configuration (specific settings for each event type)
 event_config:
@@ -157,3 +158,6 @@ event_config:
     warning_interval: 15m  # Interval between repeated warnings while still out of sync
   channel_status_event:
     min_downtime: 10m  # Minimum downtime duration before sending a channel down notification
+  htlc_expiration_event:
+    remaining_blocks: 144  # Notify when HTLCs are expiring within ~24 hours
+

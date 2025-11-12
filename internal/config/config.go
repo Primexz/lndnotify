@@ -79,29 +79,31 @@ type NotificationTemplate struct {
 	TLSCertExpiry        string `yaml:"tls_cert_expiry_event"`
 	WalletState          string `yaml:"wallet_state_event"`
 	LndUpdateAvailable   string `yaml:"lnd_update_available_event"`
+	HTLCExpiration       string `yaml:"htlc_expiration_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
 // NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventFlags struct {
-	BackupEvents        bool `yaml:"backup_events"`
-	ChainSyncEvents     bool `yaml:"chain_sync_events"`
-	ChannelEvents       bool `yaml:"channel_events"`
-	ChannelFeeEvents    bool `yaml:"channel_fee_events"`
-	ChannelStatusEvents bool `yaml:"channel_status_events"`
-	FailedHtlc          bool `yaml:"failed_htlc_events"`
-	ForwardEvents       bool `yaml:"forward_events"`
-	HealthEvents        bool `yaml:"health_events"`
-	InvoiceEvents       bool `yaml:"invoice_events"`
-	KeysendEvents       bool `yaml:"keysend_events"`
-	OnChainEvents       bool `yaml:"on_chain_events"`
-	PaymentEvents       bool `yaml:"payment_events"`
-	PeerEvents          bool `yaml:"peer_events"`
-	RebalancingEvents   bool `yaml:"rebalancing_events"`
-	StatusEvents        bool `yaml:"status_events"`
-	TLSCertExpiryEvents bool `yaml:"tls_cert_expiry_events"`
-	WalletStateEvents   bool `yaml:"wallet_state_events"`
-	LndUpdateEvents     bool `yaml:"lnd_update_events"`
+	BackupEvents         bool `yaml:"backup_events"`
+	ChainSyncEvents      bool `yaml:"chain_sync_events"`
+	ChannelEvents        bool `yaml:"channel_events"`
+	ChannelFeeEvents     bool `yaml:"channel_fee_events"`
+	ChannelStatusEvents  bool `yaml:"channel_status_events"`
+	FailedHtlc           bool `yaml:"failed_htlc_events"`
+	ForwardEvents        bool `yaml:"forward_events"`
+	HealthEvents         bool `yaml:"health_events"`
+	InvoiceEvents        bool `yaml:"invoice_events"`
+	KeysendEvents        bool `yaml:"keysend_events"`
+	OnChainEvents        bool `yaml:"on_chain_events"`
+	PaymentEvents        bool `yaml:"payment_events"`
+	PeerEvents           bool `yaml:"peer_events"`
+	RebalancingEvents    bool `yaml:"rebalancing_events"`
+	StatusEvents         bool `yaml:"status_events"`
+	TLSCertExpiryEvents  bool `yaml:"tls_cert_expiry_events"`
+	WalletStateEvents    bool `yaml:"wallet_state_events"`
+	LndUpdateEvents      bool `yaml:"lnd_update_events"`
+	HTLCExpirationEvents bool `yaml:"htlc_expiration_events"`
 }
 
 // EventConfig contains specific configuration for each event type
@@ -137,6 +139,9 @@ type EventConfig struct {
 	TLSCertExpiryEvent struct {
 		Threshold time.Duration `yaml:"threshold"`
 	} `yaml:"tls_cert_expiry_event"`
+	HTLCExpirationEvent struct {
+		RemainingBlocks int32 `yaml:"remaining_blocks"`
+	} `yaml:"htlc_expiration_event"`
 }
 
 // LoadConfig loads configuration from a YAML file
@@ -197,6 +202,9 @@ func (c *Config) setDefaults() {
 	}
 	if c.EventConfig.OnChainEvent.TransactionUrlTemplate == "" {
 		c.EventConfig.OnChainEvent.TransactionUrlTemplate = "https://mempool.space/tx/{{.TxHash}}"
+	}
+	if c.EventConfig.HTLCExpirationEvent.RemainingBlocks == 0 {
+		c.EventConfig.HTLCExpirationEvent.RemainingBlocks = 144 // ~24 hours
 	}
 
 	// Set default templates in alphabetical order to prevent merge conflicts
@@ -274,6 +282,9 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.LndUpdateAvailable == "" {
 		c.Notifications.Templates.LndUpdateAvailable = "⬆️ New LND version available: {{.LatestVersion}}\nYou are currently running version: {{.CurrentVersion}}"
+	}
+	if c.Notifications.Templates.HTLCExpiration == "" {
+		c.Notifications.Templates.HTLCExpiration = "⏰ HTLC expiring soon: {{.RemainingBlocks}} blocks remaining (~{{.RemainingTime}})\n{{.PeerAlias}} ({{.PeerPubkeyShort}})\nHTLC Amount: {{.HTLCAmount}} sats"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {

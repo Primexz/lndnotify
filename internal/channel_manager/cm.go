@@ -40,6 +40,7 @@ type ChannelManager struct {
 	refreshInterval time.Duration
 
 	feeChangeCh chan FeeChangeEvent
+	refreshCh   chan struct{}
 }
 
 func NewChannelManager(client lnrpc.LightningClient) *ChannelManager {
@@ -51,7 +52,8 @@ func NewChannelManager(client lnrpc.LightningClient) *ChannelManager {
 		ctx:             ctx,
 		cancel:          cancel,
 		refreshInterval: 5 * time.Minute,
-		feeChangeCh:     make(chan FeeChangeEvent, 100), // Buffered channel for fee changes
+		feeChangeCh:     make(chan FeeChangeEvent, 100),
+		refreshCh:       make(chan struct{}, 100),
 	}
 }
 
@@ -101,6 +103,23 @@ func (cm *ChannelManager) GetAllChannels() []*lnrpc.Channel {
 	return channels
 }
 
+func (cm *ChannelManager) GetPendingHTLCs() map[*lnrpc.Channel][]*lnrpc.HTLC {
+	pendingHTLCs := make(map[*lnrpc.Channel][]*lnrpc.HTLC)
+
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+
+	for _, ch := range cm.channels {
+		if len(ch.PendingHtlcs) == 0 {
+			continue
+		}
+
+		pendingHTLCs[ch] = ch.PendingHtlcs
+	}
+
+	return pendingHTLCs
+}
+
 // RefreshNow triggers an immediate refresh of channel states
 func (cm *ChannelManager) RefreshNow() error {
 	return cm.refreshChannels()
@@ -114,6 +133,11 @@ func (cm *ChannelManager) SetRefreshInterval(interval time.Duration) {
 // GetFeeChangeChannel returns the channel for receiving fee change events
 func (cm *ChannelManager) GetFeeChangeChannel() <-chan FeeChangeEvent {
 	return cm.feeChangeCh
+}
+
+// GetRefreshChannel returns the channel that signals when a refresh has occurred
+func (cm *ChannelManager) GetRefreshChannel() <-chan struct{} {
+	return cm.refreshCh
 }
 
 func (cm *ChannelManager) refreshLoop() {
@@ -167,6 +191,8 @@ func (cm *ChannelManager) refreshChannels() error {
 
 		cm.checkFeeChanges(ch, chanEdge, oldEdge)
 	}
+
+	cm.refreshCh <- struct{}{}
 
 	log.WithField("channel_count", len(cm.channels)).Debug("channel state refreshed")
 	return nil
