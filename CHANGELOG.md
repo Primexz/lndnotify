@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+- Added version information to startup and shutdown notifications. (@Primexz)
+
 ### Fixed
 ### Changed
 - Changed log-level of "received event" from Info to Debug. (@Primexz)

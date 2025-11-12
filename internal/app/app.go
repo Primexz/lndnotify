@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Run(configPath string) {
+func Run(configPath string, version string) {
 	log.SetLevel(log.DebugLevel)
 
 	// Load configuration
@@ -54,8 +55,8 @@ func Run(configPath string) {
 	}
 
 	if cfg.Events.StatusEvents {
-		notifier.SendNotification("🟢 lndnotify connected")
-		defer notifier.SendNotification("🔴 lndnotify disconnected")
+		notifier.SendNotification(fmt.Sprintf("🟢 lndnotify v%s connected", version))
+		defer notifier.SendNotification(fmt.Sprintf("🔴 lndnotify v%s disconnected", version))
 	}
 
 	// Handle shutdown gracefully
