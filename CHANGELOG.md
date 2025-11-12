@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Changed log-level of "received event" from Info to Debug. (@Primexz)
+- Migrated code linting to ``golangci-lint``. (@Primexz)
+
 ### Removed
 ### Deprecated
 

@@ -70,7 +70,7 @@ func Run(configPath string) {
 		case event := <-eventChan:
 			logger := log.WithField("event", event.Type())
 
-			logger.Info("received event")
+			logger.Debug("received event")
 
 			if !event.ShouldProcess(cfg) {
 				logger.Debug("event filtered, skipping")
