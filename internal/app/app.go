@@ -55,8 +55,8 @@ func Run(configPath string, version string) {
 	}
 
 	if cfg.Events.StatusEvents {
-		notifier.SendNotification(fmt.Sprintf("🟢 lndnotify v%s connected", version))
-		defer notifier.SendNotification(fmt.Sprintf("🔴 lndnotify v%s disconnected", version))
+		notifier.SendNotification(fmt.Sprintf("🟢 lndnotify v%s connected", version), true)
+		defer notifier.SendNotification(fmt.Sprintf("🔴 lndnotify v%s disconnected", version), true)
 	}
 
 	// Handle shutdown gracefully
@@ -88,7 +88,7 @@ func Run(configPath string, version string) {
 				notifier.SendNotificationWithFile(msg, source.GetFile())
 				continue
 			}
-			notifier.SendNotification(msg)
+			notifier.SendNotification(msg, false)
 
 		case <-sigChan:
 			log.Info("received shutdown signal")
