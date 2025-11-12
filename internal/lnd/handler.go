@@ -37,7 +37,7 @@ func (c *Client) handleForwards() {
 			}).Debug("polling for forwarding events")
 
 			resp, err := c.client.ForwardingHistory(c.ctx, &lnrpc.ForwardingHistoryRequest{
-				StartTime:       uint64(start.Unix()), // #nosec G115
+				StartTime:       uint64(start.Unix()),
 				PeerAliasLookup: true,
 				IndexOffset:     lastOffset,
 			})

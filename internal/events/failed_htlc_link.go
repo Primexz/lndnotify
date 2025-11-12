@@ -90,6 +90,6 @@ func (e *FailedHtlcLinkEvent) ShouldProcess(cfg *config.Config) bool {
 		return false
 	}
 	failInfo := e.FailEvent.GetInfo()
-	amountSats := uint64(failInfo.GetOutgoingAmtMsat() / 1000) // #nosec G115
+	amountSats := uint64(failInfo.GetOutgoingAmtMsat() / 1000)
 	return amountSats >= cfg.EventConfig.FailedHtlcEvent.MinAmount
 }

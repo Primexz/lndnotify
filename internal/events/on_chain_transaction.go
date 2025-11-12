@@ -89,7 +89,7 @@ func (e *OnChainTransactionEvent) ShouldProcess(cfg *config.Config) bool {
 		return false
 	}
 
-	return uint64(e.Event.Amount) >= cfg.EventConfig.OnChainEvent.MinAmount // #nosec G115
+	return uint64(e.Event.Amount) >= cfg.EventConfig.OnChainEvent.MinAmount
 }
 
 func (e *OnChainTransactionEvent) generateTransactionURL(txHash string) (string, error) {
