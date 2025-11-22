@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+### Fixed
+### Changed
+### Removed
+### Deprecated
+
+
+## [1.12.0] - 2025-11-22
+
+### Added
 - Added version information to startup and shutdown notifications. (@Primexz)
 
 ### Fixed
@@ -15,9 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Reduced batch separator length for better readability on smaller screens. (@Primexz)
 - Migrated code linting to ``golangci-lint``. (@Primexz)
 - Updated lnd to v0.20.0-beta. (@Primexz)
-
-### Removed
-### Deprecated
 
 
 ## [1.11.0] - 2025-11-03
