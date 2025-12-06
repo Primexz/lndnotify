@@ -759,6 +759,8 @@ func (c *Client) handlePendingHTLCs() {
 	log.Debug("starting pending htlc event handler")
 	defer c.wg.Done()
 
+	notifiedHtlcs := make(map[uint64]map[uint64]bool) // channelID -> htlcIndex -> notified
+
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -776,6 +778,23 @@ func (c *Client) handlePendingHTLCs() {
 			pendingHtlcs := c.channelManager.GetPendingHTLCs()
 			for ch, htlcs := range pendingHtlcs {
 				for _, htlc := range htlcs {
+					if _, exists := notifiedHtlcs[ch.ChanId]; !exists {
+						notifiedHtlcs[ch.ChanId] = make(map[uint64]bool)
+					}
+
+					if _, notified := notifiedHtlcs[ch.ChanId][htlc.HtlcIndex]; notified {
+						continue
+					}
+
+					notifiedHtlcs[ch.ChanId][htlc.HtlcIndex] = true
+
+					log.WithFields(log.Fields{
+						"channel_id":        ch.ChanId,
+						"htlc_index":        htlc.HtlcIndex,
+						"expiration_height": htlc.ExpirationHeight,
+						"current_height":    currentHeight,
+					}).Info("pending htlc detected")
+
 					remainingBlocks := int32(htlc.ExpirationHeight) - currentHeight // #nosec G115
 					c.eventSub <- events.NewHTLCExpirationEvent(htlc, ch, remainingBlocks)
 				}
