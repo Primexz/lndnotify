@@ -283,6 +283,19 @@ Triggered when a fee policy change is detected on a channel.
 | `{{.InboundBaseFeeChange}}` | The absolute change in inbound base fee (+/-X sats) |
 | `{{.InboundBaseFeeChangePercent}}` | The percentage change in inbound base fee (+/-X.X%) |
 
+## HTLC Expiration Event
+Triggered when an HTLC is nearing expiration.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.PeerAlias}}` | The alias of the peer associated with the HTLC
+| `{{.PeerPubKey}}` | The full public key of the peer |
+| `{{.PeerPubkeyShort}}` | A shortened version of the peer's public
+| `{{.ChannelPoint}}` | The channel point (funding transaction ID and output index) |
+| `{{.HTLCAmount}}` | The amount of the HTLC in satoshhis (formatted) |
+| `{{.RemainingBlocks}}` | The number of blocks remaining until the HTLC expires |
+| `{{.RemainingTime}}` | The estimated time remaining until the HTLC expires |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:

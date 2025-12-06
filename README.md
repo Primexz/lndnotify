@@ -140,6 +140,7 @@ events:
   health_event: true
   lnd_update_events: true
   channel_fee_events: true
+  htlc_expiration_events: true
 
 # Event-specific configuration
 event_config:
@@ -160,6 +161,7 @@ event_config:
     warning_interval: 15m 
   channel_status_event:
     min_downtime: 10m
+
 
 ```
 
