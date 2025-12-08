@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Deprecated
 
 
+## [1.14.0] - 2025-12-08
+
+### Changed
+- Updated [shoutrrr](https://github.com/nicholas-fedor/shoutrrr/releases/tag/v0.13.0)
+
+
 ## [1.13.0] - 2025-12-06
 
 ### Added
