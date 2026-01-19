@@ -6,7 +6,7 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/lightningnetwork/lnd v0.20.0-beta
 	github.com/nicholas-fedor/shoutrrr v0.13.1
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/text v0.33.0
 	google.golang.org/grpc v1.78.0
