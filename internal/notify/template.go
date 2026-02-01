@@ -38,6 +38,7 @@ func (m *Manager) parseTemplates() {
 		events.Event_WALLET_STATE:          m.cfg.Templates.WalletState,
 		events.Event_LND_UPDATE_AVAILABLE:  m.cfg.Templates.LndUpdateAvailable,
 		events.Event_HTLC_EXPIRATION:       m.cfg.Templates.HTLCExpiration,
+		events.Event_ALIAS_CHANGED:         m.cfg.Templates.AliasChanged,
 	}
 
 	for name, text := range templates {

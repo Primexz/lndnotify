@@ -803,6 +803,49 @@ func (c *Client) handlePendingHTLCs() {
 	}
 }
 
+func (c *Client) handleAliasChanges() {
+	log.Debug("starting alias change event handler")
+	defer c.wg.Done()
+
+	ticker := time.NewTicker(10 * time.Minute)
+	defer ticker.Stop()
+
+	aliasMap := make(map[string]string) // pubkey -> alias
+
+	for {
+		select {
+		case <-c.ctx.Done():
+			return
+		case <-ticker.C:
+			log.Debug("checking for alias changes")
+
+			peersResp, err := c.client.ListPeers(c.ctx, &lnrpc.ListPeersRequest{})
+			if err != nil {
+				log.WithError(err).Error("error fetching peer list")
+				continue
+			}
+
+			for _, peer := range peersResp.Peers {
+				pubkey := peer.PubKey
+				currentAlias := c.getAlias(pubkey)
+
+				if oldAlias, exists := aliasMap[pubkey]; exists {
+					if oldAlias != currentAlias {
+						log.WithFields(log.Fields{
+							"pubkey":    pubkey,
+							"old_alias": oldAlias,
+							"new_alias": currentAlias,
+						}).Info("alias change detected")
+						c.eventSub <- events.NewAliasChangedEvent(pubkey, oldAlias, currentAlias)
+					}
+				}
+
+				aliasMap[pubkey] = currentAlias
+			}
+		}
+	}
+}
+
 // getAlias returns the alias for a given pubkey. If an error occurs, it returns the first
 // 8 characters of the pubkey.
 func (c *Client) getAlias(pubkey string) string {

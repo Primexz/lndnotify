@@ -296,6 +296,14 @@ Triggered when an HTLC is nearing expiration.
 | `{{.RemainingBlocks}}` | The number of blocks remaining until the HTLC expires |
 | `{{.RemainingTime}}` | The estimated time remaining until the HTLC expires |
 
+## Alias Changed Event
+Triggered when the node's alias is changed.
+
+| Variable | Description |
+|----------|-------------|
+| `{{.OldAlias}}` | The previous alias of the node |
+| `{{.NewAlias}}` | The new alias of the node |
+
 ## Example Usage
 
 You can use these variables in your notification templates in the config.yaml file. For example:

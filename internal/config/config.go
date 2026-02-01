@@ -52,7 +52,6 @@ type ProviderConfig struct {
 }
 
 // NotificationTemplate holds customizable message templates
-// NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type NotificationTemplate struct {
 	BackupMulti          string `yaml:"backup_multi_event"`
 	ChainSyncLost        string `yaml:"chain_sync_lost_event"`
@@ -80,10 +79,10 @@ type NotificationTemplate struct {
 	WalletState          string `yaml:"wallet_state_event"`
 	LndUpdateAvailable   string `yaml:"lnd_update_available_event"`
 	HTLCExpiration       string `yaml:"htlc_expiration_event"`
+	AliasChanged         string `yaml:"alias_changed_event"`
 }
 
 // EventFlags controls which events to monitor (feature flags)
-// NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventFlags struct {
 	BackupEvents         bool `yaml:"backup_events"`
 	ChainSyncEvents      bool `yaml:"chain_sync_events"`
@@ -104,10 +103,10 @@ type EventFlags struct {
 	WalletStateEvents    bool `yaml:"wallet_state_events"`
 	LndUpdateEvents      bool `yaml:"lnd_update_events"`
 	HTLCExpirationEvents bool `yaml:"htlc_expiration_events"`
+	AliasChangedEvents   bool `yaml:"alias_changed_events"`
 }
 
 // EventConfig contains specific configuration for each event type
-// NOTE: Keep fields in alphabetical order to prevent merge conflicts when adding new events
 type EventConfig struct {
 	FailedHtlcEvent struct {
 		MinAmount uint64 `yaml:"min_amount"`
@@ -207,7 +206,6 @@ func (c *Config) setDefaults() {
 		c.EventConfig.HTLCExpirationEvent.RemainingBlocks = 144 // ~24 hours
 	}
 
-	// Set default templates in alphabetical order to prevent merge conflicts
 	if c.Notifications.Templates.BackupMulti == "" {
 		c.Notifications.Templates.BackupMulti = "❗️ Channel backup received for {{.NumChanPoints}} channels\n\nChannel Points:\n{{range .ChanPoints}}- {{.}}\n{{end}}\nFilename: {{.Filename}}\n SHA256: {{.Sha256Sum}}"
 	}
@@ -285,6 +283,9 @@ func (c *Config) setDefaults() {
 	}
 	if c.Notifications.Templates.HTLCExpiration == "" {
 		c.Notifications.Templates.HTLCExpiration = "⏰ HTLC expiring soon: {{.RemainingBlocks}} blocks remaining (~{{.RemainingTime}})\n{{.PeerAlias}} ({{.PeerPubkeyShort}})\nHTLC Amount: {{.HTLCAmount}} sats"
+	}
+	if c.Notifications.Templates.AliasChanged == "" {
+		c.Notifications.Templates.AliasChanged = "📝 Alias changed: {{.OldAlias}} -> {{.NewAlias}}"
 	}
 
 	if c.EventConfig.ChainLostEvent.Threshold == 0 {

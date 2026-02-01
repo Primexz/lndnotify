@@ -49,6 +49,8 @@ This project is heavily inspired by <a href="https://github.com/alexbosworth/bal
   - LND Health Status
   - LND Update Available
   - Channel Fee Change
+  - HTLC Expiration Warning
+  - Alias Changed
 - Multiple notification providers support via <a href="https://github.com/nicholas-fedor/shoutrrr" target="_blank">shoutrrr</a>
 - Customizable message templates ([see all template variables](TEMPLATES.md))
 - Customizable notification formatting (e.g., number formatting based on locale)
@@ -141,6 +143,7 @@ events:
   lnd_update_events: true
   channel_fee_events: true
   htlc_expiration_events: true
+  alias_changed_events: true
 
 # Event-specific configuration
 event_config:

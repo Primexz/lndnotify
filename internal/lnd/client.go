@@ -165,7 +165,6 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 		}
 
 		// Start subscription handlers
-		// NOTE: Keep handlers in alphabetical order to prevent merge conflicts when adding new handlers
 		handlers := []func(){
 			c.handleBackupEvents,
 			c.handleChannelEvents,
@@ -183,6 +182,7 @@ func (c *Client) SubscribeEvents() (<-chan events.Event, error) {
 			c.handleTLSCertExpiry,
 			c.handeLndVersion,
 			c.handlePendingHTLCs,
+			c.handleAliasChanges,
 		}
 		c.wg.Add(len(handlers))
 		for _, h := range handlers {

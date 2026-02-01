@@ -23,7 +23,6 @@ type FileSource interface {
 
 type EventType string
 
-// NOTE: Keep constants in alphabetical order to prevent merge conflicts when adding new events
 const (
 	Event_BACKUP_MULTI          EventType = "backup_multi_event"
 	Event_CHAIN_SYNC_LOST       EventType = "chain_sync_lost_event"
@@ -51,6 +50,7 @@ const (
 	Event_WALLET_STATE          EventType = "wallet_state_event"
 	Event_LND_UPDATE_AVAILABLE  EventType = "lnd_update_available_event"
 	Event_HTLC_EXPIRATION       EventType = "htlc_expiration_event"
+	Event_ALIAS_CHANGED         EventType = "alias_changed_event"
 )
 
 func (et EventType) String() string {
