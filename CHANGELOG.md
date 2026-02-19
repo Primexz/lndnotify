@@ -7,8 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
-- Updated [shoutrrr](https://github.com/nicholas-fedor/shoutrrr/releases/tag/v0.13.1)
-- Updated [golang.org/x/text](https://github.com/golang/text/compare/v0.31.0...v0.32.0)
+- Updated Golang to version 1.26.0 (@Primexz)
 
 ### Removed
 ### Deprecated

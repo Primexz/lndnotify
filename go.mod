@@ -1,6 +1,6 @@
 module github.com/Primexz/lndnotify
 
-go 1.25.4
+go 1.26.0
 
 require (
 	github.com/cenkalti/backoff/v5 v5.0.3
