@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Deprecated
 
 
+## [1.17.0] - 2026-04-26
+
+### Changed
+- Update dependencies (@Primexz)
+
+
 ## [1.16.0] - 2025-02-14
 
 ### Changed
