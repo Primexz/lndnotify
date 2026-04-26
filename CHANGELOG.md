@@ -19,13 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Update dependencies (@Primexz)
 
 
-## [1.16.0] - 2025-02-14
+## [1.16.0] - 2026-02-14
 
 ### Changed
 - Updated lnd to v0.20.1-beta. (@Primexz)
 
 
-## [1.15.0] - 2025-02-01
+## [1.15.0] - 2026-02-01
 
 ### Added
 - Add alias change event for notifications when a node's alias changes. (@Primexz)
